@@ -589,6 +589,75 @@
     }
     .ink-blot { transition: none !important; }
   }
+
+  /* ── Notification nudge modal ── */
+  .notif-nudge {
+    position: fixed;
+    bottom: 28px;
+    left: 50%;
+    transform: translateX(-50%) translateY(120px);
+    background: var(--surface, #1a1a1a);
+    border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 14px;
+    padding: 20px 24px;
+    width: min(440px, calc(100vw - 40px));
+    box-shadow: 0 8px 32px rgba(0,0,0,0.40);
+    z-index: 9999;
+    opacity: 0;
+    transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .notif-nudge.visible {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+  .notif-nudge.hidden { display: none; }
+  .notif-nudge-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink, #f0ede8);
+    margin: 0;
+    line-height: 1.3;
+  }
+  .notif-nudge-sub {
+    font-size: 13px;
+    color: var(--ink-mute, #888);
+    margin: 0;
+    line-height: 1.5;
+  }
+  .notif-nudge-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .notif-btn-primary {
+    background: var(--accent, #c8511a);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 9px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    flex: 1;
+    min-width: 140px;
+    transition: opacity 0.2s;
+  }
+  .notif-btn-primary:hover { opacity: 0.88; }
+  .notif-btn-primary:disabled { opacity: 0.5; cursor: default; }
+  .notif-btn-secondary {
+    background: transparent;
+    color: var(--ink-mute, #888);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 8px;
+    padding: 9px 14px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+  .notif-btn-secondary:hover { color: var(--ink, #f0ede8); }
 </style>
 </head>
 <body>
@@ -689,6 +758,16 @@
 
   </section>
 </main>
+
+<!-- Notification nudge — appears ~4s after the job starts, offers a browser ping when done -->
+<div class="notif-nudge" id="notifNudge" role="dialog" aria-labelledby="notifNudgeTitle" aria-modal="false">
+  <p class="notif-nudge-title" id="notifNudgeTitle">This takes 6–12 minutes. We'll hold your spot.</p>
+  <p class="notif-nudge-sub">TRIBE v2 encodes each second of input through a full neural model — it's thorough, not slow. You can safely switch tabs or apps.</p>
+  <div class="notif-nudge-actions">
+    <button class="notif-btn-primary" id="notifAllowBtn" type="button">Notify me when done</button>
+    <button class="notif-btn-secondary" id="notifDismissBtn" type="button">I'll wait here</button>
+  </div>
+</div>
 
 <script>
 function toggleTheme(){
@@ -829,7 +908,7 @@ function toggleTheme(){
   // -----------------------------------------------------------------------
   const DS_STEPS = [
     { id:'read',    label: RUN_MODE === 'video' ? 'Reading both videos (WhisperX)' : (RUN_MODE === 'audio' ? 'Reading both audio files (WhisperX)' : 'Reading both texts (WhisperX)'),
-      backend: ['queued','converting_text_to_speech','decoding_audio','decoding_video'],
+      backend: ['queued','worker_started','converting_text_to_speech','decoding_audio','decoding_video'],
       stageKeys: ['events_a_ms','events_b_ms'],
       expectedMs: 50_000 },
     { id:'tribe',   label:'Encoding through TRIBE v2',
@@ -844,10 +923,10 @@ function toggleTheme(){
       backend: ['computing_brain_contrast'],
       stageKeys: ['heatmap_ms'],
       expectedMs: 12_000 },
-    { id:'score',   label:'Scoring the seven dimensions',
-      backend: [],
+    { id:'score',   label:'Writing the insights',
+      backend: ['generating_content'],
       stageKeys: ['score_diff_ms'],
-      expectedMs: 800 },
+      expectedMs: 120_000 },
   ];
   const HISTORY_KEY = 'braindiff:run-history';
   const HISTORY_MAX = 50;
@@ -1146,9 +1225,11 @@ function toggleTheme(){
     stepTo(index, state);
   }
 
-  // Backend status string → UI step index (4 steps: 0=read, 1=TRIBE, 2=surface, 3=score)
+  // Backend status string → UI step index (4 steps: 0=read, 1=TRIBE, 2=surface, 3=insights)
   const STATUS_TO_STEP = {
     queued: 0,
+    worker_started: 0,
+    worker_booting: 0,
     converting_text_to_speech: 0,
     decoding_audio: 0,
     decoding_video: 0,
@@ -1156,6 +1237,7 @@ function toggleTheme(){
     predicting_version_b: 1,
     slow_processing: 2,
     computing_brain_contrast: 2,
+    generating_content: 3,
   };
 
   // Derive real per-step start times from the event stream. Backend events look like:
@@ -1186,12 +1268,14 @@ function toggleTheme(){
   }
 
   function applyStatus(status){
-    if (status === 'queued' || status === 'converting_text_to_speech' || status === 'decoding_audio' || status === 'decoding_video'){
+    if (status === 'queued' || status === 'worker_started' || status === 'worker_booting' || status === 'converting_text_to_speech' || status === 'decoding_audio' || status === 'decoding_video'){
       setStep(0, 'active');
     } else if (status === 'predicting_version_a' || status === 'predicting_version_b'){
       setStep(0, 'done'); setStep(1, 'active');
     } else if (status === 'slow_processing' || status === 'computing_brain_contrast'){
       setStep(0, 'done'); setStep(1, 'done'); setStep(2, 'active'); ensureBar(2);
+    } else if (status === 'generating_content'){
+      setStep(0, 'done'); setStep(1, 'done'); setStep(2, 'done'); setStep(3, 'active');
     }
   }
 
@@ -1310,6 +1394,77 @@ function toggleTheme(){
   }
   window.addEventListener('pageshow', resetInkBlot);
   resetInkBlot();
+
+  // ── Notification nudge ──────────────────────────────────────────────────
+  // Shows 4s after page load. If user grants permission, fires a browser
+  // notification when the job completes (works even if tab is backgrounded).
+  var _notifyOnComplete = false;
+  var _nudgeTimer = null;
+
+  function showNudge(){
+    var el = document.getElementById('notifNudge');
+    if (!el || el.classList.contains('hidden')) return;
+    // Don't show if permission already granted/denied by this session or
+    // if the run is already done.
+    if (document.body.classList.contains('run-done')) return;
+    if (typeof Notification !== 'undefined' && Notification.permission === 'granted'){
+      _notifyOnComplete = true;
+      return; // already have permission — no need to ask
+    }
+    el.classList.add('visible');
+  }
+
+  function dismissNudge(){
+    var el = document.getElementById('notifNudge');
+    if (el){ el.classList.remove('visible'); setTimeout(function(){ el.classList.add('hidden'); }, 400); }
+    if (_nudgeTimer){ clearTimeout(_nudgeTimer); _nudgeTimer = null; }
+  }
+
+  function fireCompletionNotification(){
+    if (!_notifyOnComplete) return;
+    if (typeof Notification === 'undefined' || Notification.permission !== 'granted') return;
+    try {
+      new Notification('BrainDiff is ready', {
+        body: 'Your brain contrast is ready to view.',
+        icon: '/assets/braindiff-logo.png',
+        tag: 'braindiff-complete',
+      });
+    } catch(_){}
+  }
+
+  var _origCompletionSequence = completionSequence;
+  completionSequence = function(){
+    fireCompletionNotification();
+    dismissNudge();
+    _origCompletionSequence();
+  };
+
+  var allowBtn = document.getElementById('notifAllowBtn');
+  var dismissBtn = document.getElementById('notifDismissBtn');
+
+  if (allowBtn) allowBtn.addEventListener('click', function(){
+    if (typeof Notification === 'undefined'){
+      allowBtn.textContent = 'Not supported in this browser';
+      allowBtn.disabled = true;
+      return;
+    }
+    Notification.requestPermission().then(function(perm){
+      if (perm === 'granted'){
+        _notifyOnComplete = true;
+        allowBtn.textContent = "You'll be notified ✓";
+        allowBtn.disabled = true;
+        setTimeout(dismissNudge, 1200);
+      } else {
+        allowBtn.textContent = 'Permission denied';
+        allowBtn.disabled = true;
+      }
+    });
+  });
+
+  if (dismissBtn) dismissBtn.addEventListener('click', dismissNudge);
+
+  // Show nudge 4 seconds after page load (gives the page time to render first).
+  _nudgeTimer = setTimeout(showNudge, 4000);
 })();
 </script>
 
