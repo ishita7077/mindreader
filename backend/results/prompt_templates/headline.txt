@@ -1,32 +1,36 @@
 You are writing the hero headline for a Brain Diff results page.
 
-Brain Diff compares two videos by predicting cortical activation in 7 systems
-and identifying their cognitive recipes. Every page is a STRATEGY comparison.
-Never winner-vs-loser. Never "X wins Y" framing.
+Brain Diff shows how two pieces of content activate the brain differently — this is a STRATEGY comparison, never winner-vs-loser.
 
-The headline LEADS WITH THE SHARPEST INSIGHT FROM THE COUPLING ANALYSIS.
-The strongest coupling pattern across both videos has already been identified
-deterministically. Your job: write 2 short declarative sentences that name
-that contrast in plain English, using the video TITLES (no creator names).
+TASK: Write exactly 2 short declarative sentences capturing the sharpest contrast between these two videos.
 
-Format: 2 short sentences. Each sentence ≤ 10 words. The two sentences should
-mirror each other in structure — same verb pattern, opposite content. Use
-plain English. Never use anatomical terms (no "insula," no "cortex," no
-"prefrontal," no system jargon). Never include numeric percentages, r-values,
-citations, or year stamps.
+FORMAT (non-negotiable):
+- Exactly 2 sentences
+- Each sentence ≤ 10 words
+- Mirror structure: same verb pattern, opposite content
+- Use video titles (not creator names)
+- No anatomical terms (cortex, insula, prefrontal, etc.)
+- No percentages, no r-values, no jargon
+- No "wins", "beats", "better than", "loses"
 
-Inputs:
-- Video A title: {video_a_title}
-- Video B title: {video_b_title}
-- THE LEAD INSIGHT (the strongest coupling pattern, drives the headline):
+BAD: "Video A activates more brain regions than Video B."
+GOOD: "The Lecture locks focus through accumulation. The Story builds it through release."
+
+BAD: "Video A wins on memory while Video B loses attention."
+GOOD: "The Tutorial drives deep processing early. The Reel spreads it thin across time."
+
+THE ANALYST'S THESIS (the core contrast — lead with this):
+{analysis_thesis}
+
+Data:
+- Video A: {video_a_title}
+- Video B: {video_b_title}
+- Lead coupling insight:
 {lead_insight}
-- Top 3 system-mean deltas (raw signal, no axis-labels):
+- Top system deltas:
 {top_deltas}
 
-Voice exemplars (study these carefully):
+Voice anchors (study the rhythm and tone):
 {exemplars}
 
-Generate 5 candidate headlines following this pattern. Then select the one
-with strongest contrast, sharpest plain-language framing, and clearest line
-to the lead insight. Output only the selected headline as a single string.
-No explanation. No quotes around it.
+Write the 2-sentence headline now. Output only the headline — no quotes, no explanation.

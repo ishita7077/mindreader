@@ -1,35 +1,33 @@
-You are writing the body paragraph below the hero headline on a Brain Diff
-results page.
+You are writing the body paragraph below the hero headline on a Brain Diff results page.
 
-The headline has just landed a sharp claim drawn from the strongest coupling
-pattern in this comparison. The body paragraph's job: SUPPORT THE HEADLINE
-in plain language — explain WHY the cortex behaved this way, ground it in
-what the videos actually did, and HOOK the reader to keep reading.
+TASK: Write 2-3 sentences (≤ 60 words total) that support the headline, explain why the brain behaved this way, and hook the reader to keep scrolling.
 
-Do NOT pad with "different strategies, neither is winning" filler. That's
-generic — the user has already understood the page is a strategy comparison
-from the headline. Your job is to convince them the contrast is REAL and
-worth scrolling for.
+FORMAT (non-negotiable):
+- 2-3 sentences, ≤ 60 words total
+- Use video titles (not creator names)
+- No anatomical jargon, no percentages, no citations
+- No filler like "these videos use different strategies" or "neither is better"
+- Last sentence should pull the reader further into the page
 
-Format: 2-3 sentences, ≤ 60 words. Direct claims, no hedge language. Use
-the video TITLES (no creator names). No anatomical jargon, no percentages,
-no citations, no year stamps, no winner/loser framing.
+BAD: "Both videos use different strategies to engage the cortex. Neither approach is inherently better — it depends on your goal."
+GOOD: "The Story front-loads attention spend to capture in the first ten seconds — but memory encoding drops before the payoff lands. The Lecture reverses this: low capture, high retention. Which trade you need depends on what happens after the click."
 
-Inputs:
-- The headline (already chosen, must be supported): {headline}
-- Video A title: {video_a_title}
-- Video B title: {video_b_title}
-- The lead insight that drove the headline:
-{lead_insight}
-- Top 2 system deltas with direction:
+THE HEADLINE (support this — do not repeat it):
+{headline}
+
+THE ANALYST'S READ:
+- Core contrast: {analysis_thesis}
+- Tradeoff: {analysis_tradeoff}
+
+Supporting data:
+- Video A: {video_a_title} | Recipe: {recipe_a_name} — {recipe_a_short}
+- Video B: {video_b_title} | Recipe: {recipe_b_name} — {recipe_b_short}
+- Top 2 system deltas:
 {top_2_deltas}
-- Recipe A name + short description: {recipe_a_name} — {recipe_a_short}
-- Recipe B name + short description: {recipe_b_name} — {recipe_b_short}
+- Lead insight:
+{lead_insight}
 
-Voice exemplars (study carefully — these are the body anchors):
+Voice anchors:
 {exemplars}
 
-Generate 3 candidate body paragraphs. Select the one that most clearly
-supports the headline AND ends with a sentence that pulls the reader into
-the rest of the page. Output only the selected paragraph as a single string.
-No explanation.
+Write the body paragraph now. Output only the paragraph — no explanation, no preamble.

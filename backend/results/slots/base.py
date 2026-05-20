@@ -127,11 +127,14 @@ class Slot:
         outputs_dir: Path,
         manager: ModelManager,
         audit: AuditLogger,
+        extra_context: dict[str, Any] | None = None,
     ) -> SlotResult:
         audit.emit("slot_started", slot=self.slot_address)
         start = time.perf_counter()
 
         ctx = self.build_template_context(inputs)
+        if extra_context:
+            ctx.update(extra_context)
         prompt = self.render_prompt(ctx)
         prompt_hash = hash_string(prompt)
         audit.emit("slot_prompt_rendered", slot=self.slot_address, prompt_hash=prompt_hash)
@@ -142,19 +145,42 @@ class Slot:
         attempts = 0
         last_error: str | None = None
 
-        # Two attempts: first deterministic, retry with sampling at temperature 0.5.
-        for attempt in (1, 2):
+        # Three attempts: deterministic → repair prompt → resample.
+        for attempt in range(1, 4):
             attempts = attempt
-            req = GenerationRequest(
-                prompt=prompt,
-                max_new_tokens=self.max_new_tokens,
-                temperature=self.temperature if attempt == 1 else 0.5,
-                top_p=self.top_p,
-                do_sample=False if attempt == 1 else True,
-                seed=seed + (attempt - 1),  # second attempt: nudge seed
-            )
+            is_repair = attempt == 2 and bool(candidates)
 
-            audit.emit("slot_model_called", slot=self.slot_address, attempt=attempt, prompt_hash=prompt_hash)
+            if is_repair:
+                errors_text = (
+                    "; ".join(e.detail for e in validation.errors[:3])
+                    if validation.errors else "output did not pass validation"
+                )
+                prev_raw = str(candidates[-1]) if candidates else ""
+                active_prompt = (
+                    f"Your previous output failed these checks:\n{errors_text}\n\n"
+                    f"Previous output:\n{prev_raw}\n\n"
+                    f"Fix the specific issues and output only the corrected text. No explanation."
+                )
+                req = GenerationRequest(
+                    prompt=active_prompt,
+                    max_new_tokens=self.max_new_tokens,
+                    temperature=0.35,
+                    top_p=0.9,
+                    do_sample=True,
+                    seed=seed + 100,
+                )
+            else:
+                req = GenerationRequest(
+                    prompt=prompt,
+                    max_new_tokens=self.max_new_tokens,
+                    temperature=self.temperature if attempt == 1 else 0.6,
+                    top_p=self.top_p,
+                    do_sample=False if attempt == 1 else True,
+                    seed=seed + (attempt - 1) * 7,
+                )
+
+            audit.emit("slot_model_called", slot=self.slot_address, attempt=attempt,
+                       prompt_hash=prompt_hash, repair=is_repair)
 
             try:
                 resp = await manager.generate(req)
@@ -167,9 +193,9 @@ class Slot:
                     error_code="MODEL_CALL_FAILED",
                     error_detail=last_error,
                 )
-                if attempt == 2:
+                if attempt == 3:
                     break
-                audit.emit("slot_retry_started", slot=self.slot_address, attempt=2)
+                audit.emit("slot_retry_started", slot=self.slot_address, attempt=attempt + 1)
                 continue
 
             audit.emit(
@@ -190,9 +216,9 @@ class Slot:
                     error_code="OUTPUT_UNPARSEABLE",
                     error_detail=str(exc),
                 )
-                if attempt == 2:
+                if attempt == 3:
                     break
-                audit.emit("slot_retry_started", slot=self.slot_address, attempt=2)
+                audit.emit("slot_retry_started", slot=self.slot_address, attempt=attempt + 1)
                 continue
 
             candidates.append(selected)
@@ -209,8 +235,8 @@ class Slot:
                 error_code=validation.errors[0].code if validation.errors else "VALIDATION_FAILED",
                 error_detail="; ".join(e.detail for e in validation.errors),
             )
-            if attempt == 1:
-                audit.emit("slot_retry_started", slot=self.slot_address, attempt=2)
+            if attempt < 3:
+                audit.emit("slot_retry_started", slot=self.slot_address, attempt=attempt + 1)
 
         latency_ms = int((time.perf_counter() - start) * 1000)
 

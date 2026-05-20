@@ -39,7 +39,8 @@ from .lib.input_normalizer import (
 )
 from .lib.lead_insight import select_lead_insight
 from .lib.library_matcher import match_recipe
-from .lib.model_manager import use_real_llama
+from .lib.model_manager import use_real_content_model
+from .slots.analysis_brief import AnalysisBriefSlot
 from .slots.base import Slot
 from .slots.body import BodySlot
 from .slots.chord_contextual_meaning import ChordContextualMeaningSlot
@@ -59,6 +60,7 @@ _TRIBE_DIM_TO_CANONICAL: dict[str, str] = {
     "personal_resonance": "personal_resonance",
     "self_relevance":     "personal_resonance",
     "attention":          "attention",
+    "attention_salience": "attention",   # A3 fix: was silently dropped, filled with 0.5
     "brain_effort":       "brain_effort",
     "cognitive_control":  "brain_effort",
     "gut_reaction":       "gut_reaction",
@@ -392,19 +394,19 @@ def generate_content_for_worker(
     )
     audit.emit("input_normalized", input_hash=input_hash(inputs))
 
-    # Switch ModelManager to real LLaMA unless stubbed.
+    # Switch ModelManager to real Gemma unless stubbed.
     if not use_stub:
         try:
-            use_real_llama(per_slot_timeout_seconds=600.0)
+            use_real_content_model(per_slot_timeout_seconds=600.0)
         except Exception as exc:
-            audit.emit("model_manager_failed", error_code="LLAMA_LOAD_FAILED",
+            audit.emit("model_manager_failed", error_code="CONTENT_MODEL_LOAD_FAILED",
                        error_detail=f"{type(exc).__name__}: {exc}")
-            return {"comparison_id": cmp_id, "content": None, "error": f"LLaMA load failed: {exc}"}
+            return {"comparison_id": cmp_id, "content": None, "error": f"Content model load failed: {exc}"}
 
     from .lib.model_manager import get_model_manager
     manager = get_model_manager()
 
-    # Pipeline: lead → wave1 → wave2.
+    # Pipeline: lead insight → wave 0 (analysis brief) → wave1 → wave2.
     lead = select_lead_insight(inputs)
     audit.emit("input_normalized", data={"lead_insight": {
         "video": lead.video_key, "system_a": lead.system_a, "system_b": lead.system_b,
@@ -415,6 +417,25 @@ def generate_content_for_worker(
     (out_dir / "raw").mkdir(parents=True, exist_ok=True)
     overrides_dir = Path("/tmp/manual_overrides") / cmp_id
     overrides_dir.mkdir(parents=True, exist_ok=True)
+
+    # ── Wave 0: analysis brief (Gemma analyst pass over the evidence packet) ──
+    brief_slot = AnalysisBriefSlot()
+    brief_result = _run_coro(brief_slot.run(
+        inputs=inputs, comparison_id=cmp_id, run_id=rid,
+        outputs_dir=out_dir, manager=manager, audit=audit,
+    ))
+    brief: dict = brief_result.selected if brief_result and brief_result.selected else {}
+    # Build extra_context — every downstream slot can reference these keys in prompts.
+    extra_ctx = {
+        "analysis_thesis":      brief.get("thesis", ""),
+        "analysis_tradeoff":    brief.get("tradeoff", ""),
+        "analysis_confidence":  brief.get("confidence", "low"),
+    }
+    audit.emit("analysis_brief_complete", data={
+        "source": "llm" if (brief_result and brief_result.succeeded) else "fallback",
+        "thesis_words": len(brief.get("thesis", "").split()),
+        "confidence": brief.get("confidence", "low"),
+    })
 
     match_a = match_recipe(va)
     match_b = match_recipe(vb)
@@ -439,10 +460,11 @@ def generate_content_for_worker(
             ))
             firing_index += 1
 
-    async def _run(slots):
+    async def _run(slots, ctx=None):
         return await asyncio.gather(*[
             s.run(inputs=inputs, comparison_id=cmp_id, run_id=rid,
-                  outputs_dir=out_dir, manager=manager, audit=audit)
+                  outputs_dir=out_dir, manager=manager, audit=audit,
+                  extra_context=ctx)
             for s in slots
         ])
 
@@ -475,7 +497,7 @@ def generate_content_for_worker(
             raise box["error"]
         return box.get("value")
 
-    wave1_results = _run_coro(_run(wave1))
+    wave1_results = _run_coro(_run(wave1, ctx=extra_ctx))
     headline_result = next((r for r in wave1_results if r.slot_address == "headline"), None)
     headline_text = (
         headline_result.selected
@@ -484,7 +506,7 @@ def generate_content_for_worker(
     )
 
     wave2 = [BodySlot(headline_text=headline_text, lead_insight=lead)]
-    _run_coro(_run(wave2))
+    _run_coro(_run(wave2, ctx=extra_ctx))
 
     content = assemble_content(
         comparison_id=cmp_id, run_id=rid,
@@ -492,9 +514,39 @@ def generate_content_for_worker(
         inputs=inputs.to_dict(),
         outputs_dir=out_dir, overrides_dir=overrides_dir, audit=audit,
     )
-    audit.emit("comparison_completed")
+
+    # Build content_audit — counts per source so the worker can surface
+    # fallback rate in meta without the frontend having to parse slot-by-slot.
+    content_audit = _build_content_audit(content)
+
+    audit.emit("comparison_completed", data=content_audit)
     return {
         "comparison_id": cmp_id,
         "content": content,
+        "content_audit": content_audit,
         "audit_log_path": str(audit_path),
+    }
+
+
+def _build_content_audit(content: dict | None) -> dict:
+    """Count slot sources in assembled content for observability."""
+    if not content or not isinstance(content.get("slots"), dict):
+        return {"slots_total": 0, "slots_llm": 0, "slots_repaired": 0, "slots_fallback": 0, "fallback_rate": 1.0}
+    slots = content["slots"]
+    totals = {"llm": 0, "repaired": 0, "fallback": 0, "override": 0, "other": 0}
+    for v in slots.values():
+        if isinstance(v, dict):
+            src = v.get("source", "other")
+            totals[src] = totals.get(src, 0) + 1
+    total = sum(totals.values())
+    llm = totals["llm"] + totals["repaired"]
+    fallback = totals["fallback"]
+    return {
+        "slots_total": total,
+        "slots_llm": llm,
+        "slots_repaired": totals["repaired"],
+        "slots_fallback": fallback,
+        "slots_override": totals["override"],
+        "fallback_rate": round(fallback / total, 3) if total else 1.0,
+        "content_model_id": "google/gemma-3-1b-it",
     }

@@ -1,29 +1,26 @@
-You are writing one coupling callout for a Brain Diff results page Network
-Coordination panel.
+You are writing one coupling callout for the Network Coordination panel on a Brain Diff results page.
 
-A "coupling callout" describes how strongly two cortical systems fire together
-within a single video, and what that means for the cortex's cognitive strategy.
-Brain Diff is a STRATEGY comparison — every callout reinforces this framing.
+A coupling callout describes how two brain systems fired in relation to each other — and what that means for this video's cognitive strategy.
 
-Format: 2 sentences, ≤ 38 words total. The first sentence describes what the
-systems DID (rose together / pulled apart / one suppressed the other). The
-second sentence ends with a recipe-relevant cognitive consequence — what the
-cortex was DOING because of this coupling pattern.
+FORMAT (non-negotiable):
+- Exactly 2 sentences, ≤ 38 words total
+- Sentence 1: what the systems DID (rose together / pulled apart / one suppressed the other)
+- Sentence 2: the cognitive consequence — what the brain was doing because of this pattern
+- Must name both systems by name: {system_a} and {system_b}
+- Do NOT include the r-value number in the output — it is context for you, not for readers
+- No anatomical jargon, no percentages, no citations
 
-Must reference both system names. No anatomical jargon. No percentages.
-No citations. No winner/loser framing.
+BAD: "With an r-value of +0.82, attention and memory_encoding were strongly coupled, indicating a learning state."
+GOOD: "Attention and memory_encoding rose in lockstep through the second half, keeping the brain in an active-processing loop. This is the core mechanism of the Lecture recipe."
 
-Inputs:
-- Video subject: {video_display_name}
-- Coupling type: {coupling_type} (strongest | weakest | anti)
-- System pair: {system_a} ↔ {system_b}
-- r-value: {r_value}
-- Qualitative descriptor: {descriptor}
-- This video's recipe: {recipe_name}
+BAD: "Gut reaction and brain_effort showed anti-coupling in this video."
+GOOD: "As gut reaction peaked, brain_effort fell — the brain offloaded analytical work to make room for the visceral hit. The Story recipe runs on this contrast."
 
-Voice exemplars:
+Video: {video_display_name}
+Coupling: {system_a} ↔ {system_b} ({descriptor})
+This video's recipe: {recipe_name}
+
+Voice anchors:
 {exemplars}
 
-Generate 2 candidate callouts in this voice. Select the one with the strongest
-recipe-relevant ending. Output only the selected 2-sentence callout as a
-single string. No explanation.
+Write the 2-sentence callout now. Output only the callout — no explanation, no quotes.

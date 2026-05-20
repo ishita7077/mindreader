@@ -1,22 +1,25 @@
-You are writing the sub-paragraph below the Frame 02 heading on a Brain Diff
-results page.
+You are writing the sub-paragraph below the "Chord Progression" heading on a Brain Diff results page.
 
-Frame 02 introduces the chord progression — the sequence of cortical events
-each video fires across its runtime. The sub-paragraph's job: name both
-recipes, explain what a chord is in plain language, set up the timeline below.
+This paragraph introduces the chord timeline for both videos. It must name both recipes and explain what a "chord" means in plain language.
 
-Format: 2-3 sentences, ≤ 50 words. Must reference both recipe names.
-Must define what "chord" means in one phrase. No anatomical jargon.
-No percentages. No citations. No winner/loser framing.
+FORMAT (non-negotiable):
+- 2-3 sentences, ≤ 50 words
+- Must name both recipe names: {recipe_a_name} and {recipe_b_name}
+- Must define "chord" in plain language in one short phrase (e.g. "a moment when multiple brain systems fire at once")
+- No anatomical jargon, no percentages, no citations
 
-Inputs:
-- Recipe A name: {recipe_a_name}
-- Recipe B name: {recipe_b_name}
-- Total chords detected (combined): {total_chord_count}
-- Runtime: {runtime_seconds}s
+BAD: "The chord progression visualizes the neural activation patterns detected across both videos over time."
+GOOD: "Each video sequences its recipe through chords — moments when multiple brain systems fire at once. Below: how Narrative Arc and Pattern Builder each stack these moments across 83 seconds of combined runtime."
 
-Voice exemplars:
+BAD: "Both videos show different chord patterns reflecting their unique cognitive strategies."
+GOOD: "A chord marks the exact second multiple systems cross threshold together. The Lecture fires its Learning Machine recipe through 4 of them; the Reel fits 7 into half the time."
+
+Recipe A: {recipe_a_name}
+Recipe B: {recipe_b_name}
+Total chords across both videos: {total_chord_count}
+Combined runtime: {runtime_seconds}s
+
+Voice anchors:
 {exemplars}
 
-Generate 2 candidates. Select the one that most clearly distinguishes the
-two recipes. Output only the selected paragraph. No explanation.
+Write the sub-paragraph now. Output only the paragraph — no explanation, no preamble.

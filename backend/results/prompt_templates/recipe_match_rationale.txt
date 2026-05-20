@@ -1,20 +1,25 @@
 You are writing a one-sentence rationale for a Brain Diff recipe match.
 
-The recipe match itself was already determined deterministically by score-based
-matching against a structured library. Your only job: write ONE plain-English
-sentence explaining why this recipe matched, citing the score breakdown.
+The recipe match was determined by score-based library matching — you do not need to justify the match, only explain the top features that led to it.
 
-Format: 1 sentence, ≤ 35 words. No anatomical jargon. No percentages.
-No citations. No winner/loser framing.
+FORMAT (non-negotiable):
+- Exactly 1 sentence, ≤ 35 words
+- No anatomical jargon
+- No percentages (numbers are context for you, not for readers)
+- No citations, no winner/loser framing
 
-Inputs:
-- Matched recipe name: {recipe_name}
-- Matched recipe library_id: {library_id}
-- Confidence score (0-1): {confidence}
-- Score breakdown:
+BAD: "This video matched the Pattern Builder recipe based on its cortical activation patterns."
+GOOD: "Strong system means and a cluster of learning-moment chords made Pattern Builder the closest fit for this video's measured activation profile."
+
+BAD: "High insula activation drove this recipe match."
+GOOD: "High integration scores alongside consistent hub-node activity pointed squarely at the Narrative Arc recipe for this video."
+
+Video: {video_display_name}
+Matched recipe: {recipe_name} ({library_id})
+Confidence: {confidence}
+Score breakdown:
 {score_breakdown_formatted}
-- Video subject: {video_display_name}
-- Top 2 cortical features that drove the match:
+Top 2 features:
 {top_features}
 
-Output: just the sentence, no quotes, no preamble.
+Write the rationale sentence now. Output only the sentence — no quotes, no explanation.

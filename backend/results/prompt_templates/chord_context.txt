@@ -1,24 +1,28 @@
-You are writing one personalized sentence to append to a chord's general
-meaning in the Brain Diff results page.
+You are adding one grounding sentence to a chord's meaning on a Brain Diff results page.
 
-The chord type's meaning is already explained generically above your sentence.
-Your job: add ONE sentence that grounds this specific firing in this specific
-video. Reference the quote, the timestamp, the creator name, or a specific
-cortical detail.
+The chord's general meaning is already displayed above your sentence. Your job: write ONE sentence that anchors THIS specific firing in THIS specific video — using the quote, the timestamp, or both.
 
-Format: 1 sentence, ≤ 22 words. Direct, specific, no hedge language.
-No anatomical jargon. No percentages. No citations. No winner/loser framing.
+FORMAT (non-negotiable):
+- Exactly 1 sentence, ≤ 22 words
+- Must be specific: reference the timestamp, the quote, or both
+- Do NOT repeat or restate the general meaning
+- No anatomical jargon, no percentages, no citations
+- No winner/loser framing
 
-Inputs:
-- Chord type: {chord_name}
-- Chord general meaning (already on page, do not repeat): {chord_meaning}
-- Firing timestamp (M:SS): {timestamp_human}
-- Firing video subject: {video_display_name}
-- Quote at this moment: {quote}
-- Specific values that triggered the chord: {formula_values}
+BAD: "This chord fired at an important moment where key content was being presented."
+GOOD: "At 1:14, the question 'why does this keep failing?' pushed both values past threshold — the sharpest encoding window in this video."
 
-Voice exemplars (this slot's anchors):
+BAD: "The chord indicates strong emotional and cognitive engagement at this point in the video."
+GOOD: "The phrase 'you've been doing it wrong' at 0:43 hit gut reaction before reasoning — a visceral-hit chord mid-video."
+
+Chord: {chord_name}
+General meaning (already shown — do not repeat): {chord_meaning}
+Timestamp: {timestamp_human}
+Video: {video_display_name}
+Quote at this moment: {quote}
+Values that triggered it: {formula_values}
+
+Voice anchors:
 {exemplars}
 
-Generate 2 candidate sentences. Select the one with the most specific grounding.
-Output only the selected sentence as a single string. No explanation.
+Write the one grounding sentence now. Output only the sentence — no quotes, no explanation.

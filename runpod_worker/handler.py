@@ -9,6 +9,29 @@ from urllib.parse import unquote, urlparse
 
 log = logging.getLogger("braindiff.handler")
 
+# One GPU-heavy comparison at a time per worker process.
+# RunPod endpoint-level concurrency (max_workers) handles parallelism
+# across workers; inside a single worker we queue to avoid CUDA OOM.
+_GPU_JOB_LOCK = threading.Semaphore(int(os.getenv("BRAIN_DIFF_GPU_JOB_CONCURRENCY", "1")))
+
+
+def _gpu_snapshot(stage: str) -> dict:
+    """Capture GPU memory state at a pipeline checkpoint."""
+    try:
+        import torch  # type: ignore
+        if not torch.cuda.is_available():
+            return {"stage": stage, "cuda": False}
+        return {
+            "stage": stage,
+            "cuda": True,
+            "device": torch.cuda.get_device_name(0),
+            "allocated_mb": round(torch.cuda.memory_allocated() / 1024 ** 2, 1),
+            "reserved_mb": round(torch.cuda.memory_reserved() / 1024 ** 2, 1),
+            "peak_mb": round(torch.cuda.max_memory_allocated() / 1024 ** 2, 1),
+        }
+    except Exception:
+        return {"stage": stage, "cuda": False}
+
 import httpx
 import numpy as np
 import runpod
@@ -84,18 +107,14 @@ def _warm_start() -> None:
 
 
 def _warm_llm_background() -> None:
-    """Load Gemma into GPU memory in a background thread while TRIBE warms up.
-
-    By the time TRIBE finishes loading (several minutes on cold start), Gemma
-    is already in memory. generate_content_for_worker sees a ready model and
-    adds zero extra wait for the user.
-    """
+    """Load Gemma into GPU memory in a background thread while TRIBE warms up."""
     try:
-        from backend.results.lib.model_manager import use_real_llama
-        use_real_llama(per_slot_timeout_seconds=600.0)
-        log.info("LLM warmup: Gemma loaded and ready")
+        from backend.results.lib.model_manager import use_real_content_model
+        use_real_content_model(per_slot_timeout_seconds=600.0)
+        snap = _gpu_snapshot("after_gemma_load")
+        log.info("content_model_warmup: google/gemma-3-1b-it loaded and ready — VRAM %s MB allocated", snap.get("allocated_mb", "?"))
     except Exception as exc:
-        log.warning("LLM warmup failed (non-fatal, will retry on first job): %s: %s", type(exc).__name__, exc)
+        log.warning("content_model_warmup failed (non-fatal, will retry on first job): %s: %s", type(exc).__name__, exc)
 
 
 def _download_to_temp(url: str, blob_token: str = "") -> str:
@@ -247,6 +266,7 @@ def _build_response(
     results_content: dict[str, Any] | None = None,
     display_name_a: str = "",
     display_name_b: str = "",
+    gpu_snapshots: list[dict] | None = None,
 ) -> dict[str, Any]:
     request_id = str(uuid.uuid4())
     if not job_id:
@@ -328,17 +348,18 @@ def _build_response(
     }
     # Results-page payload: schema-locked content.json shape so the new
     # results.html can render directly without any extra API call. Only
-    # included when LLaMA-driven content generation succeeded.
+    # included when content generation succeeded.
     if results_content and results_content.get("content"):
         response["results_content"] = results_content["content"]
         meta["results_comparison_id"] = results_content.get("comparison_id")
-    # Surface failure reason from the LLM pipeline into the response so the
-    # frontend (or a curl-debug session) can see why Gemma didn't produce copy
-    # without having to scrape worker logs.
     if results_content and results_content.get("error"):
         meta["results_content_error"] = results_content["error"]
     elif results_content is None:
         meta["results_content_error"] = "content_pipeline_returned_none"
+    if results_content and results_content.get("content_audit"):
+        meta["content_audit"] = results_content["content_audit"]
+    if gpu_snapshots:
+        meta["gpu_audit"] = {"snapshots": gpu_snapshots, "safe_inprocess_concurrency": 1}
     return response
 
 
@@ -350,7 +371,20 @@ def _run_text(
     display_name_a: str = "",
     display_name_b: str = "",
 ) -> dict[str, Any]:
+    with _GPU_JOB_LOCK:
+        return _run_text_locked(text_a, text_b, job_id=job_id, display_name_a=display_name_a, display_name_b=display_name_b)
+
+
+def _run_text_locked(
+    text_a: str,
+    text_b: str,
+    *,
+    job_id: str | None = None,
+    display_name_a: str = "",
+    display_name_b: str = "",
+) -> dict[str, Any]:
     started = time.perf_counter()
+    gpu_snapshots: list[dict] = [_gpu_snapshot("before_tribe")]
     warnings = _warnings_for_text(text_a, text_b)
     progress = emitter_for(job_id)
 
@@ -414,6 +448,7 @@ def _run_text(
             media_features_payload = {"waveform_a": wf_a, "waveform_b": wf_b}
     except Exception as exc:
         log.warning("Text-mode waveform pipeline unavailable: %s", exc)
+    gpu_snapshots.append(_gpu_snapshot("before_content_gen"))
     results_content = _generate_results_content(
         job_id=job_id or "",
         scores_a=scores_a,
@@ -426,6 +461,7 @@ def _run_text(
         title_b=title_b,
         progress=progress,
     )
+    gpu_snapshots.append(_gpu_snapshot("after_content_gen"))
     return _build_response(
         transcript_a=text_a,
         transcript_b=text_b,
@@ -449,6 +485,7 @@ def _run_text(
         results_content=results_content,
         display_name_a=title_a,
         display_name_b=title_b,
+        gpu_snapshots=gpu_snapshots,
     )
 
 
@@ -463,7 +500,27 @@ def _run_media(
     display_name_a: str = "",
     display_name_b: str = "",
 ) -> dict[str, Any]:
+    with _GPU_JOB_LOCK:
+        return _run_media_locked(
+            modality, media_url_a, media_url_b,
+            job_id=job_id, blob_token=blob_token, trim_to_shorter=trim_to_shorter,
+            display_name_a=display_name_a, display_name_b=display_name_b,
+        )
+
+
+def _run_media_locked(
+    modality: str,
+    media_url_a: str,
+    media_url_b: str,
+    *,
+    job_id: str | None = None,
+    blob_token: str = "",
+    trim_to_shorter: bool = False,
+    display_name_a: str = "",
+    display_name_b: str = "",
+) -> dict[str, Any]:
     started = time.perf_counter()
+    gpu_snapshots: list[dict] = [_gpu_snapshot("before_tribe")]
     warnings: list[str] = []
     progress = emitter_for(job_id)
 
@@ -686,6 +743,7 @@ def _run_media(
             or transcript_text_b[:60]
             or ("Stimulus B" if modality != "video" else "Video B")
         )
+        gpu_snapshots.append(_gpu_snapshot("before_content_gen"))
         results_content = _generate_results_content(
             job_id=job_id or "",
             scores_a=scores_a,
@@ -698,6 +756,7 @@ def _run_media(
             title_b=title_b,
             progress=progress,
         )
+        gpu_snapshots.append(_gpu_snapshot("after_content_gen"))
         return _build_response(
             transcript_a=transcript_text_a,
             transcript_b=transcript_text_b,
@@ -723,6 +782,7 @@ def _run_media(
             results_content=results_content,
             display_name_a=title_a,
             display_name_b=title_b,
+            gpu_snapshots=gpu_snapshots,
         )
     finally:
         for path in temp_files:

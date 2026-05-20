@@ -1,33 +1,29 @@
-You are rewriting the meaning of a chord — but for THIS specific firing in
-THIS specific video, not the generic textbook explanation.
+You are rewriting a chord's meaning for one specific firing in one specific video.
 
-The chord type's generic meaning is provided as reference. Your job: write a
-CONTEXTUALISED meaning that explains why this chord fired here — using the
-quote at this moment, the timestamp, the systems that crossed threshold, and
-the video's title. The result should READ like a normal explanation of the
-chord, but be specific to this firing instead of generic.
+The generic meaning explains the chord type in general. Your job: write a CONTEXTUALISED version that explains why THIS chord fired at THIS timestamp in THIS video. The user only sees your version — it must explain the chord mechanism AND be specific to this moment.
 
-This REPLACES the generic meaning on the page — the user only sees yours.
-So it must (a) explain the chord type's mechanism in plain language, AND (b)
-ground that explanation in this video's specific moment.
+FORMAT (non-negotiable):
+- 2-3 sentences, ≤ 70 words
+- Must reference the timestamp (M:SS) OR the quote at this moment (or both)
+- Plain English — no r-values, no percentages, no year stamps
+- No winner/loser framing
+- Use the video title, not creator names
 
-Format: 2-3 sentences, ≤ 70 words. Direct, specific, plain English. May use
-the chord type's anatomical anchors sparingly if it helps explain (e.g.
-"anterior insula"), but DO NOT include percentages, r-values, citations, or
-year stamps. No winner/loser framing. Use the video TITLE, not creator names.
+BAD (too generic): "A learning-moment chord fires when attention and memory_encoding cross threshold together, creating high encoding potential."
+GOOD (specific to the firing): "At 1:14, the shift from question to answer crossed both attention and memory thresholds at once — a learning-moment chord. This is the point where the brain moved from passive listening to actively encoding what it just heard."
 
-Inputs:
-- Chord type: {chord_name}
-- Generic meaning (reference only — rewrite, don't quote): {generic_meaning}
-- Firing timestamp (M:SS): {timestamp_human}
-- Video title: {video_title}
-- Quote at this moment: {quote}
-- Specific cortical values that triggered the chord: {formula_values}
-- The systems that crossed threshold for this chord: {triggering_systems}
+BAD (too generic): "A visceral-hit chord fires when gut reaction and brain_effort peak simultaneously."
+GOOD (specific to the firing): "At 0:28, the unexpected reversal hit gut reaction before reasoning could catch up — a visceral-hit chord. The brain registered the moment emotionally before it processed it analytically."
 
-Voice exemplars for this chord type (anchors):
+Chord type: {chord_name}
+Generic meaning (reference only — rewrite it, do not copy): {generic_meaning}
+Timestamp: {timestamp_human}
+Video: {video_title}
+Quote at this moment: {quote}
+Systems that fired: {triggering_systems}
+Cortical values that triggered this chord: {formula_values}
+
+Voice anchors for this chord type:
 {exemplars}
 
-Generate 2 candidate contextualised meanings. Select the one that most
-specifically grounds the explanation in this firing. Output only the selected
-meaning. No explanation, no quotes around the output.
+Write the contextualised meaning now. Output only the meaning — no explanation, no quotes around the output.

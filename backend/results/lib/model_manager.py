@@ -448,19 +448,17 @@ class LoadedTransformersBackend:
             pass
 
 
-def use_real_llama(
+def use_real_content_model(
     *,
-    cache_folder: str = "./cache",
+    cache_folder: str | None = None,
     device: str | None = None,
     max_parallel: int = 1,
-    per_slot_timeout_seconds: float = 30.0,
+    per_slot_timeout_seconds: float = 600.0,
 ) -> ModelManager:
-    """Convenience: swap the singleton to a LoadedTransformersBackend.
+    """Swap the singleton to a real Gemma backend.
 
-    Idempotent: if the singleton is already a real backend, returns it
-    without re-creating it. This makes it safe to call from both the
-    background warmup thread and generate_content_for_worker without
-    triggering a second model download/load.
+    Idempotent — safe to call from both the background warmup thread and
+    generate_content_for_worker without triggering a second model load.
     """
     current = get_model_manager()
     if isinstance(current.backend, LoadedTransformersBackend):
@@ -473,3 +471,8 @@ def use_real_llama(
     )
     set_model_manager(mgr)
     return mgr
+
+
+# Backward-compat alias — remove once all callers are updated.
+def use_real_llama(**kwargs) -> ModelManager:  # noqa: D401
+    return use_real_content_model(**kwargs)
