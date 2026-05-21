@@ -56,4 +56,4 @@ COPY runpod_worker /app/runpod_worker
 ENV BRAIN_DIFF_ATLAS_DIR=/app/atlases
 ENV PYTHONPATH=/app
 
-CMD ["python", "-u", "runpod_worker/handler.py"]
+CMD ["sh", "-c", "if [ \"$BRAIN_DIFF_RUNPOD_STUB_RESULT\" = \"1\" ]; then python -u runpod_worker/stub_handler.py; else python -u runpod_worker/handler.py; fi"]
