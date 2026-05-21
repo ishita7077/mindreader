@@ -27,7 +27,17 @@ def runtime_to_dict(profile: "RuntimeProfile | None") -> dict[str, str]:
 def _profile_for_device(device: str) -> RuntimeProfile:
     device = device.lower()
     if device == "cuda":
-        return RuntimeProfile("cuda", "cuda", {}, ("cuda", "cpu"))
+        return RuntimeProfile(
+            "cuda",
+            "cuda",
+            {
+                # Force Llama-3.2-3B to load in fp16 via accelerate's device_map="auto".
+                # Default "auto" device loads fp32 (~12.8 GB) which OOMs the Rust
+                # safetensors writer on 24 GB GPUs.  "accelerate" halves VRAM to ~6 GB.
+                "data.text_feature.device": "accelerate",
+            },
+            ("cuda", "cpu"),
+        )
     if device == "mps":
         # neuralset video/image extractors call model.model.to(self.image.device) which
         # PyTorch parses as a device string. "accelerate" is not a valid string and raises
