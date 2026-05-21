@@ -46,7 +46,7 @@ RUN pip install whisperx && \
     grep -v "^-e " /app/requirements_frozen.txt | pip install --upgrade -r /dev/stdin && \
     pip install \
         "git+https://github.com/facebookresearch/tribev2.git@72399081ed3f1040c4d996cefb2864a4c46f5b8e#egg=tribev2" && \
-    pip install runpod
+    pip install runpod accelerate
 
 # ── Application code ──────────────────────────────────────────────────────────
 COPY backend /app/backend
