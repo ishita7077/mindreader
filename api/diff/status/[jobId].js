@@ -156,6 +156,18 @@ module.exports = async function handler(req, res) {
     return badRequest(res, "Missing jobId");
   }
   try {
+    const fastMeta = await getJobMetadata(jobId).catch(() => null);
+    if (fastMeta && fastMeta.fastResult) {
+      return res.status(200).json({
+        status: "done",
+        job_id: jobId,
+        events: [
+          { status: "queued", message: "Queued", ts: fastMeta.createdAt },
+          { status: "done", message: "Done", ts: new Date().toISOString() }
+        ],
+        result: resultWithJobMetadata(fastMeta.fastResult, fastMeta)
+      });
+    }
     const [data, jobMeta, events] = await Promise.all([
       getJobStatus(jobId),
       getJobMetadata(jobId).catch(() => null),

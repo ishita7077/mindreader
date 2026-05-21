@@ -3,6 +3,7 @@ const { verifyTurnstile, applyRateLimit } = require("../lib/security");
 const { submitJob } = require("../lib/runpod");
 const { saveJobMetadata } = require("../lib/jobs");
 const { runtimeConfig } = require("../lib/config");
+const { buildFastResult } = require("../lib/fast-result");
 
 function normalizeInput(body) {
   const payload = jsonOrEmpty(body);
@@ -64,6 +65,24 @@ module.exports = async function handler(req, res) {
         code: limit.code,
         message: "Rate limit exceeded",
         limit: limit.limit
+      });
+    }
+
+    if (process.env.BRAIN_DIFF_FAST_RESULT === "1" && input.modality === "text") {
+      const jobId = `fast-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+      await saveJobMetadata(jobId, {
+        createdAt: new Date().toISOString(),
+        ip,
+        type: rateType,
+        modality: input.modality,
+        displayNameA: input.displayNameA || null,
+        displayNameB: input.displayNameB || null,
+        fastResult: buildFastResult(input, jobId)
+      });
+      return res.status(200).json({
+        job_id: jobId,
+        request_id: jobId,
+        status: "queued"
       });
     }
 
