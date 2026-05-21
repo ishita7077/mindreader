@@ -169,11 +169,41 @@ MAX_DOWNLOAD_MB = int(os.getenv("RUNPOD_MEDIA_MAX_MB", "200"))
 tribe_service = TribeService(model_revision=MODEL_REVISION)
 masks: dict[str, dict[str, Any]] = {}
 
+# ── Lazy warmup ────────────────────────────────────────────────────────────────
+# Workers register with RunPod immediately (fast boot), then load TRIBE + atlases
+# on the first incoming job. This avoids RunPod's ~3-minute worker-init timeout
+# that killed workers while they were downloading the TRIBE model from HuggingFace.
+_warmup_done = threading.Event()
+_warmup_lock = threading.Lock()
+
 
 def _warm_start() -> None:
     global masks
     masks = build_vertex_masks(atlas_dir=ATLAS_DIR)
     tribe_service.load()
+
+
+def _ensure_warm() -> None:
+    """Load TRIBE + masks the first time a job arrives. Thread-safe one-shot.
+
+    Gemma is kicked off in a daemon background thread so it can load in
+    parallel while TRIBE initialises on the main thread. Gemma failure is
+    non-fatal — the job still runs, just without LLM-generated content.
+    """
+    if _warmup_done.is_set():
+        return
+    with _warmup_lock:
+        if _warmup_done.is_set():
+            return  # another thread finished while we waited for the lock
+        log.info("lazy_warmup: starting on first job (TRIBE + atlases on main thread)")
+        # Kick off Gemma in background so both models load in parallel.
+        llm_thread = threading.Thread(
+            target=_warm_llm_background, daemon=True, name="llm-warmup"
+        )
+        llm_thread.start()
+        _warm_start()
+        _warmup_done.set()
+        log.info("lazy_warmup: TRIBE ready — Gemma loading in background")
 
 
 def _warm_llm_background() -> None:
@@ -863,6 +893,7 @@ def _run_media_locked(
 
 
 def handler(event: dict[str, Any]) -> dict[str, Any]:
+    _ensure_warm()  # no-op after first call; blocks until TRIBE + masks ready
     payload = event.get("input", {})
     # RunPod assigns the outer job id; surface it so the worker can write
     # progress events to the same `events:{job_id}` key the status endpoint
@@ -919,10 +950,10 @@ def handler(event: dict[str, Any]) -> dict[str, Any]:
     return result
 
 
-if os.getenv("BRAIN_DIFF_RUNPOD_SKIP_WARMUP", "0") != "1":
-    # Start Gemma download/load in background while TRIBE loads on the main thread.
-    # Both happen simultaneously — Gemma is ready by the time the first job arrives.
-    _llm_thread = threading.Thread(target=_warm_llm_background, daemon=True, name="llm-warmup")
-    _llm_thread.start()
-    _warm_start()
+# Fast boot: register with RunPod immediately so workers reach "ready" state
+# before TRIBE/Gemma finish loading. Models load lazily on the first job via
+# _ensure_warm(). This prevents RunPod's ~3-minute worker-init timeout from
+# killing workers while they're still downloading the TRIBE model.
+# BRAIN_DIFF_RUNPOD_SKIP_WARMUP is kept for backward compat but is now a no-op.
+log.info("worker_boot: starting runpod.serverless — TRIBE will load on first job")
 runpod.serverless.start({"handler": handler})
