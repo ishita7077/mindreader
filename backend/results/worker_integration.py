@@ -21,6 +21,7 @@ the static demo or shows an error.
 from __future__ import annotations
 
 import asyncio
+import inspect
 import logging
 from pathlib import Path
 from typing import Any
@@ -335,6 +336,58 @@ def _chord_event(
     }
 
 
+def _run_coro(coro):
+    """Run a coroutine from sync worker code, even inside an active event loop."""
+    try:
+        asyncio.get_running_loop()
+        inside_loop = True
+    except RuntimeError:
+        inside_loop = False
+    if not inside_loop:
+        return asyncio.run(coro)
+
+    import threading
+
+    box = {}
+
+    def _runner():
+        try:
+            box["value"] = asyncio.run(coro)
+        except Exception as exc:  # noqa: BLE001
+            box["error"] = exc
+
+    t = threading.Thread(target=_runner, daemon=False)
+    t.start()
+    t.join()
+    if "error" in box:
+        raise box["error"]
+    return box.get("value")
+
+
+def _slot_run_coro(
+    slot: Slot,
+    *,
+    inputs: NormalizedInputs,
+    comparison_id: str,
+    run_id: str,
+    outputs_dir: Path,
+    manager,
+    audit: AuditLogger,
+    extra_context: dict[str, Any] | None = None,
+):
+    kwargs = {
+        "inputs": inputs,
+        "comparison_id": comparison_id,
+        "run_id": run_id,
+        "outputs_dir": outputs_dir,
+        "manager": manager,
+        "audit": audit,
+    }
+    if "extra_context" in inspect.signature(slot.run).parameters:
+        kwargs["extra_context"] = extra_context
+    return slot.run(**kwargs)
+
+
 # ────────────────────────────────────────────────────────────
 # Top-level: the function the worker calls
 # ────────────────────────────────────────────────────────────
@@ -462,40 +515,18 @@ def generate_content_for_worker(
 
     async def _run(slots, ctx=None):
         return await asyncio.gather(*[
-            s.run(inputs=inputs, comparison_id=cmp_id, run_id=rid,
-                  outputs_dir=out_dir, manager=manager, audit=audit,
-                  extra_context=ctx)
+            _slot_run_coro(
+                s,
+                inputs=inputs,
+                comparison_id=cmp_id,
+                run_id=rid,
+                outputs_dir=out_dir,
+                manager=manager,
+                audit=audit,
+                extra_context=ctx,
+            )
             for s in slots
         ])
-
-    def _run_coro(coro):
-        """Run a coroutine whether or not the caller is already inside a
-        running event loop. asyncio.run() raises RuntimeError when called
-        from inside an active loop (which is what happens here when the
-        worker has already spun up async machinery for TRIBE / model
-        loading). We detect that case and run the coro in a fresh thread
-        with its own loop so it can complete cleanly.
-        """
-        try:
-            asyncio.get_running_loop()
-            inside_loop = True
-        except RuntimeError:
-            inside_loop = False
-        if not inside_loop:
-            return asyncio.run(coro)
-        import threading
-        box = {}
-        def _runner():
-            try:
-                box["value"] = asyncio.run(coro)
-            except Exception as exc:  # noqa: BLE001
-                box["error"] = exc
-        t = threading.Thread(target=_runner, daemon=False)
-        t.start()
-        t.join()
-        if "error" in box:
-            raise box["error"]
-        return box.get("value")
 
     wave1_results = _run_coro(_run(wave1, ctx=extra_ctx))
     headline_result = next((r for r in wave1_results if r.slot_address == "headline"), None)

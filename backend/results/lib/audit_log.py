@@ -39,6 +39,7 @@ ALLOWED_EVENT_TYPES = frozenset({
     "slot_override_used",
     "slot_override_invalid",
     "slot_completed",
+    "analysis_brief_complete",
     "library_match_scored",
     "library_match_low_confidence",
     "content_assembled",

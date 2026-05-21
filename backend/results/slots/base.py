@@ -179,8 +179,13 @@ class Slot:
                     seed=seed + (attempt - 1) * 7,
                 )
 
-            audit.emit("slot_model_called", slot=self.slot_address, attempt=attempt,
-                       prompt_hash=prompt_hash, repair=is_repair)
+            audit.emit(
+                "slot_model_called",
+                slot=self.slot_address,
+                attempt=attempt,
+                prompt_hash=prompt_hash,
+                data={"repair": is_repair},
+            )
 
             try:
                 resp = await manager.generate(req)
