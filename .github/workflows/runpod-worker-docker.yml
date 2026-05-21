@@ -75,7 +75,10 @@ jobs:
         with:
           context: .
           file: runpod_worker/Dockerfile
+          platforms: linux/amd64
           push: true
+          provenance: false
+          sbom: false
           tags: |
             ${{ steps.meta.outputs.tags }}
             ${{ steps.ttl.outputs.image }}
