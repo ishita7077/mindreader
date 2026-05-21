@@ -66,11 +66,17 @@ jobs:
             type=raw,value=runpod-latest
             type=sha,prefix=runpod-
 
+      - name: Temporary public image name
+        id: ttl
+        run: echo "image=ttl.sh/braindiff-${GITHUB_SHA::12}:24h" >> "$GITHUB_OUTPUT"
+
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
           context: .
           file: runpod_worker/Dockerfile
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: |
+            ${{ steps.meta.outputs.tags }}
+            ${{ steps.ttl.outputs.image }}
           labels: ${{ steps.meta.outputs.labels }}
