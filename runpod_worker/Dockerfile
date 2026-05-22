@@ -35,7 +35,8 @@ RUN pip install --upgrade pip
 #      overriding what whisperx just pulled; pip upgrades in-place so the wheel
 #      is only on disk once at the end.
 #   3. tribev2 git install — its deps are already satisfied by the frozen reqs
-#   4. runpod — small SDK, installed last so its version is never overridden
+#   4. runpod + accelerate — small runtime packages, installed last. accelerate
+#      is installed with --no-deps so it cannot perturb the frozen stack.
 #
 # The editable (-e) line for tribev2 is removed from frozen reqs with grep
 # because we install it properly via git+ in step 3.
@@ -46,7 +47,8 @@ RUN pip install whisperx && \
     grep -v "^-e " /app/requirements_frozen.txt | pip install --upgrade -r /dev/stdin && \
     pip install \
         "git+https://github.com/facebookresearch/tribev2.git@72399081ed3f1040c4d996cefb2864a4c46f5b8e#egg=tribev2" && \
-    pip install runpod accelerate
+    pip install runpod && \
+    pip install --no-deps accelerate==1.10.1
 
 # ── Application code ──────────────────────────────────────────────────────────
 COPY backend /app/backend
