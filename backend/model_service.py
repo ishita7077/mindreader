@@ -297,16 +297,31 @@ class TribeService:
             handle.write(text)
             temp_path = handle.name
         try:
+            # [RP-17] gTTS speech synthesis starts (inside TRIBE.get_events_dataframe).
+            print("[RP-17] gtts_started", flush=True)
+            logger.info("[RP-17] gtts_started")
             if progress is not None:
                 progress.emit("synthesizing_speech", "Synthesising speech for the text via gTTS...")
             t0 = time.perf_counter()
             events = self.model.get_events_dataframe(text_path=temp_path)
             events_ms = int((time.perf_counter() - t0) * 1000)
+            # [RP-18] gTTS finished and TRIBE built the events frame.
+            print(f"[RP-18] gtts_ok elapsed_ms={events_ms}", flush=True)
+            logger.info("[RP-18] gtts_ok elapsed_ms=%d", events_ms)
             if progress is not None:
                 progress.emit("predicting", "Running TRIBE v2 forward pass (text + audio → cortex)...")
+            # [RP-19] Llama text encoder load + TRIBE forward pass begin.  The
+            # neuralset text extractor triggers Llama-3.2-3B loading lazily on
+            # first call.  If RP-19 prints but RP-20 doesn't, the Llama load
+            # itself died (OOM, missing accelerate, HF auth).
+            print("[RP-19] llama_load_and_predict_started", flush=True)
+            logger.info("[RP-19] llama_load_and_predict_started")
             t1 = time.perf_counter()
             preds, segments = self.model.predict(events=events)
             predict_ms = int((time.perf_counter() - t1) * 1000)
+            # [RP-20] TRIBE forward pass returned predictions.
+            print(f"[RP-20] tribe_predict_ok elapsed_ms={predict_ms}", flush=True)
+            logger.info("[RP-20] tribe_predict_ok elapsed_ms=%d", predict_ms)
             if hasattr(preds, "detach"):
                 preds = preds.detach().cpu().numpy()
             elif hasattr(preds, "values"):
@@ -314,6 +329,9 @@ class TribeService:
             preds_np = np.array(preds, dtype=np.float32)
             if preds_np.ndim != 2:
                 raise ValueError(f"Unexpected predictions shape: {preds_np.shape}")
+            # [RP-21] Predictions packaged as a numpy array.
+            print(f"[RP-21] predictions_packaged shape={preds_np.shape}", flush=True)
+            logger.info("[RP-21] predictions_packaged shape=%s", preds_np.shape)
             # For text mode the transcript is just the input text. Audio + video
             # paths return the WhisperX-aligned segments — keep the contract
             # uniform so downstream callers can treat all three modalities the same.
@@ -329,11 +347,17 @@ class TribeService:
             cause = str(err.__cause__) if err.__cause__ is not None else ""
             cause_low = cause.lower()
             blob = f"{low} {cause_low}"
+            # Tag the failure with the most-specific code we can identify so
+            # that "last code printed" tells you exactly what to fix.
             if "gated repo" in msg or "meta-llama/Llama-3.2-3B" in msg or "401 Client Error" in msg:
+                print(f"[RP-20] llama_load_FAILED reason=hf_auth err={msg[:200]}", flush=True)
+                logger.error("[RP-20] llama_load_FAILED reason=hf_auth: %s", msg)
                 raise RuntimeError(
                     "HF_AUTH_REQUIRED: Access to meta-llama/Llama-3.2-3B is required. Run `huggingface-cli login` with an approved token."
                 ) from err
             if "whisperx failed" in low or "unsupported device" in blob or "ctranslate2" in blob:
+                print(f"[RP-18] gtts_FAILED reason=whisperx err={msg[:200]}", flush=True)
+                logger.error("[RP-18] whisperx_FAILED: %s", msg)
                 raise RuntimeError(
                     "WHISPERX_FAILED: Text transcription (WhisperX) failed. "
                     "On Apple Silicon, Whisper runs on CPU only; TRIBEv2 still uses the GPU. "
@@ -349,11 +373,20 @@ class TribeService:
                     or "could not find" in low
                 )
             ):
+                print(f"[RP-17] gtts_FAILED reason=ffmpeg_missing err={msg[:200]}", flush=True)
+                logger.error("[RP-17] gtts_FAILED reason=ffmpeg_missing: %s", msg)
                 raise RuntimeError("FFMPEG_REQUIRED: ffmpeg is required for text->speech transcription path.") from err
             if "'uvx'" in msg or "no such file or directory: 'uvx'" in low:
+                print(f"[RP-17] gtts_FAILED reason=uvx_missing err={msg[:200]}", flush=True)
+                logger.error("[RP-17] gtts_FAILED reason=uvx_missing: %s", msg)
                 raise RuntimeError("UVX_REQUIRED: uv/uvx is required for text->speech transcription path.") from err
             if "model loading went wrong" in low and err.__cause__ is not None:
+                print(f"[RP-20] llama_load_FAILED reason=load_error err={str(err.__cause__)[:200]}", flush=True)
+                logger.error("[RP-20] llama_load_FAILED reason=load_error: %s", err.__cause__)
                 raise RuntimeError(f"LLAMA_LOAD_FAILED: {err.__cause__}") from err
+            # Generic predict failure — RP-20 is the closest code (TRIBE forward pass).
+            print(f"[RP-20] tribe_predict_FAILED err={type(err).__name__}: {msg[:200]}", flush=True)
+            logger.error("[RP-20] tribe_predict_FAILED: %s", msg)
             raise
         finally:
             os.unlink(temp_path)

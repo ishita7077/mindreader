@@ -1,3 +1,19 @@
+"""Tiny bootstrap for the RunPod serverless worker.
+
+Every checkpoint emits a code like [RP-NN] so that when a worker dies during
+init you can read the last code in the RunPod console logs and know exactly
+which step failed.  See the checklist in the project notes for what each
+code means and how to fix it.
+"""
+
+# ─────────────────────────────────────────────────────────────────────────────
+# [RP-01] Container started, Python is alive.
+# This is the absolute first line before ANY import.  If you do not see RP-01
+# in the worker logs, the Docker image itself did not boot (wrong CMD, wrong
+# PYTHONPATH, image pull failed).
+# ─────────────────────────────────────────────────────────────────────────────
+print("[RP-01] container_started: python is alive", flush=True)
+
 import importlib
 import logging
 import os
@@ -7,13 +23,29 @@ import time
 import traceback
 from typing import Any, Callable
 
+# [RP-02] handler.py finished its standard-library imports.
+print("[RP-02] handler_py_imports_ok: stdlib loaded", flush=True)
+
 import runpod
 
-logging.basicConfig(
-    level=os.getenv("BRAIN_DIFF_LOG_LEVEL", "INFO"),
-    format="%(asctime)s %(levelname)s %(name)s: %(message)s",
-)
+# [RP-03] runpod SDK imported successfully.  If RP-02 prints but RP-03 does
+# not, the runpod package is broken or missing from the image.
+print("[RP-03] runpod_sdk_imported: ok", flush=True)
+
+
+# Send ALL log records to stdout so they appear in RunPod's worker logs next
+# to our print() codes.  Default basicConfig goes to stderr which sometimes
+# gets buffered or hidden in the RunPod UI.
+_root = logging.getLogger()
+for _h in list(_root.handlers):
+    _root.removeHandler(_h)
+_handler = logging.StreamHandler(sys.stdout)
+_handler.setFormatter(logging.Formatter("%(asctime)s %(levelname)s %(name)s: %(message)s"))
+_root.addHandler(_handler)
+_root.setLevel(os.getenv("BRAIN_DIFF_LOG_LEVEL", "INFO"))
+
 log = logging.getLogger("braindiff.worker_bootstrap")
+
 
 _impl_handler: Callable[[dict[str, Any]], Any] | None = None
 
@@ -44,14 +76,26 @@ def _load_impl_handler() -> Callable[[dict[str, Any]], Any]:
     if _impl_handler is not None:
         return _impl_handler
     started = time.time()
-    log.info("worker_impl_import: starting snapshot=%s", _boot_snapshot())
+    # [RP-06] Beginning the heavy worker_impl import (TRIBE, transformers, etc.)
+    print("[RP-06] worker_impl_import_started", flush=True)
+    log.info("[RP-06] worker_impl_import: starting snapshot=%s", _boot_snapshot())
     module = importlib.import_module("runpod_worker.worker_impl")
     _impl_handler = module.handler
-    log.info("worker_impl_import: ready elapsed_s=%.2f", time.time() - started)
+    elapsed = time.time() - started
+    # [RP-07] worker_impl finished importing.  If you see RP-06 but never
+    # RP-07, a top-level import inside worker_impl crashed (likely a missing
+    # pip package such as `accelerate`).  Traceback is captured by handler()
+    # below and returned in the job result.
+    print(f"[RP-07] worker_impl_import_ok: elapsed_s={elapsed:.2f}", flush=True)
+    log.info("[RP-07] worker_impl_import: ready elapsed_s=%.2f", elapsed)
     return _impl_handler
 
 
 def handler(event: dict[str, Any]) -> Any:
+    # [RP-05] First job event reached the bootstrap handler.
+    job_id = (event or {}).get("id", "?")
+    print(f"[RP-05] first_job_received: job_id={job_id}", flush=True)
+    log.info("[RP-05] first_job_received: job_id=%s", job_id)
     try:
         return _load_impl_handler()(event)
     except Exception as exc:
@@ -65,5 +109,11 @@ def handler(event: dict[str, Any]) -> Any:
         }
 
 
-log.info("worker_bootstrap: starting runpod.serverless snapshot=%s", _boot_snapshot())
+# [RP-04] About to register the worker with RunPod.  This is the LAST thing
+# we control before runpod.serverless.start() takes over and blocks forever.
+# If RP-04 prints but the RunPod console keeps the worker stuck in
+# "initializing", the failure is inside runpod.serverless.start() itself
+# (network to RunPod control plane, mis-configured endpoint, etc.).
+print("[RP-04] about_to_register_with_runpod", flush=True)
+log.info("[RP-04] worker_bootstrap: starting runpod.serverless snapshot=%s", _boot_snapshot())
 runpod.serverless.start({"handler": handler})

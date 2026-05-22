@@ -134,6 +134,15 @@ def _hf_login_from_env() -> None:
         pass
 
 
+# [RP-08] HF_TOKEN check — required for gated models (Llama-3.2-3B, Gemma).
+# Logs whether a token was present and whether the explicit login() succeeded.
+_token_present = bool(
+    os.getenv("HF_TOKEN")
+    or os.getenv("HUGGING_FACE_HUB_TOKEN")
+    or os.getenv("HUGGINGFACE_HUB_TOKEN")
+)
+print(f"[RP-08] hf_token_check: present={_token_present}", flush=True)
+log.info("[RP-08] hf_token_check: present=%s", _token_present)
 _hf_login_from_env()
 
 
@@ -179,8 +188,40 @@ _warmup_lock = threading.Lock()
 
 def _warm_start() -> None:
     global masks
+    # [RP-09] Atlas files lookup
+    atlas_exists = os.path.isdir(ATLAS_DIR)
+    print(f"[RP-09] atlas_lookup: dir={ATLAS_DIR} exists={atlas_exists}", flush=True)
+    log.info("[RP-09] atlas_lookup: dir=%s exists=%s", ATLAS_DIR, atlas_exists)
     masks = build_vertex_masks(atlas_dir=ATLAS_DIR)
-    tribe_service.load()
+
+    # [RP-10] GPU detection — done inside detect_runtime_profile() via torch.cuda.is_available()
+    try:
+        import torch  # type: ignore
+        _cuda = torch.cuda.is_available()
+        _gpu_name = torch.cuda.get_device_name(0) if _cuda else "none"
+    except Exception:
+        _cuda = False
+        _gpu_name = "torch-unavailable"
+    print(f"[RP-10] gpu_detect: cuda={_cuda} device={_gpu_name}", flush=True)
+    log.info("[RP-10] gpu_detect: cuda=%s device=%s", _cuda, _gpu_name)
+
+    # [RP-11] TRIBE model download/load begins.  TribeService.load() does both:
+    # downloads the safetensors from HF (or hits cache) and moves them to GPU.
+    print("[RP-11] tribe_load_started", flush=True)
+    log.info("[RP-11] tribe_load_started: revision=%s", tribe_service.model_revision)
+    try:
+        tribe_service.load()
+    except Exception as exc:
+        # [RP-13] TRIBE load FAILED — emit the code with a short cause so it
+        # is greppable in the worker logs even before the traceback prints.
+        print(f"[RP-13] tribe_load_FAILED err={type(exc).__name__}: {str(exc)[:200]}", flush=True)
+        log.exception("[RP-13] tribe_load_FAILED")
+        raise
+    # If we got here, both the download (RP-12) and the GPU placement (RP-13) succeeded.
+    print("[RP-12] tribe_download_or_cache_ok", flush=True)
+    print("[RP-13] tribe_loaded_on_gpu_ok", flush=True)
+    log.info("[RP-12] tribe_download_or_cache_ok")
+    log.info("[RP-13] tribe_loaded_on_gpu_ok")
 
 
 def _ensure_warm() -> None:
@@ -196,14 +237,21 @@ def _ensure_warm() -> None:
         if _warmup_done.is_set():
             return  # another thread finished while we waited for the lock
         log.info("lazy_warmup: starting on first job (TRIBE + atlases on main thread)")
-        # Kick off Gemma in background so both models load in parallel.
+        # [RP-14] Gemma background load kicked off.  Non-blocking — the main
+        # thread continues with TRIBE.  Gemma failure does not fail the job.
+        print("[RP-14] gemma_bg_thread_start", flush=True)
+        log.info("[RP-14] gemma_bg_thread_start")
         llm_thread = threading.Thread(
             target=_warm_llm_background, daemon=True, name="llm-warmup"
         )
         llm_thread.start()
         _warm_start()
         _warmup_done.set()
-        log.info("lazy_warmup: TRIBE ready — Gemma loading in background")
+        # [RP-15] Main-thread warmup is complete.  Worker is now hot and can
+        # process the rest of the current job and any follow-up jobs without
+        # re-loading TRIBE.
+        print("[RP-15] warmup_complete_main_thread", flush=True)
+        log.info("[RP-15] warmup_complete_main_thread — TRIBE ready, Gemma still loading in background")
 
 
 def _warm_llm_background() -> None:
@@ -895,6 +943,18 @@ def _run_media_locked(
 def handler(event: dict[str, Any]) -> dict[str, Any]:
     _ensure_warm()  # no-op after first call; blocks until TRIBE + masks ready
     payload = event.get("input", {})
+    # [RP-16] Job input arrived at the heavy handler.  We log the shape (mode
+    # + which fields are present) before kicking off any pipeline work so a
+    # malformed request is obvious in the logs.
+    _shape = {
+        "mode": (payload.get("mode") or "?"),
+        "has_text_a": bool(payload.get("text_a")),
+        "has_text_b": bool(payload.get("text_b")),
+        "has_media_url_a": bool(payload.get("media_url_a")),
+        "has_media_url_b": bool(payload.get("media_url_b")),
+    }
+    print(f"[RP-16] job_validated: {_shape}", flush=True)
+    log.info("[RP-16] job_validated: %s", _shape)
     # RunPod assigns the outer job id; surface it so the worker can write
     # progress events to the same `events:{job_id}` key the status endpoint
     # reads. Falls back to payload.job_id (older callers) or "" (no events).
