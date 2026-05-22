@@ -381,7 +381,17 @@ class LoadedTransformersBackend:
             chat_input = self._tokenizer.apply_chat_template(
                 messages, add_generation_prompt=True, return_tensors="pt", return_dict=True,
             )
-        if not isinstance(chat_input, dict) or "input_ids" not in chat_input:
+        # NOTE: apply_chat_template returns BatchEncoding (a dict-like class from
+        # transformers, NOT a plain dict). The previous `isinstance(chat_input, dict)`
+        # check rejected it incorrectly — breaking every slot that used a chat
+        # template (i.e. every writer slot in this pipeline) silently. Check for
+        # the `input_ids` key directly; BatchEncoding supports `in` and `__getitem__`
+        # just like dict, which is all we need below.
+        try:
+            _has_input_ids = "input_ids" in chat_input
+        except Exception:
+            _has_input_ids = False
+        if not _has_input_ids:
             raise RuntimeError(f"apply_chat_template returned unexpected type: {type(chat_input)}")
         input_ids = chat_input["input_ids"]
         attention_mask = chat_input.get("attention_mask")
