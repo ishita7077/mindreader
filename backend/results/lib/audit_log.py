@@ -34,6 +34,7 @@ ALLOWED_EVENT_TYPES = frozenset({
     "slot_model_failed",
     "slot_validation_passed",
     "slot_validation_failed",
+    "slot_validation_bypassed",
     "slot_retry_started",
     "slot_fallback_used",
     "slot_override_used",
