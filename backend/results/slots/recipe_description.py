@@ -20,7 +20,7 @@ def _format_time(seconds: float) -> str:
 
 class RecipeDescriptionSlot(Slot):
     template_name = "recipe_description.txt"
-    max_new_tokens = 100
+    max_new_tokens = 500  # was 100 - Gemma 1B truncates at small budgets
 
     def __init__(self, *, video_key: str) -> None:
         if video_key not in ("video_a", "video_b"):

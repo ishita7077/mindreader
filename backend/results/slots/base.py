@@ -145,6 +145,13 @@ class Slot:
         validation: ValidationResult = ValidationResult(passed=False)
         attempts = 0
         last_error: str | None = None
+        # ── G1 DIAGNOSTIC ────────────────────────────────────────────────────
+        # Capture EVERY per-attempt failure (model call crash, parse error,
+        # validation error) so we can see the real reason a slot ended up in
+        # fallback. Surfaced in raw_slot.json and (via assembler) in the
+        # final API response so we never have to guess again.
+        attempt_errors: list[dict[str, Any]] = []
+        # ─────────────────────────────────────────────────────────────────────
 
         # Three attempts: deterministic → repair prompt → resample.
         for attempt in range(1, 4):
@@ -192,6 +199,12 @@ class Slot:
                 resp = await manager.generate(req)
             except Exception as exc:
                 last_error = f"{type(exc).__name__}: {exc}"
+                attempt_errors.append({
+                    "attempt": attempt,
+                    "stage": "model_call",
+                    "error_code": "MODEL_CALL_FAILED",
+                    "error_detail": last_error,
+                })
                 audit.emit(
                     "slot_model_failed",
                     slot=self.slot_address,
@@ -215,6 +228,13 @@ class Slot:
                 selected = self.parse_selected(resp.text)
             except Exception as exc:
                 last_error = f"PARSE_ERROR: {exc}"
+                attempt_errors.append({
+                    "attempt": attempt,
+                    "stage": "parse",
+                    "error_code": "OUTPUT_UNPARSEABLE",
+                    "error_detail": str(exc),
+                    "raw_model_text": (resp.text or "")[:600],
+                })
                 audit.emit(
                     "slot_validation_failed",
                     slot=self.slot_address,
@@ -254,6 +274,13 @@ class Slot:
                 audit.emit("slot_validation_passed", slot=self.slot_address, attempt=attempt)
                 break
 
+            attempt_errors.append({
+                "attempt": attempt,
+                "stage": "validation",
+                "error_code": validation.errors[0].code if validation.errors else "VALIDATION_FAILED",
+                "error_detail": "; ".join(e.detail for e in validation.errors),
+                "raw_model_text": (resp.text or "")[:600],
+            })
             audit.emit(
                 "slot_validation_failed",
                 slot=self.slot_address,
@@ -291,6 +318,9 @@ class Slot:
             "attempts":   attempts,
             "validation": validation.as_dict(),
             "latency_ms": latency_ms,
+            # G1 diagnostic: every failure across all attempts, in order.
+            "attempt_errors": attempt_errors,
+            "last_error":     last_error,
         }
         raw_path.write_text(json.dumps(raw_doc, indent=2, ensure_ascii=False))
 

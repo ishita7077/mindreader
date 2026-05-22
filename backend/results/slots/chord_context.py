@@ -24,7 +24,7 @@ def _format_time(seconds: float) -> str:
 
 class ChordContextSlot(Slot):
     template_name = "chord_context.txt"
-    max_new_tokens = 80
+    max_new_tokens = 500  # was 80 - Gemma 1B truncates at small budgets
 
     def __init__(self, *, firing_index: int, video_key: str, event: ChordEvent) -> None:
         self.firing_index = firing_index

@@ -14,7 +14,7 @@ from .base import Slot, voice_exemplars
 class HeadlineSlot(Slot):
     slot_address = "headline"
     template_name = "headline.txt"
-    max_new_tokens = 120
+    max_new_tokens = 500  # was 120 - Gemma 1B truncates at small budgets
 
     def __init__(self, *, lead_insight: LeadInsight) -> None:
         super().__init__(validator=HeadlineValidator())

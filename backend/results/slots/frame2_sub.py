@@ -13,7 +13,7 @@ from .base import Slot, voice_exemplars
 class Frame2SubSlot(Slot):
     slot_address = "frame2_sub"
     template_name = "frame2_sub.txt"
-    max_new_tokens = 130
+    max_new_tokens = 500  # was 130 - Gemma 1B truncates at small budgets
 
     def __init__(self, *, recipe_a_name: str, recipe_b_name: str) -> None:
         super().__init__(validator=Frame2SubValidator(

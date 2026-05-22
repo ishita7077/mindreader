@@ -29,7 +29,7 @@ class RecipeMatchSlot(Slot):
     """One per video. slot_address = recipe_match.video_a or recipe_match.video_b."""
 
     template_name = "recipe_match_rationale.txt"
-    max_new_tokens = 100
+    max_new_tokens = 500  # was 100 - Gemma 1B truncated mid-word at 100
     output_is_json = False  # the rationale is text; we wrap it into JSON ourselves
 
     def __init__(self, *, video_key: str) -> None:

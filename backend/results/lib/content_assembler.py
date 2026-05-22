@@ -132,12 +132,21 @@ class ContentAssembler:
             error_code=("RAW_VALIDATION_FAILED" if raw is not None else "RAW_NOT_FOUND"),
         )
         default = self._defaults.get(fallback_key, self._defaults.get("headline"))
+        # G1 diagnostic: surface the per-attempt failures so we can SEE why
+        # this slot fell back instead of guessing. Empty list if raw is None.
+        diagnostic_errors = (raw.get("attempt_errors", []) if raw else []) or []
+        if raw and raw.get("last_error"):
+            diagnostic_errors = diagnostic_errors + [{
+                "stage": "summary",
+                "error_code": "LAST_ERROR",
+                "error_detail": raw["last_error"],
+            }]
         return ResolvedSlot(
             value=default["value"],
             source="fallback",
             status="generic",
             raw_path=None,
-            errors=[],
+            errors=diagnostic_errors,
         )
 
     def resolve_recipe_match(self, slot_address: str) -> ResolvedSlot:
@@ -178,12 +187,19 @@ class ContentAssembler:
             error_code=("RAW_VALIDATION_FAILED" if raw is not None else "RAW_NOT_FOUND"),
         )
         default = self._defaults["recipe_match"]
+        diagnostic_errors = (raw.get("attempt_errors", []) if raw else []) or []
+        if raw and raw.get("last_error"):
+            diagnostic_errors = diagnostic_errors + [{
+                "stage": "summary",
+                "error_code": "LAST_ERROR",
+                "error_detail": raw["last_error"],
+            }]
         return ResolvedSlot(
             value=default["value"],
             source="fallback",
             status="generic",
             raw_path=None,
-            errors=[],
+            errors=diagnostic_errors,
         )
 
     # ------- file IO -------

@@ -17,7 +17,7 @@ from .base import Slot, voice_exemplars
 class BodySlot(Slot):
     slot_address = "body"
     template_name = "body.txt"
-    max_new_tokens = 180
+    max_new_tokens = 500  # was 180 - Gemma 1B truncates at small budgets
 
     def __init__(self, *, headline_text: str, lead_insight: LeadInsight) -> None:
         super().__init__(validator=BodyValidator())

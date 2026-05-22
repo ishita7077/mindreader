@@ -36,7 +36,7 @@ _CHORD_SYSTEMS = {
 
 class ChordContextualMeaningSlot(Slot):
     template_name = "chord_contextual_meaning.txt"
-    max_new_tokens = 220
+    max_new_tokens = 500  # was 220 - Gemma 1B truncates at small budgets
 
     def __init__(self, *, firing_index: int, video_key: str, event: ChordEvent) -> None:
         self.firing_index = firing_index

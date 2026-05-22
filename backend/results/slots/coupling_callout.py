@@ -48,7 +48,7 @@ def _pick_pair(couplings: list[CouplingEntry], coupling_type: str) -> CouplingEn
 
 class CouplingCalloutSlot(Slot):
     template_name = "coupling_callout.txt"
-    max_new_tokens = 110
+    max_new_tokens = 500  # was 110 - Gemma 1B truncates at small budgets
 
     def __init__(self, *, video_key: str, coupling_type: str) -> None:
         if video_key not in ("video_a", "video_b"):
