@@ -23,6 +23,7 @@ the assembler will fall through to the default. The fallback flag is set.
 from __future__ import annotations
 
 import json
+import os
 import re
 import time
 from dataclasses import dataclass, field
@@ -228,6 +229,26 @@ class Slot:
 
             candidates.append(selected)
             validation = self.validator.validate(selected)
+
+            # ── DEBUG BYPASS ─────────────────────────────────────────────────
+            # When BRAIN_DIFF_BYPASS_VALIDATORS=1 is set on the worker:
+            #   - Validator still runs and its errors are preserved (visible in
+            #     audit log + raw_slot.json).
+            #   - We force passed=True so the raw Gemma text reaches the page
+            #     (assembler treats it as an LLM success and surfaces value).
+            # Default (env var unset, empty, "0", or anything other than "1"):
+            # zero behavior change vs current main — original validation result
+            # is used unchanged.
+            if os.getenv("BRAIN_DIFF_BYPASS_VALIDATORS") == "1" and not validation.passed:
+                audit.emit(
+                    "slot_validation_bypassed",
+                    slot=self.slot_address,
+                    attempt=attempt,
+                    error_code=validation.errors[0].code if validation.errors else "BYPASSED",
+                    error_detail="; ".join(e.detail for e in validation.errors),
+                )
+                validation = ValidationResult(passed=True, errors=validation.errors)
+            # ─────────────────────────────────────────────────────────────────
 
             if validation.passed:
                 audit.emit("slot_validation_passed", slot=self.slot_address, attempt=attempt)
