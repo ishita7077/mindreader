@@ -1,0 +1,958 @@
+import logging
+import os
+import tempfile
+import threading
+import time
+import uuid
+from typing import Any
+from urllib.parse import unquote, urlparse
+
+log = logging.getLogger("braindiff.handler")
+
+# One GPU-heavy comparison at a time per worker process.
+# RunPod endpoint-level concurrency (max_workers) handles parallelism
+# across workers; inside a single worker we queue to avoid CUDA OOM.
+_GPU_JOB_LOCK = threading.Semaphore(int(os.getenv("BRAIN_DIFF_GPU_JOB_CONCURRENCY", "1")))
+
+
+def _gpu_snapshot(stage: str) -> dict:
+    """Capture GPU memory state at a pipeline checkpoint."""
+    try:
+        import torch  # type: ignore
+        if not torch.cuda.is_available():
+            return {"stage": stage, "cuda": False}
+        return {
+            "stage": stage,
+            "cuda": True,
+            "device": torch.cuda.get_device_name(0),
+            "allocated_mb": round(torch.cuda.memory_allocated() / 1024 ** 2, 1),
+            "reserved_mb": round(torch.cuda.memory_reserved() / 1024 ** 2, 1),
+            "peak_mb": round(torch.cuda.max_memory_allocated() / 1024 ** 2, 1),
+        }
+    except Exception:
+        return {"stage": stage, "cuda": False}
+
+import runpod
+
+
+def _stub_result(event: dict[str, Any]) -> dict[str, Any]:
+    payload = event.get("input") or {}
+    text_a = (payload.get("text_a") or "Version A").strip()
+    text_b = (payload.get("text_b") or "Version B").strip()
+    dims = [
+        ("attention_salience", 0.62, 0.73),
+        ("memory_encoding", 0.58, 0.66),
+        ("language_depth", 0.71, 0.69),
+        ("personal_resonance", 0.49, 0.57),
+        ("cognitive_control", 0.52, 0.48),
+        ("visceral_response", 0.44, 0.53),
+        ("social_thinking", 0.46, 0.50),
+    ]
+    diff = {
+        name: {
+            "score_a": a,
+            "score_b": b,
+            "delta": b - a,
+            "winner": "b" if b > a else "a",
+            "timeseries_a": [a, min(0.99, a + 0.03), max(0.01, a - 0.02)],
+            "timeseries_b": [b, min(0.99, b + 0.02), max(0.01, b - 0.03)],
+        }
+        for name, a, b in dims
+    }
+    return {
+        "diff": diff,
+        "dimensions": [
+            {
+                "dimension": name,
+                "label": name.replace("_", " ").title(),
+                "score_a": a,
+                "score_b": b,
+                "delta": b - a,
+                "winner": "b" if b > a else "a",
+            }
+            for name, a, b in dims
+        ],
+        "insights": {
+            "headline": "Version B creates a sharper attention and memory trace.",
+            "summary": "Emergency fast-boot result generated from the live worker path.",
+        },
+        "vertex_delta_b64": "",
+        "vertex_a_b64": "",
+        "vertex_b_b64": "",
+        "warnings": ["Emergency fast-boot worker mode is enabled."],
+        "meta": {
+            "model_revision": "fast_boot_stub",
+            "atlas": "HCP_MMP1.0",
+            "pipeline": "text_fast_boot",
+            "modality": "text",
+            "text_a": text_a,
+            "text_b": text_b,
+            "text_a_length": len(text_a),
+            "text_b_length": len(text_b),
+            "processing_time_ms": 1,
+            "dimensions_count": len(dims),
+            "headline": "Version B creates a sharper attention and memory trace.",
+            "winner_summary": "Version B leads on attention and memory encoding.",
+            "display_name_a": payload.get("display_name_a") or "A",
+            "display_name_b": payload.get("display_name_b") or "B",
+        },
+    }
+
+
+if os.getenv("BRAIN_DIFF_RUNPOD_STUB_RESULT", "0") == "1":
+    runpod.serverless.start({"handler": _stub_result})
+    raise SystemExit(0)
+
+import httpx
+import numpy as np
+
+
+def _hf_login_from_env() -> None:
+    """Authenticate with HuggingFace Hub before any model download.
+
+    The huggingface_hub library auto-detects HF_TOKEN / HUGGING_FACE_HUB_TOKEN /
+    HUGGINGFACE_HUB_TOKEN, but the priority order has changed across versions
+    and the env-var-only path silently sends unauthenticated requests when the
+    var name doesn't match. To make gated-model access (meta-llama/Llama-3.2-3B)
+    rock-solid we explicitly call huggingface_hub.login() with whichever token
+    env var is set, before any TribeModel.from_pretrained call.
+    """
+    token = (
+        os.getenv("HF_TOKEN")
+        or os.getenv("HUGGING_FACE_HUB_TOKEN")
+        or os.getenv("HUGGINGFACE_HUB_TOKEN")
+    )
+    if not token:
+        return
+    try:
+        from huggingface_hub import login as _hf_login
+        _hf_login(token=token, add_to_git_credential=False)
+        os.environ["HF_TOKEN"] = token
+        os.environ["HUGGING_FACE_HUB_TOKEN"] = token
+        os.environ["HUGGINGFACE_HUB_TOKEN"] = token
+    except Exception:
+        pass
+
+
+_hf_login_from_env()
+
+
+from backend.atlas_peaks import describe_peak_abs_delta
+from backend.brain_regions import build_vertex_masks
+from backend.differ import compute_diff
+from backend.duration_utils import (
+    DurationMismatch,
+    DurationProbeError,
+    check_media_similarity,
+    ensure_within_max,
+    probe_duration_seconds,
+    trim_to_duration,
+)
+from backend.heatmap import compute_vertex_delta, generate_heatmap_artifact
+from backend.insight_engine import build_insight_payload
+from backend.media_features import audio_envelope, peak_moments, video_keyframes
+from backend.model_service import TribeService
+from backend.narrative import build_headline
+from backend.result_semantics import enrich_dimension_payload, winner_summary
+from backend.scorer import score_predictions
+from backend.vertex_codec import f32_b64
+
+# New results-page content generation (uses the same LLaMA TRIBE loaded).
+from backend.results.worker_integration import generate_content_for_worker
+
+from runpod_worker.progress import emitter_for
+
+MODEL_REVISION = os.getenv("TRIBEV2_REVISION", "facebook/tribev2")
+ATLAS_DIR = os.getenv("BRAIN_DIFF_ATLAS_DIR", "atlases")
+MAX_DOWNLOAD_MB = int(os.getenv("RUNPOD_MEDIA_MAX_MB", "200"))
+
+tribe_service = TribeService(model_revision=MODEL_REVISION)
+masks: dict[str, dict[str, Any]] = {}
+
+# ── Lazy warmup ────────────────────────────────────────────────────────────────
+# Workers register with RunPod immediately (fast boot), then load TRIBE + atlases
+# on the first incoming job. This avoids RunPod's ~3-minute worker-init timeout
+# that killed workers while they were downloading the TRIBE model from HuggingFace.
+_warmup_done = threading.Event()
+_warmup_lock = threading.Lock()
+
+
+def _warm_start() -> None:
+    global masks
+    masks = build_vertex_masks(atlas_dir=ATLAS_DIR)
+    tribe_service.load()
+
+
+def _ensure_warm() -> None:
+    """Load TRIBE + masks the first time a job arrives. Thread-safe one-shot.
+
+    Gemma is kicked off in a daemon background thread so it can load in
+    parallel while TRIBE initialises on the main thread. Gemma failure is
+    non-fatal — the job still runs, just without LLM-generated content.
+    """
+    if _warmup_done.is_set():
+        return
+    with _warmup_lock:
+        if _warmup_done.is_set():
+            return  # another thread finished while we waited for the lock
+        log.info("lazy_warmup: starting on first job (TRIBE + atlases on main thread)")
+        # Kick off Gemma in background so both models load in parallel.
+        llm_thread = threading.Thread(
+            target=_warm_llm_background, daemon=True, name="llm-warmup"
+        )
+        llm_thread.start()
+        _warm_start()
+        _warmup_done.set()
+        log.info("lazy_warmup: TRIBE ready — Gemma loading in background")
+
+
+def _warm_llm_background() -> None:
+    """Load Gemma into GPU memory in a background thread while TRIBE warms up."""
+    try:
+        from backend.results.lib.model_manager import use_real_content_model
+        use_real_content_model(per_slot_timeout_seconds=600.0)
+        snap = _gpu_snapshot("after_gemma_load")
+        log.info("content_model_warmup: google/gemma-3-1b-it loaded and ready — VRAM %s MB allocated", snap.get("allocated_mb", "?"))
+    except Exception as exc:
+        log.warning("content_model_warmup failed (non-fatal, will retry on first job): %s: %s", type(exc).__name__, exc)
+
+
+def _download_to_temp(url: str, blob_token: str = "") -> str:
+    suffix = os.path.splitext(url.split("?", 1)[0])[1] or ".bin"
+    handle = tempfile.NamedTemporaryFile(delete=False, suffix=suffix)
+    downloaded = 0
+    try:
+        headers = {"authorization": f"Bearer {blob_token}"} if blob_token else None
+        with httpx.stream("GET", url, headers=headers, timeout=60.0) as response:
+            response.raise_for_status()
+            for chunk in response.iter_bytes():
+                if not chunk:
+                    continue
+                downloaded += len(chunk)
+                if downloaded > MAX_DOWNLOAD_MB * 1024 * 1024:
+                    raise ValueError(f"MEDIA_TOO_LARGE: exceeded {MAX_DOWNLOAD_MB}MB download cap")
+                handle.write(chunk)
+        handle.close()
+        return handle.name
+    except Exception:
+        handle.close()
+        try:
+            os.unlink(handle.name)
+        except OSError:
+            pass
+        raise
+
+
+def _filename_from_url(url: str) -> str:
+    try:
+        parsed = urlparse(url)
+        return unquote(os.path.basename(parsed.path)) or ""
+    except Exception:
+        return ""
+
+
+def _warnings_for_text(text_a: str, text_b: str) -> list[str]:
+    warnings: list[str] = []
+    words_a = len([w for w in text_a.strip().split() if w])
+    words_b = len([w for w in text_b.strip().split() if w])
+    if words_a < 3 or words_b < 3:
+        warnings.append("Very short text may produce unreliable results")
+    return warnings
+
+
+def _coerce_prediction_output(output: Any) -> tuple[np.ndarray, Any, dict[str, Any]]:
+    if not (isinstance(output, tuple) and len(output) == 3):
+        raise ValueError(f"Unexpected prediction output shape: {type(output).__name__}")
+    preds, segments, timing = output
+    return preds, segments, timing
+
+
+def _pipeline_label(modality: str) -> str:
+    """Honest description of which pre-encoding pipeline ran.
+
+    Replaces the old `text_to_speech: True` flag, which lied for audio/video
+    (those skip TTS entirely — real audio goes straight to WhisperX, video is
+    FFmpeg-extracted frames + audio).
+    """
+    if modality == "text":
+        return "text_to_speech"
+    if modality == "audio":
+        return "audio_direct"
+    return "video_frames_audio"
+
+
+def _generate_results_content(
+    *,
+    job_id: str,
+    scores_a: dict[str, dict[str, Any]],
+    scores_b: dict[str, dict[str, Any]],
+    transcript_segments_a: list[dict[str, Any]],
+    transcript_segments_b: list[dict[str, Any]],
+    duration_a_s: float,
+    duration_b_s: float,
+    title_a: str,
+    title_b: str,
+    progress: Any = None,
+) -> dict[str, Any] | None:
+    """Run the LLaMA-driven content pipeline using the same model TRIBE just used.
+
+    Soft-fails: if anything goes wrong, returns None and the page falls back to
+    its built-in stub copy. The brain prediction payload is still returned to
+    the user — content generation is purely additive.
+    """
+    if not job_id:
+        return None
+    try:
+        if progress:
+            progress.emit("generating_content", "Writing the page copy with LLaMA...")
+        # score_predictions returns per-second 'timeseries' per dim already.
+        # Adapter shape: {dim_name: [v0..vT]} per video.
+        ts_a = {k: list(v.get("timeseries", [])) for k, v in scores_a.items()}
+        ts_b = {k: list(v.get("timeseries", [])) for k, v in scores_b.items()}
+        result = generate_content_for_worker(
+            video_a_id=f"{job_id}_a",
+            video_b_id=f"{job_id}_b",
+            video_a_title=title_a or "Video A",
+            video_b_title=title_b or "Video B",
+            duration_a_s=duration_a_s,
+            duration_b_s=duration_b_s,
+            timeseries_a=ts_a,
+            timeseries_b=ts_b,
+            transcript_segments_a=transcript_segments_a,
+            transcript_segments_b=transcript_segments_b,
+            analysis_version=os.getenv("TRIBEV2_REVISION", "tribev2.live"),
+        )
+        return result
+    except Exception as exc:  # noqa: BLE001
+        # Don't break the existing flow if content gen fails. Log to stderr so
+        # the failure surfaces in worker logs even though the soft-fail keeps
+        # the user-facing brain payload alive.
+        import traceback
+        log.error("CONTENT_GEN_FAILED: %s: %s\n%s", type(exc).__name__, exc, traceback.format_exc())
+        try:
+            if progress:
+                progress.emit(
+                    "content_generation_failed",
+                    f"Content generation failed (non-fatal): {type(exc).__name__}: {exc}",
+                )
+        except Exception:
+            pass
+        return {"comparison_id": "", "content": None, "error": f"{type(exc).__name__}: {exc}"}
+
+
+def _build_response(
+    *,
+    transcript_a: str,
+    transcript_b: str,
+    transcript_segments_a: list[dict[str, Any]],
+    transcript_segments_b: list[dict[str, Any]],
+    modality: str,
+    stage_times: dict[str, int],
+    processing_time_ms: int,
+    preds_a: np.ndarray,
+    preds_b: np.ndarray,
+    diff: dict[str, Any],
+    dimension_rows: list[dict[str, Any]],
+    vertex_delta: np.ndarray,
+    vertex_a: np.ndarray,
+    vertex_b: np.ndarray,
+    median_a: float,
+    median_b: float,
+    warnings: list[str],
+    media_durations: dict[str, float] | None = None,
+    media_filenames: dict[str, str] | None = None,
+    media_features: dict[str, Any] | None = None,
+    job_id: str | None = None,
+    results_content: dict[str, Any] | None = None,
+    display_name_a: str = "",
+    display_name_b: str = "",
+    gpu_snapshots: list[dict] | None = None,
+) -> dict[str, Any]:
+    request_id = str(uuid.uuid4())
+    if not job_id:
+        job_id = str(uuid.uuid4())
+    # Insight engine reads transcript_a/b to detect content quality
+    # ("Personal, direct language", "Corporate jargon", etc.) and weave that
+    # into the discovery headline. Audio/video paths feed it the WhisperX
+    # transcript so they get the same content-aware narrative as text mode
+    # instead of the generic "Version A vs Version B" fallback.
+    insights = build_insight_payload(
+        dimension_rows,
+        warnings,
+        narrative_tone=os.environ.get("BRAIN_DIFF_NARRATIVE_TONE", "sober"),
+        text_a=transcript_a,
+        text_b=transcript_b,
+    )
+    heatmap = generate_heatmap_artifact(vertex_delta)
+    meta: dict[str, Any] = {
+        "model_revision": tribe_service.model_revision,
+        "atlas": "HCP_MMP1.0",
+        "method_primary": "signed_roi_contrast",
+        "normalization": "within_stimulus_median",
+        "pipeline": _pipeline_label(modality),
+        "modality": modality,
+        "transcript_a": transcript_a,
+        "transcript_b": transcript_b,
+        "transcript_a_length": len(transcript_a),
+        "transcript_b_length": len(transcript_b),
+        "transcript_segments_a": transcript_segments_a,
+        "transcript_segments_b": transcript_segments_b,
+        "text_a_timesteps": int(preds_a.shape[0]),
+        "text_b_timesteps": int(preds_b.shape[0]),
+        "processing_time_ms": processing_time_ms,
+        "request_id": request_id,
+        "job_id": job_id,
+        "headline": build_headline(diff),
+        "winner_summary": winner_summary(dimension_rows),
+        "stage_times": stage_times,
+        "median_a": median_a,
+        "median_b": median_b,
+        "heatmap": heatmap,
+        "atlas_peak": describe_peak_abs_delta(vertex_delta),
+        "dimensions_count": len(diff),
+        # Display names — single source of truth for "what to call A and B" in
+        # the UI. Auto-suggested on the launch page (and optionally edited by
+        # the user) so we never fall back to "Stimulus A" / raw input text.
+        "display_name_a": display_name_a or "Stimulus A",
+        "display_name_b": display_name_b or "Stimulus B",
+    }
+    if modality == "text":
+        # Back-compat: text mode keeps text_a/text_b at the meta top level
+        # because the recall card and tests still read them.
+        meta["text_a"] = transcript_a
+        meta["text_b"] = transcript_b
+        meta["text_a_length"] = len(transcript_a)
+        meta["text_b_length"] = len(transcript_b)
+    if media_durations is not None:
+        meta["media_duration_a_s"] = float(media_durations.get("a", 0.0))
+        meta["media_duration_b_s"] = float(media_durations.get("b", 0.0))
+    if media_filenames is not None:
+        # Codex's status endpoint already populates `media_name_a/b` from the
+        # job-meta blob URL; we mirror those names here so a worker-only
+        # consumer still gets the filename even without the job-meta merge.
+        meta["media_filename_a"] = media_filenames.get("a", "")
+        meta["media_filename_b"] = media_filenames.get("b", "")
+        meta["media_name_a"] = media_filenames.get("a", "")
+        meta["media_name_b"] = media_filenames.get("b", "")
+    if media_features is not None:
+        meta["media_features"] = media_features
+    response: dict[str, Any] = {
+        "diff": diff,
+        "dimensions": dimension_rows,
+        "insights": insights,
+        "vertex_delta_b64": f32_b64(vertex_delta),
+        "vertex_a_b64": f32_b64(vertex_a),
+        "vertex_b_b64": f32_b64(vertex_b),
+        "warnings": warnings,
+        "meta": meta,
+    }
+    # Results-page payload: schema-locked content.json shape so the new
+    # results.html can render directly without any extra API call. Only
+    # included when content generation succeeded.
+    if results_content and results_content.get("content"):
+        response["results_content"] = results_content["content"]
+        meta["results_comparison_id"] = results_content.get("comparison_id")
+    if results_content and results_content.get("error"):
+        meta["results_content_error"] = results_content["error"]
+    elif results_content is None:
+        meta["results_content_error"] = "content_pipeline_returned_none"
+    if results_content and results_content.get("content_audit"):
+        meta["content_audit"] = results_content["content_audit"]
+    if gpu_snapshots:
+        meta["gpu_audit"] = {"snapshots": gpu_snapshots, "safe_inprocess_concurrency": 1}
+    return response
+
+
+def _run_text(
+    text_a: str,
+    text_b: str,
+    *,
+    job_id: str | None = None,
+    display_name_a: str = "",
+    display_name_b: str = "",
+) -> dict[str, Any]:
+    with _GPU_JOB_LOCK:
+        return _run_text_locked(text_a, text_b, job_id=job_id, display_name_a=display_name_a, display_name_b=display_name_b)
+
+
+def _run_text_locked(
+    text_a: str,
+    text_b: str,
+    *,
+    job_id: str | None = None,
+    display_name_a: str = "",
+    display_name_b: str = "",
+) -> dict[str, Any]:
+    started = time.perf_counter()
+    gpu_snapshots: list[dict] = [_gpu_snapshot("before_tribe")]
+    warnings = _warnings_for_text(text_a, text_b)
+    progress = emitter_for(job_id)
+
+    progress.emit("predicting_version_a", "Encoding Version A through TRIBE v2...")
+    preds_a, _, timing_a = _coerce_prediction_output(
+        tribe_service.text_to_predictions(text_a, progress=progress)
+    )
+    progress.emit("predicting_version_b", "Encoding Version B through TRIBE v2...")
+    preds_b, _, timing_b = _coerce_prediction_output(
+        tribe_service.text_to_predictions(text_b, progress=progress)
+    )
+
+    progress.emit("computing_brain_contrast", "Computing brain contrast...")
+    scores_a, median_a = score_predictions(preds_a, masks)
+    scores_b, median_b = score_predictions(preds_b, masks)
+    diff = compute_diff(scores_a, scores_b)
+    dimension_rows = enrich_dimension_payload(diff)
+    vertex_delta, vertex_a, vertex_b = compute_vertex_delta(preds_a, preds_b)
+    stage_times = {
+        "events_a_ms": int(timing_a.get("events_ms", 0) or 0),
+        "predict_a_ms": int(timing_a.get("predict_ms", 0) or 0),
+        "events_b_ms": int(timing_b.get("events_ms", 0) or 0),
+        "predict_b_ms": int(timing_b.get("predict_ms", 0) or 0),
+    }
+    processing_time_ms = int((time.perf_counter() - started) * 1000)
+    # Use TRIBE's per-second per-dim scores to drive the results-page content.
+    # Text mode has no transcript segments — synthesise minimal ones from the inputs.
+    runtime_a = float(preds_a.shape[0])
+    runtime_b = float(preds_b.shape[0])
+    text_segments_a = [{"start": 0, "end": runtime_a, "text": text_a}]
+    text_segments_b = [{"start": 0, "end": runtime_b, "text": text_b}]
+    title_a = display_name_a or text_a[:60] or "Stimulus A"
+    title_b = display_name_b or text_b[:60] or "Stimulus B"
+
+    # ─── Generate TTS waveforms so text mode has the same audio-shape view
+    # the results page renders for audio mode. The TRIBE pipeline already
+    # synthesises speech internally to feed audio features into the model
+    # but doesn't expose the audio file; we re-synthesise here with gTTS
+    # (cheap and identical voice) so the frontend can draw a waveform.
+    # Soft-fail: never block the brain payload on a TTS hiccup.
+    media_features_payload: dict[str, Any] | None = None
+    try:
+        from gtts import gTTS  # type: ignore
+        from backend.media_features import audio_envelope, WAVEFORM_BINS
+        wf_a: list[float] = []
+        wf_b: list[float] = []
+        for text, slot in ((text_a, "a"), (text_b, "b")):
+            try:
+                tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".mp3")
+                tmp.close()
+                gTTS(text=text or " ", lang="en").save(tmp.name)
+                env = audio_envelope(tmp.name, bins=WAVEFORM_BINS) or []
+                if slot == "a": wf_a = env
+                else: wf_b = env
+            except Exception as werr:
+                log.warning("TTS waveform failed for slot %s: %s", slot, werr)
+            finally:
+                try: os.unlink(tmp.name)
+                except Exception: pass
+        if wf_a or wf_b:
+            media_features_payload = {"waveform_a": wf_a, "waveform_b": wf_b}
+    except Exception as exc:
+        log.warning("Text-mode waveform pipeline unavailable: %s", exc)
+    gpu_snapshots.append(_gpu_snapshot("before_content_gen"))
+    results_content = _generate_results_content(
+        job_id=job_id or "",
+        scores_a=scores_a,
+        scores_b=scores_b,
+        transcript_segments_a=text_segments_a,
+        transcript_segments_b=text_segments_b,
+        duration_a_s=runtime_a,
+        duration_b_s=runtime_b,
+        title_a=title_a,
+        title_b=title_b,
+        progress=progress,
+    )
+    gpu_snapshots.append(_gpu_snapshot("after_content_gen"))
+    return _build_response(
+        transcript_a=text_a,
+        transcript_b=text_b,
+        transcript_segments_a=[],
+        transcript_segments_b=[],
+        modality="text",
+        stage_times=stage_times,
+        processing_time_ms=processing_time_ms,
+        preds_a=preds_a,
+        preds_b=preds_b,
+        diff=diff,
+        dimension_rows=dimension_rows,
+        vertex_delta=vertex_delta,
+        vertex_a=vertex_a,
+        vertex_b=vertex_b,
+        median_a=median_a,
+        median_b=median_b,
+        warnings=warnings,
+        media_features=media_features_payload,
+        job_id=job_id,
+        results_content=results_content,
+        display_name_a=title_a,
+        display_name_b=title_b,
+        gpu_snapshots=gpu_snapshots,
+    )
+
+
+def _run_media(
+    modality: str,
+    media_url_a: str,
+    media_url_b: str,
+    *,
+    job_id: str | None = None,
+    blob_token: str = "",
+    trim_to_shorter: bool = False,
+    display_name_a: str = "",
+    display_name_b: str = "",
+) -> dict[str, Any]:
+    with _GPU_JOB_LOCK:
+        return _run_media_locked(
+            modality, media_url_a, media_url_b,
+            job_id=job_id, blob_token=blob_token, trim_to_shorter=trim_to_shorter,
+            display_name_a=display_name_a, display_name_b=display_name_b,
+        )
+
+
+def _run_media_locked(
+    modality: str,
+    media_url_a: str,
+    media_url_b: str,
+    *,
+    job_id: str | None = None,
+    blob_token: str = "",
+    trim_to_shorter: bool = False,
+    display_name_a: str = "",
+    display_name_b: str = "",
+) -> dict[str, Any]:
+    started = time.perf_counter()
+    gpu_snapshots: list[dict] = [_gpu_snapshot("before_tribe")]
+    warnings: list[str] = []
+    progress = emitter_for(job_id)
+
+    # Track every temp file we create so cleanup works regardless of which
+    # step fails. ensure_within_max may produce a `.trim` sibling.
+    temp_files: set[str] = set()
+
+    def _track(p: str) -> str:
+        if p:
+            temp_files.add(p)
+        return p
+
+    progress.emit("downloading_a", f"Downloading Version A {modality}...")
+    path_a = _track(_download_to_temp(media_url_a, blob_token))
+    try:
+        progress.emit("downloading_b", f"Downloading Version B {modality}...")
+        path_b = _track(_download_to_temp(media_url_b, blob_token))
+    except Exception:
+        for p in list(temp_files):
+            try:
+                os.unlink(p)
+            except OSError:
+                pass
+        raise
+
+    media_durations: dict[str, float] = {}
+    media_filenames: dict[str, str] = {
+        "a": _filename_from_url(media_url_a),
+        "b": _filename_from_url(media_url_b),
+    }
+    media_features_payload: dict[str, Any] = {}
+    try:
+        progress.emit(
+            "decoding_video" if modality == "video" else "decoding_audio",
+            (
+                "Decoding video + extracting frames..."
+                if modality == "video"
+                else "Decoding audio features..."
+            ),
+        )
+        # Enforce the same 30-second / similar-duration constraints the local
+        # FastAPI path enforces (backend/api.py). Without these the worker
+        # would silently chew on arbitrarily long uploads.
+        try:
+            path_a, dur_a, trimmed_a = ensure_within_max(path_a)
+            _track(path_a)
+            path_b, dur_b, trimmed_b = ensure_within_max(path_b)
+            _track(path_b)
+        except DurationProbeError as err:
+            raise RuntimeError(f"MEDIA_DURATION_PROBE_FAILED: {err}") from err
+        media_durations = {"a": float(dur_a), "b": float(dur_b)}
+        if trimmed_a or trimmed_b:
+            warnings.append("One or both stimuli were truncated to 30 seconds.")
+        try:
+            check_media_similarity(dur_a, dur_b)
+        except DurationMismatch as err:
+            if not trim_to_shorter:
+                raise RuntimeError(f"MEDIA_DURATION_MISMATCH: {err}") from err
+            target = min(dur_a, dur_b)
+            if dur_a > target:
+                progress.emit("trimming_a", f"Trimming Version A to {target:.1f}s to match Version B...")
+                path_a = _track(trim_to_duration(path_a, target))
+                dur_a = target
+            if dur_b > target:
+                progress.emit("trimming_b", f"Trimming Version B to {target:.1f}s to match Version A...")
+                path_b = _track(trim_to_duration(path_b, target))
+                dur_b = target
+            media_durations = {"a": float(dur_a), "b": float(dur_b)}
+            warnings.append(
+                f"Duration mismatch fixed by comparing the first {target:.1f}s of both stimuli."
+            )
+
+        # Pre-compute the modality-specific features the result page needs.
+        # Done before prediction so they're cheap to skip on failure (they
+        # don't block the actual contrast).
+        try:
+            if modality == "audio":
+                progress.emit("waveform_a", "Computing audio waveform A...")
+                wave_a = audio_envelope(path_a)
+                progress.emit("waveform_b", "Computing audio waveform B...")
+                wave_b = audio_envelope(path_b)
+                media_features_payload = {
+                    "waveform_a": wave_a,
+                    "waveform_b": wave_b,
+                }
+            else:
+                progress.emit("keyframes_a", "Extracting keyframes A...")
+                keys_a = video_keyframes(path_a)
+                progress.emit("keyframes_b", "Extracting keyframes B...")
+                keys_b = video_keyframes(path_b)
+                media_features_payload = {
+                    "keyframes_a": keys_a,
+                    "keyframes_b": keys_b,
+                }
+        except Exception as err:
+            # Feature extraction is best-effort. Surface the failure as a
+            # warning and continue — the result page renders empty states
+            # for missing features rather than fake placeholders.
+            warnings.append(f"Media feature extraction failed: {err}")
+
+        if modality == "audio":
+            preds_a, _, timing_a = _coerce_prediction_output(
+                tribe_service.audio_to_predictions(path_a, progress=progress)
+            )
+            preds_b, _, timing_b = _coerce_prediction_output(
+                tribe_service.audio_to_predictions(path_b, progress=progress)
+            )
+        else:
+            preds_a, _, timing_a = _coerce_prediction_output(
+                tribe_service.video_to_predictions(path_a, progress=progress)
+            )
+            preds_b, _, timing_b = _coerce_prediction_output(
+                tribe_service.video_to_predictions(path_b, progress=progress)
+            )
+
+        progress.emit("computing_brain_contrast", "Computing brain contrast...")
+        scores_a, median_a = score_predictions(preds_a, masks)
+        scores_b, median_b = score_predictions(preds_b, masks)
+        diff = compute_diff(scores_a, scores_b)
+        dimension_rows = enrich_dimension_payload(diff)
+        vertex_delta, vertex_a, vertex_b = compute_vertex_delta(preds_a, preds_b)
+        stage_times = {
+            "events_a_ms": int(timing_a.get("events_ms", 0) or 0),
+            "predict_a_ms": int(timing_a.get("predict_ms", 0) or 0),
+            "events_b_ms": int(timing_b.get("events_ms", 0) or 0),
+            "predict_b_ms": int(timing_b.get("predict_ms", 0) or 0),
+        }
+
+        # Real per-timestep peak-Δ moment detection — replaces the old
+        # buildMoments() template that fabricated identical "{label}
+        # changes at beat N" prose for every job.
+        # Use Version-B duration as the timeline anchor (matches the
+        # frontend, which scrubs along max(durA, durB)).
+        anchor_duration = max(dur_a, dur_b) if dur_b else dur_a
+        try:
+            moments = peak_moments(
+                preds_a, preds_b, masks,
+                duration_seconds=anchor_duration,
+                top_k=4,
+            )
+        except Exception:
+            moments = []
+        if moments:
+            media_features_payload["moments"] = moments
+
+        # Co-activation pattern detection. Reads the published-evidence
+        # pattern definitions from frontend_new/data/pattern-definitions.json
+        # (single source of truth — same file the frontend's Pattern Card
+        # UI reads) and returns per-side instances with start/end/peak.
+        try:
+            from backend.pattern_detector import detect_patterns_both_sides
+            patterns_payload = detect_patterns_both_sides(
+                dimension_rows,
+                duration_a_s=dur_a,
+                duration_b_s=dur_b,
+            )
+            if patterns_payload.get("a") or patterns_payload.get("b"):
+                media_features_payload["patterns"] = patterns_payload
+        except Exception as err:
+            warnings.append(f"Pattern detection failed: {err}")
+
+        # Connectivity map: pairwise Pearson correlation between the
+        # 7 cortical-system timeseries, integration / parallel scores,
+        # hub + isolated node, plus the B−A delta matrix.
+        # Cheap (21 correlations on ~30 floats); never blocks the result.
+        try:
+            from backend.connectivity import compute_connectivity_both_sides
+            connectivity_payload = compute_connectivity_both_sides(dimension_rows)
+            media_features_payload["connectivity"] = connectivity_payload
+        except Exception as err:
+            warnings.append(f"Connectivity map failed: {err}")
+
+        # Structural Skeleton (Prompt 1, trimmed): when the *content*
+        # changes across text / visual / audio. Uses transcript segments,
+        # waveform RMS bins, and keyframe times we already extracted —
+        # no new ML, no LLM summaries, no audio classifier (deferred to
+        # v2 — see /methodology/skeleton).
+        try:
+            from backend.structural_skeleton import build_skeleton_both_sides
+            transcripts_a_for_skeleton = list(timing_a.get("transcript_segments") or [])
+            transcripts_b_for_skeleton = list(timing_b.get("transcript_segments") or [])
+            skeleton_payload = build_skeleton_both_sides(
+                transcripts_a_for_skeleton,
+                transcripts_b_for_skeleton,
+                media_features_payload.get("waveform_a") or [],
+                media_features_payload.get("waveform_b") or [],
+                media_features_payload.get("keyframes_a") or [],
+                media_features_payload.get("keyframes_b") or [],
+                duration_a_s=dur_a,
+                duration_b_s=dur_b,
+            )
+            media_features_payload["skeleton"] = skeleton_payload
+        except Exception as err:
+            warnings.append(f"Structural skeleton failed: {err}")
+
+        processing_time_ms = int((time.perf_counter() - started) * 1000)
+        # LLaMA-driven results-page content (uses TRIBE's per-second per-dim scores).
+        transcript_text_a = str(timing_a.get("transcript_text", "") or "")
+        transcript_text_b = str(timing_b.get("transcript_text", "") or "")
+        transcript_segs_a = list(timing_a.get("transcript_segments") or [])
+        transcript_segs_b = list(timing_b.get("transcript_segments") or [])
+        # Resolve display titles. Priority:
+        #   1. user-supplied display_name_a/b from launch page (auto-suggested, editable)
+        #   2. media filename without extension (best-effort)
+        #   3. transcript first 60 chars
+        #   4. generic fallback
+        def _strip_ext(name: str) -> str:
+            if not name:
+                return ""
+            return name.rsplit(".", 1)[0] if "." in name else name
+        title_a = (
+            display_name_a
+            or _strip_ext((media_filenames or {}).get("a", ""))
+            or transcript_text_a[:60]
+            or ("Stimulus A" if modality != "video" else "Video A")
+        )
+        title_b = (
+            display_name_b
+            or _strip_ext((media_filenames or {}).get("b", ""))
+            or transcript_text_b[:60]
+            or ("Stimulus B" if modality != "video" else "Video B")
+        )
+        gpu_snapshots.append(_gpu_snapshot("before_content_gen"))
+        results_content = _generate_results_content(
+            job_id=job_id or "",
+            scores_a=scores_a,
+            scores_b=scores_b,
+            transcript_segments_a=transcript_segs_a,
+            transcript_segments_b=transcript_segs_b,
+            duration_a_s=float(media_durations.get("a", dur_a) if media_durations else dur_a),
+            duration_b_s=float(media_durations.get("b", dur_b) if media_durations else dur_b),
+            title_a=title_a,
+            title_b=title_b,
+            progress=progress,
+        )
+        gpu_snapshots.append(_gpu_snapshot("after_content_gen"))
+        return _build_response(
+            transcript_a=transcript_text_a,
+            transcript_b=transcript_text_b,
+            transcript_segments_a=transcript_segs_a,
+            transcript_segments_b=transcript_segs_b,
+            modality=modality,
+            stage_times=stage_times,
+            processing_time_ms=processing_time_ms,
+            preds_a=preds_a,
+            preds_b=preds_b,
+            diff=diff,
+            dimension_rows=dimension_rows,
+            vertex_delta=vertex_delta,
+            vertex_a=vertex_a,
+            vertex_b=vertex_b,
+            median_a=median_a,
+            median_b=median_b,
+            warnings=warnings,
+            media_durations=media_durations,
+            media_filenames=media_filenames,
+            media_features=media_features_payload,
+            job_id=job_id,
+            results_content=results_content,
+            display_name_a=title_a,
+            display_name_b=title_b,
+            gpu_snapshots=gpu_snapshots,
+        )
+    finally:
+        for path in temp_files:
+            try:
+                os.unlink(path)
+            except OSError:
+                pass
+
+
+def handler(event: dict[str, Any]) -> dict[str, Any]:
+    _ensure_warm()  # no-op after first call; blocks until TRIBE + masks ready
+    payload = event.get("input", {})
+    # RunPod assigns the outer job id; surface it so the worker can write
+    # progress events to the same `events:{job_id}` key the status endpoint
+    # reads. Falls back to payload.job_id (older callers) or "" (no events).
+    job_id = (
+        event.get("id")
+        or payload.get("job_id")
+        or ""
+    )
+    if isinstance(job_id, str):
+        job_id = job_id.strip()
+    else:
+        job_id = ""
+    blob_token = (payload.get("blob_token") or "").strip()
+    trim_to_shorter = bool(payload.get("trim_to_shorter"))
+    progress = emitter_for(job_id)
+    progress.emit("worker_started", "Worker booted, loading inputs...")
+
+    mode = (payload.get("mode") or "text").strip().lower()
+    # User-supplied display names (auto-suggested on the launch page, optionally
+    # edited). When present, the worker uses them as titles instead of the raw
+    # input text or filename. Stored on result.meta.display_name_a/b so the
+    # whole UI can read them from one place.
+    display_name_a = (payload.get("display_name_a") or "").strip()
+    display_name_b = (payload.get("display_name_b") or "").strip()
+    if mode == "text":
+        text_a = (payload.get("text_a") or "").strip()
+        text_b = (payload.get("text_b") or "").strip()
+        if not text_a or not text_b:
+            raise ValueError("text_a and text_b are required for mode=text")
+        result = _run_text(
+            text_a=text_a, text_b=text_b, job_id=job_id,
+            display_name_a=display_name_a, display_name_b=display_name_b,
+        )
+        progress.emit("done", "Done")
+        return result
+    if mode not in {"audio", "video"}:
+        raise ValueError("mode must be one of: text, audio, video")
+    media_url_a = (payload.get("media_url_a") or "").strip()
+    media_url_b = (payload.get("media_url_b") or "").strip()
+    if not media_url_a or not media_url_b:
+        raise ValueError("media_url_a and media_url_b are required for audio/video mode")
+    result = _run_media(
+        mode,
+        media_url_a=media_url_a,
+        media_url_b=media_url_b,
+        job_id=job_id,
+        blob_token=blob_token,
+        trim_to_shorter=trim_to_shorter,
+        display_name_a=display_name_a,
+        display_name_b=display_name_b,
+    )
+    progress.emit("done", "Done")
+    return result
+
+
+# Direct execution path for local/manual worker smoke tests. The production
+# RunPod image starts `runpod_worker/handler.py`, which is a tiny bootstrap that
+# imports this module only after RunPod has registered the worker as ready.
+if __name__ == "__main__":
+    log.info("worker_impl: direct start — TRIBE will load on first job")
+    runpod.serverless.start({"handler": handler})
