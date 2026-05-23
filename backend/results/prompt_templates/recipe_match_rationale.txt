@@ -14,6 +14,9 @@ GOOD: "Strong system means and a cluster of learning-moment chords made Pattern 
 BAD: "High insula activation drove this recipe match."
 GOOD: "High integration scores alongside consistent hub-node activity pointed squarely at the Narrative Arc recipe for this video."
 
+
+# ----- DYNAMIC BELOW -----
+
 Video: {video_display_name}
 Matched recipe: {recipe_name} ({library_id})
 Confidence: {confidence}

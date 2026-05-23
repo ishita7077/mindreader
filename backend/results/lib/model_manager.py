@@ -38,15 +38,27 @@ log = logging.getLogger(__name__)
 
 @dataclass
 class GenerationRequest:
-    """One model call. Slot runner builds these."""
+    """One model call. Slot runner builds these.
+
+    Anthropic-era fields (additions, all optional / non-breaking):
+      - slot_address: which slot this call is for; AnthropicBackend uses
+        it to pick Sonnet vs Haiku via model_routing.
+      - prompt_blocks: structured prompt for caching (list of dicts with
+        cache_control on static parts). When supplied, takes precedence
+        over `prompt` for the AnthropicBackend. The `prompt` string is
+        still populated for the audit log + raw_slot.json archive.
+    """
     prompt: str
     max_new_tokens: int
-    temperature: float = 1.0   # Gemma 3: low temp increases format failures; 1.0 is recommended
+    temperature: float = 1.0
     top_p: float = 0.95
-    top_k: int = 64            # Gemma 3 official recommended sampling config
-    do_sample: bool = True     # Gemma 3: greedy decoding triggers looping/failures
-    seed: int = 0
+    top_k: int = 64
+    do_sample: bool = True
+    seed: int = 0                                       # No-op on Anthropic; kept for audit/raw_slot compatibility.
     stop: list[str] = field(default_factory=list)
+    # ── Anthropic-era additions ────────────────────────────────────────
+    slot_address: str = ""                              # Routes to Sonnet/Haiku via model_routing.
+    prompt_blocks: list[dict] | None = None             # For prompt-caching; None = use `prompt` as-is.
 
 
 @dataclass
@@ -271,209 +283,25 @@ def set_model_manager(mgr: ModelManager) -> None:
     _singleton = mgr
 
 
-# ────────────────────────────────────────────────────────────
-# LoadedTransformersBackend — real LLaMA via transformers.generate()
-# ────────────────────────────────────────────────────────────
-#
-# This is the backend used in production (Mode B). The worker imports it,
-# loads LLaMA-3.2-3B-Instruct from the SAME HuggingFace cache TRIBE uses
-# (./cache, populated when TRIBE first ran), and points ModelManager at it.
-#
-# Loading is lazy — first call materialises the model, subsequent calls reuse
-# it. Inside the runpod_worker's long-lived process, this means one cold load
-# per container lifecycle (~30s on first comparison, milliseconds thereafter).
-#
-# Memory: ~6GB VRAM for Llama-3.2-3B fp16. On a 24GB+ GPU this sits alongside
-# TRIBE comfortably. On smaller GPUs we should switch to the shared-instance
-# path (use TRIBE's already-loaded text encoder + add the LM head). That's a
-# follow-up — for now this is the simplest correct thing.
-
-class LoadedTransformersBackend:
-    """Real Gemma backend. Uses transformers.AutoModelForCausalLM."""
-
-    model_id = "google/gemma-3-1b-it"
-
-    def __init__(
-        self,
-        *,
-        model_name: str = "google/gemma-3-1b-it",
-        cache_folder: str | None = None,    # None = use HF default (HF_HOME / ~/.cache/huggingface)
-        device: str | None = None,
-        dtype: str = "bfloat16",            # Gemma 3: float16 overflows and produces empty output
-    ) -> None:
-        self.model_name = model_name
-        self.cache_folder = cache_folder
-        self._device = device
-        self._dtype_str = dtype
-        self._model = None
-        self._tokenizer = None
-        self.model_revision: str | None = None
-
-    def _ensure_loaded(self) -> None:
-        if self._model is not None:
-            return
-        log.info("LoadedTransformersBackend: loading %s (cache=%s)", self.model_name, self.cache_folder)
-        import torch  # type: ignore
-        from transformers import AutoModelForCausalLM, AutoTokenizer  # type: ignore
-
-        # Pick device.
-        if self._device is None:
-            if torch.cuda.is_available():
-                self._device = "cuda"
-            elif getattr(torch.backends, "mps", None) and torch.backends.mps.is_available():
-                self._device = "mps"
-            else:
-                self._device = "cpu"
-
-        dtype = {
-            "float16": torch.float16,
-            "bfloat16": torch.bfloat16,
-            "float32": torch.float32,
-        }.get(self._dtype_str, torch.float16)
-
-        # Pick CPU dtype = float32 (MPS GQA bug + better numerics on CPU);
-        # GPU dtype = whatever the caller asked (fp16 default).
-        load_dtype = torch.float32 if self._device == "cpu" else dtype
-
-        tok_kwargs: dict[str, Any] = {}
-        model_kwargs: dict[str, Any] = {}
-        if self.cache_folder:
-            tok_kwargs["cache_dir"] = self.cache_folder
-            model_kwargs["cache_dir"] = self.cache_folder
-
-        self._tokenizer = AutoTokenizer.from_pretrained(self.model_name, **tok_kwargs)
-        if self._tokenizer.pad_token_id is None:
-            self._tokenizer.pad_token_id = self._tokenizer.eos_token_id
-
-        self._model = AutoModelForCausalLM.from_pretrained(
-            self.model_name,
-            torch_dtype=load_dtype,
-            device_map=self._device if self._device not in ("cpu", None) else None,
-            **model_kwargs,
-        )
-        if self._device == "cpu":
-            self._model = self._model.to("cpu")
-        self._model.eval()
-        try:
-            self.model_revision = self._model.config._name_or_path  # noqa: SLF001
-        except Exception:
-            self.model_revision = None
-        log.info("LoadedTransformersBackend: ready on device=%s dtype=%s", self._device, self._dtype_str)
-
-    async def generate(self, req: GenerationRequest) -> GenerationResponse:
-        # Run the blocking transformers call in a thread so other slots can
-        # progress concurrently if the ModelManager Semaphore allows.
-        import asyncio
-        return await asyncio.get_event_loop().run_in_executor(None, self._generate_sync, req)
-
-    def _generate_sync(self, req: GenerationRequest) -> GenerationResponse:
-        self._ensure_loaded()
-        import torch  # type: ignore
-
-        start = time.perf_counter()
-        torch.manual_seed(req.seed)
-        messages = [{"role": "user", "content": req.prompt}]
-        if not getattr(self._tokenizer, "chat_template", None):
-            # Base model with no chat template — encode prompt directly.
-            encoded = self._tokenizer(req.prompt, return_tensors="pt", return_attention_mask=True)
-            chat_input = {"input_ids": encoded["input_ids"], "attention_mask": encoded["attention_mask"]}
-        else:
-            chat_input = self._tokenizer.apply_chat_template(
-                messages, add_generation_prompt=True, return_tensors="pt", return_dict=True,
-            )
-        # NOTE: apply_chat_template returns BatchEncoding (a dict-like class from
-        # transformers, NOT a plain dict). The previous `isinstance(chat_input, dict)`
-        # check rejected it incorrectly — breaking every slot that used a chat
-        # template (i.e. every writer slot in this pipeline) silently. Check for
-        # the `input_ids` key directly; BatchEncoding supports `in` and `__getitem__`
-        # just like dict, which is all we need below.
-        try:
-            _has_input_ids = "input_ids" in chat_input
-        except Exception:
-            _has_input_ids = False
-        if not _has_input_ids:
-            raise RuntimeError(f"apply_chat_template returned unexpected type: {type(chat_input)}")
-        input_ids = chat_input["input_ids"]
-        attention_mask = chat_input.get("attention_mask")
-        if self._device not in ("cpu", None):
-            input_ids = input_ids.to(self._device)
-            if attention_mask is not None:
-                attention_mask = attention_mask.to(self._device)
-        input_len = input_ids.shape[1]
-
-        gen_kwargs: dict[str, Any] = {
-            "max_new_tokens": req.max_new_tokens,
-            "do_sample": req.do_sample,
-            "pad_token_id": self._tokenizer.pad_token_id,
-        }
-        if attention_mask is not None:
-            gen_kwargs["attention_mask"] = attention_mask
-        if req.do_sample:
-            gen_kwargs["temperature"] = req.temperature
-            gen_kwargs["top_p"] = req.top_p
-            gen_kwargs["top_k"] = req.top_k
-        with torch.inference_mode():
-            output_ids = self._model.generate(input_ids, **gen_kwargs)
-
-        new_tokens = output_ids[0, input_len:]
-        text = self._tokenizer.decode(new_tokens, skip_special_tokens=True).strip()
-        latency_ms = int((time.perf_counter() - start) * 1000)
-
-        try:
-            import transformers as _tf  # type: ignore
-            tf_ver = _tf.__version__
-        except Exception:
-            tf_ver = None
-        try:
-            torch_ver = torch.__version__
-        except Exception:
-            torch_ver = None
-
-        return GenerationResponse(
-            text=text,
-            latency_ms=latency_ms,
-            tokens_input=int(input_len),
-            tokens_output=int(new_tokens.shape[0]),
-            model_id=self.model_id,
-            model_revision=self.model_revision,
-            transformers_version=tf_ver,
-            torch_version=torch_ver,
-        )
-
-    def vram_peak_mb(self) -> float | None:
-        try:
-            import torch  # type: ignore
-            if self._device == "cuda":
-                return torch.cuda.max_memory_allocated() / (1024 * 1024)
-        except Exception:
-            pass
-        return None
-
-    def reset_vram_peak(self) -> None:
-        try:
-            import torch  # type: ignore
-            if self._device == "cuda":
-                torch.cuda.reset_peak_memory_stats()
-        except Exception:
-            pass
-
-
 def use_real_content_model(
     *,
-    cache_folder: str | None = None,
-    device: str | None = None,
+    cache_folder: str | None = None,      # ignored on Anthropic path; kept for signature compat
+    device: str | None = None,            # ignored on Anthropic path; kept for signature compat
     max_parallel: int = 1,
-    per_slot_timeout_seconds: float = 600.0,
+    per_slot_timeout_seconds: float = 45.0,   # was 600 for Gemma cold load — 45s is plenty for HTTP
 ) -> ModelManager:
-    """Swap the singleton to a real Gemma backend.
+    """Swap the singleton to the production Anthropic backend.
 
-    Idempotent — safe to call from both the background warmup thread and
-    generate_content_for_worker without triggering a second model load.
+    Idempotent — safe to call multiple times (the AnthropicBackend
+    instance is cheap to recreate; we replace it on every call).
+
+    `cache_folder` and `device` are accepted to preserve the legacy
+    signature used by `worker_impl._warm_llm_background` but are no-ops
+    on the Anthropic path — there's nothing to cache or device-place
+    for an HTTP client.
     """
-    current = get_model_manager()
-    if isinstance(current.backend, LoadedTransformersBackend):
-        return current
-    backend = LoadedTransformersBackend(cache_folder=cache_folder, device=device)
+    from .anthropic_backend import make_default_backend  # local import to avoid circulars
+    backend = make_default_backend()
     mgr = ModelManager(
         backend,
         max_parallel=max_parallel,

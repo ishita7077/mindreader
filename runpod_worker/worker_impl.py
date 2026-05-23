@@ -255,12 +255,20 @@ def _ensure_warm() -> None:
 
 
 def _warm_llm_background() -> None:
-    """Load Gemma into GPU memory in a background thread while TRIBE warms up."""
+    """Instantiate the production content backend in a background thread.
+
+    Post-Gemma-migration this is a tiny op (Anthropic HTTP client construction,
+    no model weights to load). We keep the background-thread pattern only so
+    the first job sees a ready manager without a synchronous startup cost,
+    and so the audit log shows which backend booted.
+    """
     try:
-        from backend.results.lib.model_manager import use_real_content_model
-        use_real_content_model(per_slot_timeout_seconds=600.0)
-        snap = _gpu_snapshot("after_gemma_load")
-        log.info("content_model_warmup: google/gemma-3-1b-it loaded and ready — VRAM %s MB allocated", snap.get("allocated_mb", "?"))
+        from backend.results.lib.model_manager import use_real_content_model, get_model_manager
+        use_real_content_model(per_slot_timeout_seconds=45.0)
+        mgr = get_model_manager()
+        backend_name = type(mgr.backend).__name__
+        model_id = getattr(mgr.backend, "model_id", "?")
+        log.info("content_model_warmup: %s ready (default model_id=%s)", backend_name, model_id)
     except Exception as exc:
         log.warning("content_model_warmup failed (non-fatal, will retry on first job): %s: %s", type(exc).__name__, exc)
 

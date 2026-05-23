@@ -10,6 +10,9 @@ RULES:
 - recommendations: 1–4 items. Each MUST include at least one evidence_ref. No generic advice.
 - confidence: "low" if data is sparse (short input, few chords), "medium" if moderate, "high" if multiple signals agree.
 
+
+# ----- DYNAMIC BELOW -----
+
 {evidence_block}
 
 Return ONLY this JSON object. No explanation before or after:

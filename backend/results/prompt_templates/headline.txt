@@ -19,6 +19,12 @@ GOOD: "The Lecture locks focus through accumulation. The Story builds it through
 BAD: "Video A wins on memory while Video B loses attention."
 GOOD: "The Tutorial drives deep processing early. The Reel spreads it thin across time."
 
+
+Voice anchors (study the rhythm and tone):
+{exemplars}
+
+# ----- DYNAMIC BELOW -----
+
 THE ANALYST'S THESIS (the core contrast — lead with this):
 {analysis_thesis}
 
@@ -29,8 +35,5 @@ Data:
 {lead_insight}
 - Top system deltas:
 {top_deltas}
-
-Voice anchors (study the rhythm and tone):
-{exemplars}
 
 Write the 2-sentence headline now. Output only the headline — no quotes, no explanation.

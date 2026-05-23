@@ -16,11 +16,14 @@ GOOD: "Attention and memory_encoding rose in lockstep through the second half, k
 BAD: "Gut reaction and brain_effort showed anti-coupling in this video."
 GOOD: "As gut reaction peaked, brain_effort fell — the brain offloaded analytical work to make room for the visceral hit. The Story recipe runs on this contrast."
 
-Video: {video_display_name}
-Coupling: {system_a} ↔ {system_b} ({descriptor})
-This video's recipe: {recipe_name}
 
 Voice anchors:
 {exemplars}
+
+# ----- DYNAMIC BELOW -----
+
+Video: {video_display_name}
+Coupling: {system_a} ↔ {system_b} ({descriptor})
+This video's recipe: {recipe_name}
 
 Write the 2-sentence callout now. Output only the callout — no explanation, no quotes.

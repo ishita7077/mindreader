@@ -35,7 +35,13 @@ ALLOWED_EVENT_TYPES = frozenset({
     "slot_validation_passed",
     "slot_validation_failed",
     "slot_validation_bypassed",
+    "slot_model_refused",       # Anthropic refusal stop_reason
+    "slot_model_rate_limited",  # Anthropic 429
     "slot_retry_started",
+    "cache_hit",                # Anthropic prompt-caching observability
+    "cache_miss",               # Anthropic prompt-caching observability
+    "spend_warning",            # Daily spend ≥80% of cap
+    "spend_cap_reached",        # Daily spend ≥100% of cap; further calls refused
     "slot_fallback_used",
     "slot_override_used",
     "slot_override_invalid",

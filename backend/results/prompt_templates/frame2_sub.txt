@@ -14,12 +14,15 @@ GOOD: "Each video sequences its recipe through chords — moments when multiple 
 BAD: "Both videos show different chord patterns reflecting their unique cognitive strategies."
 GOOD: "A chord marks the exact second multiple systems cross threshold together. The Lecture fires its Learning Machine recipe through 4 of them; the Reel fits 7 into half the time."
 
+
+Voice anchors:
+{exemplars}
+
+# ----- DYNAMIC BELOW -----
+
 Recipe A: {recipe_a_name}
 Recipe B: {recipe_b_name}
 Total chords across both videos: {total_chord_count}
 Combined runtime: {runtime_seconds}s
-
-Voice anchors:
-{exemplars}
 
 Write the sub-paragraph now. Output only the paragraph — no explanation, no preamble.

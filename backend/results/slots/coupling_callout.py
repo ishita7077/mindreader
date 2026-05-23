@@ -121,6 +121,7 @@ class CouplingCalloutSlot(Slot):
 
         ctx = self.build_template_context(inputs, pair=pair)
         prompt = self.render_prompt(ctx)
+        prompt_blocks = self.render_prompt_blocks(ctx)
         prompt_hash = hash_string(prompt)
         audit.emit("slot_prompt_rendered", slot=self.slot_address, prompt_hash=prompt_hash)
 
@@ -138,6 +139,8 @@ class CouplingCalloutSlot(Slot):
                 top_p=0.9,
                 do_sample=False if attempt == 1 else True,
                 seed=seed + (attempt - 1),
+                slot_address=self.slot_address,
+                prompt_blocks=prompt_blocks,
             )
             audit.emit("slot_model_called", slot=self.slot_address, attempt=attempt, prompt_hash=prompt_hash)
             try:

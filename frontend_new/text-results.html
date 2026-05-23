@@ -648,7 +648,19 @@ async function bootFromJob(){
     if (!resp.ok) return errCard('Job status check failed', `HTTP ${resp.status} from <code>${JOB_STATUS_URL}</code>`);
     const data = await resp.json();
     if (data.status === 'error') {
-      return errCard('Worker error', `<code>${escapeHtmlText((data.error && data.error.code) || 'unknown')}</code>: ${escapeHtmlText((data.error && data.error.message) || '')}`);
+      // Special-case the daily-spend cap: friendlier copy, no scary "Worker error" label.
+      const code = data.error && data.error.code;
+      if (code === 'SPEND_CAP_REACHED') {
+        const plain = (data.error && data.error.plain) || {};
+        const day = plain.day ? `<br><small>UTC day: ${escapeHtmlText(plain.day)}</small>` : '';
+        return errCard(
+          'Daily limit reached',
+          escapeHtmlText(plain.reason || 'BrainDiff has reached its daily budget.') +
+          '<br>' + escapeHtmlText(plain.action || 'Please try again tomorrow.') +
+          day
+        );
+      }
+      return errCard('Worker error', `<code>${escapeHtmlText(code || 'unknown')}</code>: ${escapeHtmlText((data.error && data.error.message) || '')}`);
     }
     if (data.status === 'done') {
       const content = data.result && data.result.results_content;

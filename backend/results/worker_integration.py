@@ -422,6 +422,34 @@ def generate_content_for_worker(
     audit = AuditLogger(comparison_id=cmp_id, run_id=rid, log_dir=audit_log_dir)
     audit.emit("comparison_started", data={"analysis_version": analysis_version, "in_worker": True})
 
+    # ── Spend-cap pre-check ──────────────────────────────────────────────
+    # Bail out clean BEFORE doing brain analysis if today's Anthropic spend
+    # is already at the cap. Returning early here means the worker surfaces
+    # a structured spend_cap_reached error to the frontend, which shows the
+    # daily-limit banner. Without this pre-check we'd run TRIBE (slow) only
+    # to discover at the writing stage that we can't generate any copy.
+    try:
+        from .lib.spend_tracker import assert_under_cap, SpendCapExceeded, get_today_spend_usd, get_cap_usd
+        assert_under_cap()
+    except SpendCapExceeded as exc:
+        audit.emit("spend_cap_reached", error_code="SPEND_CAP_PRE_CHECK",
+                   error_detail=str(exc))
+        audit.emit("comparison_failed")
+        return {
+            "comparison_id": cmp_id,
+            "content": None,
+            "error": "spend_cap_reached",
+            "spend_cap": {
+                "day": exc.day,
+                "spent_usd": exc.spent_usd,
+                "cap_usd": exc.cap_usd,
+            },
+        }
+    except Exception:
+        # Spend tracker should never raise other exceptions — but if it does,
+        # don't kill the job. Worst case: cap is overspent by one comparison.
+        pass
+
     try:
         va = _build_video(
             video_id=video_a_id, display_name=video_a_title,
@@ -572,6 +600,15 @@ def _build_content_audit(content: dict | None) -> dict:
     total = sum(totals.values())
     llm = totals["llm"] + totals["repaired"]
     fallback = totals["fallback"]
+    # Read the actual backend in use rather than hardcoding. After the
+    # Gemma → Anthropic migration this surfaces "claude-haiku-4-5" by
+    # default (Sonnet for individual reasoning slots is shown per-slot in
+    # raw_slot.json.model.model_id).
+    try:
+        from .lib.model_manager import get_model_manager
+        content_model_id = getattr(get_model_manager().backend, "model_id", "unknown")
+    except Exception:
+        content_model_id = "unknown"
     return {
         "slots_total": total,
         "slots_llm": llm,
@@ -579,5 +616,5 @@ def _build_content_audit(content: dict | None) -> dict:
         "slots_fallback": fallback,
         "slots_override": totals["override"],
         "fallback_rate": round(fallback / total, 3) if total else 1.0,
-        "content_model_id": "google/gemma-3-1b-it",
+        "content_model_id": content_model_id,
     }

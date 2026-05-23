@@ -103,19 +103,66 @@ class Slot:
 
     # ------- prompt rendering -------
 
-    def render_prompt(self, ctx: dict[str, Any]) -> str:
-        """Render the template by replacing {placeholder} tokens.
+    # ── DYNAMIC-marker convention ─────────────────────────────────────
+    # Prompt templates split into a cacheable prefix and a per-call suffix
+    # using this exact line on its own:
+    #     # ----- DYNAMIC BELOW -----
+    # Anything ABOVE that line is the static prefix (task description, format
+    # rules, BAD/GOOD examples, voice anchors) and is wrapped with Anthropic
+    # `cache_control={"type":"ephemeral","ttl":"1h"}` so subsequent calls
+    # with the same prefix pay the 90% cache-read rate (~10x cheaper).
+    # Anything BELOW is the dynamic per-comparison data.
+    # Templates without the marker are treated as 100% dynamic (no caching).
+    DYNAMIC_MARKER = "# ----- DYNAMIC BELOW -----"
 
-        Simple substitution; we don't need full Jinja2. Missing keys raise.
-        """
-        template = (TEMPLATES_DIR / self.template_name).read_text()
-        # Use a minimal {key} substitution that leaves unrelated braces intact.
+    def _substitute(self, text: str, ctx: dict[str, Any]) -> str:
+        """Apply `{key}` substitution; raise on unknown keys."""
         def repl(match: re.Match[str]) -> str:
             key = match.group(1)
             if key not in ctx:
-                raise KeyError(f"prompt template {self.template_name} references {{{key}}} but ctx has no such key")
+                raise KeyError(
+                    f"prompt template {self.template_name} references "
+                    f"{{{key}}} but ctx has no such key"
+                )
             return str(ctx[key])
-        return re.sub(r"\{([a-zA-Z_][a-zA-Z0-9_]*)\}", repl, template)
+        return re.sub(r"\{([a-zA-Z_][a-zA-Z0-9_]*)\}", repl, text)
+
+    def render_prompt(self, ctx: dict[str, Any]) -> str:
+        """Render the full template as a single string (legacy / audit path)."""
+        template = (TEMPLATES_DIR / self.template_name).read_text()
+        # Strip the marker comment line so it doesn't pollute the rendered prompt.
+        template = template.replace(self.DYNAMIC_MARKER + "\n", "").replace(self.DYNAMIC_MARKER, "")
+        return self._substitute(template, ctx)
+
+    def render_prompt_blocks(self, ctx: dict[str, Any]) -> list[dict[str, Any]]:
+        """Render the template as a list of Anthropic content blocks.
+
+        Returns 1 or 2 blocks:
+          - If the template has DYNAMIC_MARKER: [static_with_cache_control, dynamic]
+          - If not: [single_dynamic_block]
+        AnthropicBackend uses this when present; otherwise falls back to req.prompt.
+        """
+        template = (TEMPLATES_DIR / self.template_name).read_text()
+        if self.DYNAMIC_MARKER in template:
+            static_raw, dynamic_raw = template.split(self.DYNAMIC_MARKER, 1)
+        else:
+            static_raw, dynamic_raw = "", template
+
+        blocks: list[dict[str, Any]] = []
+        static_rendered = self._substitute(static_raw, ctx).rstrip()
+        if static_rendered:
+            blocks.append({
+                "type": "text",
+                "text": static_rendered,
+                # 1-hour TTL captures cross-job reuse for typical BrainDiff
+                # traffic patterns. 25% premium on cache write, 90% discount
+                # on cache read. Worth it given how often slots repeat.
+                "cache_control": {"type": "ephemeral", "ttl": "1h"},
+            })
+        dynamic_rendered = self._substitute(dynamic_raw, ctx).lstrip()
+        if dynamic_rendered:
+            blocks.append({"type": "text", "text": dynamic_rendered})
+        return blocks
 
     # ------- the runner -------
 
@@ -137,6 +184,9 @@ class Slot:
         if extra_context:
             ctx.update(extra_context)
         prompt = self.render_prompt(ctx)
+        # Anthropic-era: also pre-compute the structured cacheable form.
+        # AnthropicBackend uses these blocks to cache the static prefix.
+        prompt_blocks = self.render_prompt_blocks(ctx)
         prompt_hash = hash_string(prompt)
         audit.emit("slot_prompt_rendered", slot=self.slot_address, prompt_hash=prompt_hash)
 
@@ -176,6 +226,9 @@ class Slot:
                     top_p=0.9,
                     do_sample=True,
                     seed=seed + 100,
+                    slot_address=self.slot_address,
+                    # Repair prompts are per-call dynamic; skip caching.
+                    prompt_blocks=None,
                 )
             else:
                 req = GenerationRequest(
@@ -185,6 +238,8 @@ class Slot:
                     top_p=self.top_p,
                     do_sample=False if attempt == 1 else True,
                     seed=seed + (attempt - 1) * 7,
+                    slot_address=self.slot_address,
+                    prompt_blocks=prompt_blocks,
                 )
 
             audit.emit(

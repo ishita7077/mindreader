@@ -78,6 +78,8 @@ class AnalysisBriefSlot(Slot):
         if extra_context:
             ctx.update(extra_context)
         prompt = self.render_prompt(ctx)
+        # Anthropic-era: structured form for prompt caching.
+        prompt_blocks = self.render_prompt_blocks(ctx)
         prompt_hash = hash_string(prompt)
         audit.emit("slot_prompt_rendered", slot=self.slot_address, prompt_hash=prompt_hash)
 
@@ -110,6 +112,8 @@ class AnalysisBriefSlot(Slot):
                     top_p=0.9,
                     do_sample=True,
                     seed=seed + 100,
+                    slot_address=self.slot_address,
+                    prompt_blocks=None,
                 )
             else:
                 req = GenerationRequest(
@@ -119,6 +123,8 @@ class AnalysisBriefSlot(Slot):
                     top_p=self.top_p,
                     do_sample=self.do_sample,
                     seed=seed + (attempt - 1) * 7,
+                    slot_address=self.slot_address,
+                    prompt_blocks=prompt_blocks,
                 )
 
             audit.emit(

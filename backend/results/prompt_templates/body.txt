@@ -12,6 +12,12 @@ FORMAT (non-negotiable):
 BAD: "Both videos use different strategies to engage the cortex. Neither approach is inherently better — it depends on your goal."
 GOOD: "The Story front-loads attention spend to capture in the first ten seconds — but memory encoding drops before the payoff lands. The Lecture reverses this: low capture, high retention. Which trade you need depends on what happens after the click."
 
+
+Voice anchors:
+{exemplars}
+
+# ----- DYNAMIC BELOW -----
+
 THE HEADLINE (support this — do not repeat it):
 {headline}
 
@@ -26,8 +32,5 @@ Supporting data:
 {top_2_deltas}
 - Lead insight:
 {lead_insight}
-
-Voice anchors:
-{exemplars}
 
 Write the body paragraph now. Output only the paragraph — no explanation, no preamble.

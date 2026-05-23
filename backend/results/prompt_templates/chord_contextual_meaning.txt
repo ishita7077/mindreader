@@ -15,6 +15,12 @@ GOOD (specific to the firing): "At 1:14, the shift from question to answer cross
 BAD (too generic): "A visceral-hit chord fires when gut reaction and brain_effort peak simultaneously."
 GOOD (specific to the firing): "At 0:28, the unexpected reversal hit gut reaction before reasoning could catch up — a visceral-hit chord. The brain registered the moment emotionally before it processed it analytically."
 
+
+Voice anchors for this chord type:
+{exemplars}
+
+# ----- DYNAMIC BELOW -----
+
 Chord type: {chord_name}
 Generic meaning (reference only — rewrite it, do not copy): {generic_meaning}
 Timestamp: {timestamp_human}
@@ -22,8 +28,5 @@ Video: {video_title}
 Quote at this moment: {quote}
 Systems that fired: {triggering_systems}
 Cortical values that triggered this chord: {formula_values}
-
-Voice anchors for this chord type:
-{exemplars}
 
 Write the contextualised meaning now. Output only the meaning — no explanation, no quotes around the output.

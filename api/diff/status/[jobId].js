@@ -105,11 +105,34 @@ function mapRunpodStatus(data, jobId, jobMeta, events) {
   const raw = String(data.status || "").toUpperCase();
 
   if (raw === "COMPLETED") {
+    const output = data.output || {};
+    // Worker can return a clean spend-cap error inside the output payload —
+    // surface as a structured error instead of "done" so the frontend can
+    // render the daily-limit banner.
+    if (output && output.error === "spend_cap_reached") {
+      const cap = output.spend_cap || {};
+      return {
+        status: "error",
+        events,
+        error: {
+          code: "SPEND_CAP_REACHED",
+          message: `BrainDiff has reached its daily processing budget ($${(cap.cap_usd || 0).toFixed(2)} for ${cap.day || "today"}). Please try again tomorrow.`,
+          plain: {
+            code: "SPEND_CAP_REACHED",
+            reason: "BrainDiff has reached its daily processing budget.",
+            action: "Please try again tomorrow when the budget resets at midnight UTC.",
+            spent_usd: cap.spent_usd,
+            cap_usd: cap.cap_usd,
+            day: cap.day
+          }
+        }
+      };
+    }
     return {
       status: "done",
       job_id: jobId,
       events,
-      result: resultWithJobMetadata(data.output || data, jobMeta)
+      result: resultWithJobMetadata(output || data, jobMeta)
     };
   }
 

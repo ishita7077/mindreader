@@ -15,14 +15,17 @@ GOOD: "At 1:14, the question 'why does this keep failing?' pushed both values pa
 BAD: "The chord indicates strong emotional and cognitive engagement at this point in the video."
 GOOD: "The phrase 'you've been doing it wrong' at 0:43 hit gut reaction before reasoning — a visceral-hit chord mid-video."
 
+
+Voice anchors:
+{exemplars}
+
+# ----- DYNAMIC BELOW -----
+
 Chord: {chord_name}
 General meaning (already shown — do not repeat): {chord_meaning}
 Timestamp: {timestamp_human}
 Video: {video_display_name}
 Quote at this moment: {quote}
 Values that triggered it: {formula_values}
-
-Voice anchors:
-{exemplars}
 
 Write the one grounding sentence now. Output only the sentence — no quotes, no explanation.
