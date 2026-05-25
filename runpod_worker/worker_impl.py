@@ -507,6 +507,22 @@ def _build_response(
         meta["content_audit"] = results_content["content_audit"]
     if gpu_snapshots:
         meta["gpu_audit"] = {"snapshots": gpu_snapshots, "safe_inprocess_concurrency": 1}
+
+    # ── Persistence ──────────────────────────────────────────────────────
+    # Save the full response + the audit log into Upstash Redis so the link
+    # keeps working long after RunPod's serverless cache forgets it (RunPod
+    # purges in ~30-60 min). 30-day TTL by default. Best-effort: if Redis
+    # is unreachable we just return the response normally — never let
+    # persistence failure break the user's result.
+    try:
+        from runpod_worker.persistence import store_result, store_audit_log
+        store_result(job_id, response)
+        if results_content and results_content.get("audit_log_path"):
+            store_audit_log(job_id, results_content["audit_log_path"])
+    except Exception as exc:
+        log.warning("persistence: store failed (non-fatal) job_id=%s err=%s: %s",
+                    job_id, type(exc).__name__, exc)
+
     return response
 
 

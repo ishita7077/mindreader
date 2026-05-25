@@ -172,6 +172,30 @@ function mapRunpodStatus(data, jobId, jobMeta, events) {
   };
 }
 
+// Persisted-result lookup — the worker writes the final response to
+// `result:{jobId}` in Redis (TTL 30 days) so links keep working long after
+// RunPod's serverless cache purges (~30-60 min after job completion).
+// This avoids the "Job status check failed HTTP 500" links go through after
+// ~40 minutes.
+async function readPersistedResult(jobId) {
+  try {
+    const store = redis();
+    const raw = await store.get(`result:${jobId}`);
+    if (!raw) return null;
+    // Upstash @upstash/redis returns parsed JSON automatically when the
+    // value is JSON-shaped. Handle both shapes defensively.
+    if (typeof raw === "object") return raw;
+    if (typeof raw === "string") {
+      try { return JSON.parse(raw); }
+      catch (_) { return null; }
+    }
+    return null;
+  } catch (_) {
+    // Redis hiccup — fall through to the RunPod query.
+    return null;
+  }
+}
+
 module.exports = async function handler(req, res) {
   if (req.method !== "GET") return methodNotAllowed(res, ["GET"]);
   const jobId = req.query.jobId;
@@ -191,6 +215,21 @@ module.exports = async function handler(req, res) {
         result: resultWithJobMetadata(fastMeta.fastResult, fastMeta)
       });
     }
+    // FIRST: check our persisted store. If the worker stored the result
+    // there (30-day TTL), return it — RunPod's cache is irrelevant.
+    const persisted = await readPersistedResult(jobId);
+    if (persisted) {
+      // Re-derive events from Redis (the worker also persisted those during
+      // execution); ok if empty for old jobs that were stored before the
+      // event-persistence migration.
+      const events = await readProgressEvents(jobId);
+      return res.status(200).json({
+        status: "done",
+        job_id: jobId,
+        events,
+        result: resultWithJobMetadata(persisted, fastMeta)
+      });
+    }
     const [data, jobMeta, events] = await Promise.all([
       getJobStatus(jobId),
       getJobMetadata(jobId).catch(() => null),
@@ -199,9 +238,10 @@ module.exports = async function handler(req, res) {
     const mapped = mapRunpodStatus(data, jobId, jobMeta, events);
     if (mapped.status === "done") {
       // Best-effort cleanup — never block the result on Blob/Redis hiccups.
+      // Note: we no longer delete events:{jobId} here because they're
+      // useful for the persisted-result render path above.
       await Promise.all([
         maybeDeleteBlobsForJob(jobId).catch(() => {}),
-        redis().del(`events:${jobId}`).catch(() => {})
       ]);
     }
     return res.status(200).json(mapped);

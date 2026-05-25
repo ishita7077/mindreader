@@ -98,13 +98,32 @@ def _build_video(
     for tribe_name, series in timeseries_per_dim.items():
         canonical = _canonicalise_dim(tribe_name)
         if canonical is None:
+            log.warning(
+                "tribe_dim_unknown name=%r — TRIBE returned an unrecognised "
+                "dimension; dropping. If this is recurring, add it to "
+                "_TRIBE_DIM_TO_CANONICAL.", tribe_name,
+            )
             continue
         canonical_ts[canonical] = [float(v) for v in series]
 
-    # Fill any missing system with a flat-mean fallback.
-    for s in CANONICAL_SYSTEMS:
-        if not canonical_ts[s]:
-            canonical_ts[s] = [0.5 for _ in range(int(duration_seconds) + 1)]
+    # Identify any missing systems — these would produce silent fake data.
+    missing = [s for s in CANONICAL_SYSTEMS if not canonical_ts[s]]
+    if missing:
+        # LOUD failure: previously we silently filled missing systems with
+        # a flat 0.5 line, which polluted every downstream calculation
+        # (means, peaks, couplings, chords) without anyone noticing. Now we
+        # refuse the job with an explicit error so the operator KNOWS the
+        # TRIBE → mask wiring drifted.
+        log.error(
+            "tribe_dimension_missing systems=%s — refusing to fabricate "
+            "fake data. TRIBE did not return values for these systems. "
+            "Check brain_regions.DIMENSIONS_HCP vs the actual TRIBE output.",
+            missing,
+        )
+        raise ValueError(
+            f"TRIBE_DIMENSION_MISSING: missing systems {missing}. "
+            f"Refusing to silently fabricate 0.5-flat data."
+        )
 
     # Means + peaks from the timeseries.
     means: dict[str, float] = {}
@@ -475,10 +494,14 @@ def generate_content_for_worker(
     )
     audit.emit("input_normalized", input_hash=input_hash(inputs))
 
-    # Switch ModelManager to real Gemma unless stubbed.
+    # Boot the Anthropic content backend unless we're in stub mode (CI / tests).
+    # Timeout is per-slot. 45s is generous for Anthropic HTTP calls (typical
+    # 2-8s, p99 ~20s); previously 600s, which was correct for Gemma cold-load
+    # but now means a stuck call hangs the worker for 10 minutes before any
+    # error surfaces.
     if not use_stub:
         try:
-            use_real_content_model(per_slot_timeout_seconds=600.0)
+            use_real_content_model(per_slot_timeout_seconds=45.0)
         except Exception as exc:
             audit.emit("model_manager_failed", error_code="CONTENT_MODEL_LOAD_FAILED",
                        error_detail=f"{type(exc).__name__}: {exc}")
@@ -588,15 +611,37 @@ def generate_content_for_worker(
 
 
 def _build_content_audit(content: dict | None) -> dict:
-    """Count slot sources in assembled content for observability."""
+    """Count slot sources in assembled content for observability.
+
+    Walks the slots dict RECURSIVELY so nested slot groups
+    (coupling_callouts.video_a.strongest, recipe_match.video_a, etc.)
+    are counted too. The previous shallow walk reported
+    `slots_fallback: 0` even when 2 of 6 coupling cards had fallen
+    back — misleading the operator into thinking everything was fine.
+    """
     if not content or not isinstance(content.get("slots"), dict):
         return {"slots_total": 0, "slots_llm": 0, "slots_repaired": 0, "slots_fallback": 0, "fallback_rate": 1.0}
     slots = content["slots"]
     totals = {"llm": 0, "repaired": 0, "fallback": 0, "override": 0, "other": 0}
-    for v in slots.values():
-        if isinstance(v, dict):
-            src = v.get("source", "other")
+
+    def _walk(node: Any) -> None:
+        """Increment totals for every dict that has a `source` field."""
+        if not isinstance(node, dict):
+            return
+        if "source" in node and isinstance(node.get("source"), str):
+            # This dict represents a resolved slot — count it.
+            src = node["source"]
             totals[src] = totals.get(src, 0) + 1
+            # Don't descend further into a resolved slot's fields.
+            return
+        for v in node.values():
+            if isinstance(v, dict):
+                _walk(v)
+            elif isinstance(v, list):
+                for item in v:
+                    _walk(item)
+
+    _walk(slots)
     total = sum(totals.values())
     llm = totals["llm"] + totals["repaired"]
     fallback = totals["fallback"]

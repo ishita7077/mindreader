@@ -1,18 +1,18 @@
 {
-  "version": "1.0",
-  "notes": "Fallback content per slot, used when both manual override and LLM generation are unavailable. Generic enough to render any comparison without being wrong.",
+  "version": "1.1",
+  "notes": "Fallback content per slot, used when both manual override and LLM generation are unavailable. Generic enough to render any comparison without being wrong. v1.1: removed anatomical terms (cortex, cortical) to comply with the editorial-voice rules now enforced by the body + headline validators.",
   "headline": {
-    "value": "Two videos. Two cortical recipes. Different strategies, same brain.",
+    "value": "Two videos. Two brain recipes. Different strategies, same systems.",
     "source": "fallback",
     "status": "generic"
   },
   "body": {
-    "value": "These two videos recruit the cortex differently. Each runs a distinct cognitive recipe — different systems pulled, different timing, different cortical fingerprints. Neither is winning. They're playing different games.",
+    "value": "These two videos recruit the brain's seven systems differently. Each runs a distinct cognitive recipe — different systems pulled, different timing, different signatures. Neither is winning. They're playing different games.",
     "source": "fallback",
     "status": "generic"
   },
   "frame2_sub": {
-    "value": "Two recipes unfold across the runtime. A chord fires when two cortical systems cross threshold at the same second and hold for at least one or two more. The chord progression below shows when each play makes its moves.",
+    "value": "Two recipes unfold across the runtime. A chord fires when two brain systems cross threshold at the same second and hold for at least one or two more. The chord progression below shows when each play makes its moves.",
     "source": "fallback",
     "status": "generic"
   },
@@ -28,7 +28,7 @@
     "status": "generic"
   },
   "recipe_description": {
-    "value": "The cortical signature for this video did not match a named recipe in the current library. Closest match noted in audit logs. *Built for novel pattern.*",
+    "value": "The brain signature for this video did not match a named recipe in the current library. Closest match noted in audit logs. *Built for novel pattern.*",
     "source": "fallback",
     "status": "generic"
   },
@@ -38,12 +38,12 @@
     "status": "generic"
   },
   "chord_contextual_meaning": {
-    "value": "This chord fired at this moment because the systems involved crossed threshold together. The cortex was doing what this chord type generally captures, but no contextualised explanation could be generated for this specific firing.",
+    "value": "This chord fired at this moment because the systems involved crossed threshold together. The brain was doing what this chord type generally captures, but no contextualised explanation could be generated for this specific firing.",
     "source": "fallback",
     "status": "generic"
   },
   "coupling_callout": {
-    "value": "The two systems show a measurable correlation across this video's runtime. The pattern reflects how this content recruits the cortex.",
+    "value": "These two systems showed a measurable correlation across this video's runtime — a pattern in how the brain coordinated them during this content.",
     "source": "fallback",
     "status": "generic"
   }
