@@ -41,20 +41,19 @@ class CouplingCalloutValidator(BaseValidator):
             ))
 
         wc = self.count_words(text)
-        if wc > 38:
+        # Tightened from 38 → 22 to match the new prompt that explicitly caps
+        # the callout at 22 words. Cards are small; long callouts were
+        # crowding the layout per user feedback.
+        if wc > 22:
             errors.append(ValidationError(
                 code="OVER_WORD_LIMIT",
-                detail=f"coupling_callout has {wc} words, max 38",
+                detail=f"coupling_callout has {wc} words, max 22",
             ))
-
-        text_lower = text.lower()
-        for sys_key in (self.system_a, self.system_b):
-            display_forms = _SYSTEM_DISPLAY.get(sys_key, [sys_key.split("_")[0]])
-            if not any(form in text_lower for form in display_forms):
-                errors.append(ValidationError(
-                    code="MISSING_SYSTEM_NAME",
-                    detail=f"coupling_callout must reference system {sys_key!r} (any of {display_forms})",
-                ))
+        # MISSING_SYSTEM_NAME check removed (May 25 2026): the prompt now
+        # explicitly forbids opening with the system pair names (they're on
+        # the chip above the card). The "must reference both systems" rule
+        # is incompatible with the new "lead with what's distinctive" goal.
+        # System pairing is preserved via the chip/eyebrow row.
 
         errors.extend(self.check_banned_patterns(text))
         return ValidationResult(passed=not errors, errors=errors)

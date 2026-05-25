@@ -17,47 +17,71 @@
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Crimson+Pro:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Inter+Tight:wght@400;500;600&display=swap" rel="stylesheet">
 <script>(function(){var r=document.documentElement;try{var t=localStorage.getItem('braindiff-theme');if(t==='dark')r.setAttribute('data-theme','dark');}catch(e){}})();</script>
 <style>
-/* ── LAB-NOTEBOOK THEME ───────────────────────────────────────────────────
-   Palette designed to read like an open biology/research notebook:
-     - Cream/kraft paper backgrounds (warm beige, not sterile white)
-     - Faded blue ink (think old-school fountain pen) for primary accent
-     - Red ink for callouts and corrections (lab notebook red pen)
-     - Pencil grey / charcoal for body text — readable, not stark black
-     - Serif body (Crimson Pro / EB Garamond style) reads like a printed
-       paper; monospace becomes Courier-feeling rather than tech-y.
-     - Slight warm tint everywhere — nothing pure white, nothing pure black.
+/* ── LAB-NOTEBOOK THEME v2 — FULL LEGAL-PAD MODE ─────────────────────────
+   The first pass was too timid (still felt like cream paper). This is the
+   real treatment:
+     - YELLOW legal-pad background, not cream
+     - Faint horizontal rule lines on the body (printed pencil rules)
+     - Near-black ink for body text (pencil + ink), not warm charcoal
+     - Faded blue ink (A) + red pen ink (B) for accents
+     - System colours retuned to a desaturated biology-textbook palette:
+       sienna, oxblood, ochre, olive — never sage-green-on-yellow which
+       fights the background.
 */
 :root {
-  /* Paper tones — warmer kraft tones than the prior cream */
-  --cream:   #F4ECD8;   /* primary page surface — aged paper */
-  --cream-2: #ECE2C9;   /* card surfaces — slightly darker */
-  --cream-3: #E1D5B7;   /* edges and dividers */
+  /* Paper — proper yellow legal-pad, not beige */
+  --cream:   #F4EBC2;   /* primary page surface — legal-pad yellow */
+  --cream-2: #ECE0B0;   /* card surfaces — slightly darker pad sheet */
+  --cream-3: #DACFA0;   /* edges */
 
-  /* Ink tones — graphite + soft black, never harsh */
-  --ink:        #2A2520;   /* body text — warm charcoal */
-  --ink-mid:    #5C5249;
-  --ink-dim:    #8B8275;
-  --ink-faint:  #B8AC97;
+  /* Faint horizontal rule pattern — applied via body::before so it tiles */
+  --rule-color: rgba(168, 50, 31, 0.10);   /* red rule lines, very faint */
+  --margin-color: rgba(168, 50, 31, 0.20); /* left red margin line on legal pad */
 
-  /* Red ink — classic notebook correction/callout pen */
-  --red:      #A8321F;
-  --red-soft: #C45434;
-  --red-bg:   rgba(168, 50, 31, 0.07);
-  --gold:     #B8882A;
+  /* Ink — pencil + ink, near-black on yellow */
+  --ink:       #181410;   /* body text — almost-black graphite */
+  --ink-mid:   #3D352D;
+  --ink-dim:   #6E6452;
+  --ink-faint: #9E9272;
 
-  /* Two-side accent: faded blue ink (A) vs red ink (B) — the two pens */
-  --a:      #2E5C7E;   --a-soft: rgba(46, 92, 126, 0.12);
-  --b:      #A8321F;   --b-soft: rgba(168, 50, 31, 0.12);
+  /* Red ink — classic correction pen */
+  --red:      #9F2715;
+  --red-soft: #C04632;
+  --red-bg:   rgba(159, 39, 21, 0.08);
+  --gold:     #A07118;
 
-  --line:        rgba(42, 37, 32, 0.10);
-  --line-strong: rgba(42, 37, 32, 0.18);
+  /* Two-side accent: faded blue fountain-pen ink (A) vs oxblood red pen (B) */
+  --a:      #1F4A6E;   --a-soft: rgba(31, 74, 110, 0.13);
+  --b:      #9F2715;   --b-soft: rgba(159, 39, 21, 0.13);
 
-  /* Fonts — serif body that reads like printed prose */
+  --line:        rgba(24, 20, 16, 0.10);
+  --line-strong: rgba(24, 20, 16, 0.20);
+
+  /* Fonts — keep the print-paper feel */
   --ff-display: 'EB Garamond', 'Garamond', Georgia, serif;
   --ff-body:    'Crimson Pro', 'Crimson Text', 'Garamond', Georgia, serif;
   --ff-mono:    'Courier Prime', 'Courier New', monospace;
   --ff-ui:      'Inter Tight', system-ui, sans-serif;
   --halo: 0.15;
+}
+
+/* Legal-pad ruled lines — a 30px-tall horizontal-rule pattern across the
+   whole page body. Subtle enough not to fight the text, present enough
+   that the page reads as a notebook page. The red margin line on the
+   left is a classic legal-pad detail. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to right, transparent 95px, var(--margin-color) 95px, var(--margin-color) 96px, transparent 96px),
+    repeating-linear-gradient(to bottom, transparent 0, transparent 29px, var(--rule-color) 29px, var(--rule-color) 30px);
+}
+@media (max-width: 720px) {
+  /* hide the margin line on narrow screens */
+  body::before { background-image: repeating-linear-gradient(to bottom, transparent 0, transparent 29px, var(--rule-color) 29px, var(--rule-color) 30px); }
 }
 :root[data-theme="dark"]{
   /* Dark mode: brown-leather feel rather than pure black */
@@ -621,10 +645,19 @@ const SYSTEM_REGION = {
   social_thinking:'rTPJ — THEORY OF MIND',
   language_depth:'BROCA + WERNICKE — LANGUAGE NETWORK',
 };
+// Biology-textbook palette: earthy / desaturated, all from the same
+// warm family so they don't clash with the legal-pad yellow background.
+// Greens dropped (they vibrate on yellow). Each system gets a colour
+// from a different anatomy-textbook stain family (sienna, oxblood,
+// indigo, terracotta, ochre, plum, umber).
 const SYSTEM_COLOR = {
-  personal_resonance:'#B8882A', attention:'#C73D24', brain_effort:'#2A6B85',
-  gut_reaction:'#C44536', memory_encoding:'#9B7BA8',
-  social_thinking:'#5A8A6F', language_depth:'#C8A96E',
+  personal_resonance: '#8B5E2C',   // umber
+  attention:          '#A23A1F',   // oxblood
+  brain_effort:       '#2C4F6E',   // indigo ink
+  gut_reaction:       '#B8492B',   // burnt sienna
+  memory_encoding:    '#6E4A77',   // plum
+  social_thinking:    '#7A5A2E',   // walnut
+  language_depth:     '#5C7A40',   // muted olive (darkened — no longer fights yellow)
 };
 // SVG region positions on the brain (matched to v7).
 const REGION_POSITIONS = {
@@ -824,15 +857,23 @@ function fmtTime(s){return `${Math.floor(s/60)}:${Math.floor(s%60).toString().pa
 
 // Two-tone the headline by wrapping creator names in side-coloured spans.
 // If the LLM used full video titles, REPLACE them with the short "A" / "B"
-// tags (in the same colour) — the names are right above in the <h1>, so
-// repeating them in the H2 just bloats it. "A does this. B does that." reads
-// cleaner than "Lyrical Morning Forest does this. Urgent Morning Forest does
-// that." for a body that's already labelled.
+// tags (in the same colour). The case-INSENSITIVE flag matters: Claude
+// often title-cases names ("Pope Address") even when the input is
+// lowercase ("Pope address") — a case-sensitive regex misses those.
+// Also strip a leading "The " — the LLM tends to write "The Pope Address
+// builds X." which would become "The A builds X." (awkward). We collapse
+// to just "A builds X."
 function twoToneHeadline(text, va, vb){
   let html = esc(text);
   const escName = n => esc(n).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  if (va.display_name) html = html.replace(new RegExp(`\\b${escName(va.display_name)}\\b`, 'g'), `<span class="a-side">A</span>`);
-  if (vb.display_name) html = html.replace(new RegExp(`\\b${escName(vb.display_name)}\\b`, 'g'), `<span class="b-side">B</span>`);
+  if (va.display_name) {
+    html = html.replace(new RegExp(`(?:[Tt]he )?\\b${escName(va.display_name)}\\b`, 'gi'),
+      `<span class="a-side">A</span>`);
+  }
+  if (vb.display_name) {
+    html = html.replace(new RegExp(`(?:[Tt]he )?\\b${escName(vb.display_name)}\\b`, 'gi'),
+      `<span class="b-side">B</span>`);
+  }
   // Italicise *body*, *head*, *retention*, *spread* style emphases the LLM may use.
   html = html.replace(/\*([^*]+)\*/g, '<em>$1</em>');
   return html;
@@ -1164,15 +1205,20 @@ function annotateText(text, dimensions, side){
     const bare = tok.replace(/[^\w'-]/g, '').toLowerCase();
     if (!bare || bare.length < 4 || ANNOTATION_STOPWORDS.has(bare)) return;
     const ds = dominanceScore(dimensions, seriesKey, step);
-    // dominanceScore returns {sys, top, gap}. Only highlight when:
-    //   - top activation is meaningfully high (|v| >= 0.55 in [0,1] scale, where 0.5 = baseline)
-    //   - AND it leads runner-up by a clear margin (>= 0.12)
-    if (ds && ds.top >= 0.55 && ds.gap >= 0.12) {
+    // dominanceScore returns {sys, top, gap}. Looser gates than the prior
+    // pass (which left the read-along completely empty in the Pope test):
+    //   - top activation just needs to be ABOVE baseline (>= 0.50 — any
+    //     time the dominant system is above resting state)
+    //   - AND it leads runner-up by even a small margin (>= 0.04)
+    // Combined with the cap-by-strength below, this still keeps the
+    // density tasteful (~1 in 3-4 meaningful tokens) without producing
+    // an empty page.
+    if (ds && ds.top >= 0.50 && ds.gap >= 0.04) {
       candidates.push({ idx, sys: ds.sys, strength: ds.top + ds.gap });
     }
   });
-  // Second pass: pick top ~1/5 by strength so the annotation feels curated.
-  const cap = Math.max(1, Math.round(candidates.length / 5));
+  // Second pass: keep ~1 in 3 meaningful tokens, biased toward strongest.
+  const cap = Math.max(2, Math.round(candidates.length / 3));
   const keep = new Set(
     candidates.sort((a,b) => b.strength - a.strength).slice(0, cap).map(c => c.idx)
   );
@@ -1309,12 +1355,12 @@ function renderFrame3(c, va, vb){
                   }).join('');
                 })()}
               </g>
-              <path id="curve-a-fill" fill="rgba(42,107,133,0.10)" stroke="none"/>
-              <path id="curve-b-fill" fill="rgba(199,61,36,0.10)" stroke="none"/>
-              <path id="curve-a" fill="none" stroke="#2A6B85" stroke-width="2.4"/>
-              <path id="curve-b" fill="none" stroke="#C73D24" stroke-width="2.4"/>
-              <line id="tv-crosshair" x1="0" y1="20" x2="0" y2="386" stroke="rgba(200,41,26,0.5)" stroke-width="1" stroke-dasharray="3,3" opacity="0"/>
-              <circle id="tv-cross-a" cx="0" cy="0" r="4" fill="#2A6B85" stroke="white" stroke-width="1.5" opacity="0"/>
+              <path id="curve-a-fill" style="fill: var(--a-soft); stroke: none"/>
+              <path id="curve-b-fill" style="fill: var(--b-soft); stroke: none"/>
+              <path id="curve-a" fill="none" style="stroke: var(--a)" stroke-width="2.4"/>
+              <path id="curve-b" fill="none" style="stroke: var(--b)" stroke-width="2.4"/>
+              <line id="tv-crosshair" x1="0" y1="20" x2="0" y2="386" style="stroke: var(--red)" stroke-width="1" stroke-dasharray="3,3" opacity="0"/>
+              <circle id="tv-cross-a" cx="0" cy="0" r="4" style="fill: var(--a); stroke: var(--cream)" stroke-width="1.5" opacity="0"/>
               <circle id="tv-cross-b" cx="0" cy="0" r="4" fill="#C73D24" stroke="white" stroke-width="1.5" opacity="0"/>
             </svg>
             <div class="tv-tooltip" id="tv-tooltip">

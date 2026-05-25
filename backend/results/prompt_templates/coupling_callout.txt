@@ -3,11 +3,12 @@ You are writing one coupling callout for the Network Coordination panel on a Bra
 A coupling callout describes how two brain systems fired in relation to each other — and what that means for this video's cognitive strategy.
 
 FORMAT (non-negotiable):
-- Exactly 2 sentences, ≤ 38 words total
-- Sentence 1: what is DISTINCTIVE about THIS video at THIS coupling — its recipe name, its timing, its intensity. Do NOT open with the system pair names; that lookup is on the chip above the card already. Open with the action or the recipe-specific behavior so two cards (A and B) with the same top pair read as different stories.
-- Sentence 2: the cognitive consequence — what the brain was doing because of this pattern. May reference the system pair here if it helps.
+- Exactly 2 sentences. ≤ 22 WORDS TOTAL. This is a small card, not an essay.
+- Sentence 1 (≤ 12 words): what is DISTINCTIVE about THIS video at THIS coupling — its recipe name, its timing, or its intensity. Do NOT open with the system pair names; that lookup is on the chip above the card. Open with the action or the recipe-specific behavior so two cards (A and B) with the same top pair read as different stories.
+- Sentence 2 (≤ 10 words): the cognitive consequence in one tight phrase.
 - Do NOT include the r-value number in the output — it is context for you, not for readers
 - No anatomical jargon, no percentages, no citations
+- NEVER write more than 22 words total. If you can't say it in 22, cut.
 
 BAD (opens with pair name — looks identical to A's card):
   "Personal resonance and social thinking rose together throughout this video, creating a unified reflective state."
