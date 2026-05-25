@@ -547,7 +547,8 @@ function toggleTheme(){
 const params = new URLSearchParams(location.search);
 const COMPARISON_ID = params.get('id');
 const JOB_ID = params.get('jobId') || params.get('job_id');
-const DEV_MODE = params.get('dev') !== '0';
+// DEV mode: OFF by default. Opt in with `?dev=1` in the URL.
+const DEV_MODE = params.get('dev') === '1';
 if (DEV_MODE) document.body.classList.add('dev-mode');
 
 const CANONICAL_SYSTEMS = ['personal_resonance','attention','brain_effort','gut_reaction','memory_encoding','social_thinking','language_depth'];
