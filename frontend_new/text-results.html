@@ -590,6 +590,18 @@ const JOB_STATUS_URL = JOB_ID ? `/api/diff/status/${encodeURIComponent(JOB_ID)}`
 let CONTENT = null;
 let RESULT = null;  // full worker payload (dimensions, transcripts) — needed for the annotated text frame
 
+// Truncate a string at the last word-boundary at or before `maxLen` chars,
+// appending an ellipsis. Avoids the "cut mid-word" effect (e.g. "creat"
+// instead of "creating") in the coupling-callout cc-pair line.
+function truncateAtWord(s, maxLen){
+  if (!s) return '';
+  s = String(s).trim();
+  if (s.length <= maxLen) return s;
+  const cut = s.slice(0, maxLen);
+  const m = cut.match(/^(.+)\s\S*$/);
+  return ((m ? m[1] : cut).trim()) + '…';
+}
+
 // ─── Modality copy helper ──────────────────────────────────────────────
 // Single source of truth for what to call "the thing being compared".
 // Used everywhere instead of hardcoded "video" so the text/audio results
@@ -1244,7 +1256,7 @@ function renderCallouts(c, va, vb, callouts){
     cards.push(`<div class="connect-callout ${klass} ${hidden?'is-hidden':''} has-badge"${id?` id="${id}"`:''}>
       ${badge(slot)}
       <div class="cc-eyebrow">${esc(sideLabel)} · ${esc(headerText)}</div>
-      <div class="cc-pair">${esc(v.split('.')[0]).slice(0,80)}<span class="r-val"></span></div>
+      <div class="cc-pair">${esc(truncateAtWord(v.split('.')[0], 80))}<span class="r-val"></span></div>
       <div class="cc-text">${esc(v)}</div>
     </div>`);
   };
