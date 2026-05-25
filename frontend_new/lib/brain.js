@@ -94,22 +94,32 @@ function mountBrain(canvas, opts={}){
   // black with blue highlights; in light mode it inverts — dark slate brain
   // on cream stage with deep blue highlights. applyBrainTheme() re-colors
   // everything when the user toggles the theme.
+  // ── BIOLOGY-TEXTBOOK BRAIN PALETTE ──────────────────────────────────────
+  // Replaces the prior "specimen photograph" greys with the warm pink-tan
+  // palette you'd see in an anatomy textbook (think Gray's Anatomy plates
+  // or the Netter atlas). Cortex is a desaturated coral/salmon — the tone
+  // a histology stain produces — rather than a sci-fi blue-grey.
+  // Activation highlights remain vermillion/blue (high-contrast against the
+  // pink base) so the brain reads as a labelled diagram, not a hologram.
   const BRAIN_THEMES = {
     dark: {
-      base:[0.83, 0.80, 0.73],
-      ambient:0xd6d4cc, ambI:0.45,
-      key:0xfffaf2,     keyI:1.05,
-      fill:0xc2cbd8,    fillI:0.50,
-      rim:0x3a4d6b,     rimI:0.40,
+      // On dark backgrounds, lift the brain to a warm parchment-pink so it
+      // glows out of the paper rather than disappearing into shadow.
+      base:[0.82, 0.70, 0.66],         // warm parchment pink
+      ambient:0xd9b9a4, ambI:0.55,     // soft umber ambient
+      key:0xfff2e4,     keyI:1.10,     // warm key light (afternoon sun on paper)
+      fill:0xd6b8a0,    fillI:0.45,    // dusty rose fill
+      rim:0x5e3d2e,     rimI:0.45,     // deep umber rim for silhouette separation
     },
     light: {
-      // Medium warm gray brain on cream stage — reads like a specimen
-      // photograph. Warm undertone so it doesn't clash with the cream page.
-      base:[0.56, 0.52, 0.47],
-      ambient:0xd8cebd, ambI:0.45,     // warm cream ambient
-      key:0xffffff,     keyI:1.20,     // clean white key
-      fill:0xf0e2c8,    fillI:0.45,    // warm cream fill
-      rim:0x3a4a5c,     rimI:0.55,     // cool blue rim for silhouette separation
+      // Cream-paper background: cortex sits as a slightly-saturated
+      // anatomy-textbook coral. Warm tones throughout so it feels printed,
+      // not screen-rendered.
+      base:[0.78, 0.58, 0.52],         // anatomy-plate coral-pink
+      ambient:0xefd8c4, ambI:0.50,     // soft kraft-paper ambient
+      key:0xfff0dc,     keyI:1.10,     // warm yellowish key (printed-page light)
+      fill:0xefcfb8,    fillI:0.45,    // rose-tinted fill
+      rim:0x6b4232,     rimI:0.50,     // sienna rim, no cool blue contamination
     },
   };
   function currentTheme(){

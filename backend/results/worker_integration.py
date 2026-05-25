@@ -79,6 +79,25 @@ def _canonicalise_dim(name: str) -> str | None:
     return _TRIBE_DIM_TO_CANONICAL.get(name.lower().replace("-", "_").replace(" ", "_"))
 
 
+def _normalise_signed(v: float, clamp: float = 2.0) -> float:
+    """Map a signed normalised activation (typically in [-2, +2]) to [0, 1].
+
+    Baseline (TRIBE z-score = 0) maps to 0.5. Values above baseline go into
+    the upper half (0.5–1.0), below-baseline into the lower half (0–0.5).
+    Clamped at ±`clamp` so extreme outliers don't compress the rest.
+    Used by `_build_video` so every downstream consumer (the chart, the
+    chord detector's percentile thresholds, the coupling math) sees the
+    same [0, 1] scale.
+    """
+    try:
+        x = float(v)
+    except (TypeError, ValueError):
+        return 0.5
+    if x > clamp:  x = clamp
+    if x < -clamp: x = -clamp
+    return (x + clamp) / (2.0 * clamp)
+
+
 def _build_video(
     *,
     video_id: str,
@@ -104,7 +123,14 @@ def _build_video(
                 "_TRIBE_DIM_TO_CANONICAL.", tribe_name,
             )
             continue
-        canonical_ts[canonical] = [float(v) for v in series]
+        # Normalise to [0, 1] for chart-friendly display.
+        # Input values are "raw_signed_mean / whole_brain_median" from
+        # scorer.py — z-score-like, typically in [-2, +2]. The frontend chart
+        # assumes a [0, 1] range. Mapping: clamp to [-2, +2] then linear-map
+        # to [0, 1] with baseline (v=0) → 0.5. This keeps the chart readable
+        # AND keeps the sign convention intact (above-baseline → upper half,
+        # below-baseline → lower half).
+        canonical_ts[canonical] = [_normalise_signed(v) for v in series]
 
     # Identify any missing systems — these would produce silent fake data.
     missing = [s for s in CANONICAL_SYSTEMS if not canonical_ts[s]]

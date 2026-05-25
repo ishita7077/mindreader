@@ -7,32 +7,83 @@
 <title>Brain Diff — Results</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400;1,9..144,500&family=JetBrains+Mono:wght@300;400;500&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,300;1,6..72,400&family=Inter+Tight:wght@400;500;600&display=swap" rel="stylesheet">
+<!-- Lab-notebook palette fonts:
+       EB Garamond — display + body (warm classical serif, used in printed papers)
+       Crimson Pro — alt body (more on-screen-legible serif)
+       Courier Prime — monospace (typewriter-feel, lab notebook captions)
+       Inter Tight retained for utility chrome.
+     Old fonts (Fraunces, Newsreader, JetBrains Mono) left in CSS fallback chains
+     for the case where the new fonts fail to load. -->
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Crimson+Pro:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Inter+Tight:wght@400;500;600&display=swap" rel="stylesheet">
 <script>(function(){var r=document.documentElement;try{var t=localStorage.getItem('braindiff-theme');if(t==='dark')r.setAttribute('data-theme','dark');}catch(e){}})();</script>
 <style>
+/* ── LAB-NOTEBOOK THEME ───────────────────────────────────────────────────
+   Palette designed to read like an open biology/research notebook:
+     - Cream/kraft paper backgrounds (warm beige, not sterile white)
+     - Faded blue ink (think old-school fountain pen) for primary accent
+     - Red ink for callouts and corrections (lab notebook red pen)
+     - Pencil grey / charcoal for body text — readable, not stark black
+     - Serif body (Crimson Pro / EB Garamond style) reads like a printed
+       paper; monospace becomes Courier-feeling rather than tech-y.
+     - Slight warm tint everywhere — nothing pure white, nothing pure black.
+*/
 :root {
-  --cream: #F7F2EA; --cream-2: #EFE7D7; --cream-3: #E8DEC8;
-  --ink: #1A1410; --ink-mid: #4A4440; --ink-dim: #8A8078; --ink-faint: #B5ADA3;
-  --red: #C8291A; --red-soft: #E15640; --red-bg: rgba(200,41,26,0.08);
-  --gold: #B8882A;
-  --a: #2A6B85; --a-soft: rgba(42,107,133,0.12);
-  --b: #C73D24; --b-soft: rgba(199,61,36,0.12);
-  --line: rgba(26,20,16,0.08); --line-strong: rgba(26,20,16,0.16);
-  --ff-display: 'Fraunces', Georgia, serif;
-  --ff-body: 'Newsreader', Georgia, serif;
-  --ff-mono: 'JetBrains Mono', monospace;
-  --ff-ui: 'Inter Tight', system-ui, sans-serif;
+  /* Paper tones — warmer kraft tones than the prior cream */
+  --cream:   #F4ECD8;   /* primary page surface — aged paper */
+  --cream-2: #ECE2C9;   /* card surfaces — slightly darker */
+  --cream-3: #E1D5B7;   /* edges and dividers */
+
+  /* Ink tones — graphite + soft black, never harsh */
+  --ink:        #2A2520;   /* body text — warm charcoal */
+  --ink-mid:    #5C5249;
+  --ink-dim:    #8B8275;
+  --ink-faint:  #B8AC97;
+
+  /* Red ink — classic notebook correction/callout pen */
+  --red:      #A8321F;
+  --red-soft: #C45434;
+  --red-bg:   rgba(168, 50, 31, 0.07);
+  --gold:     #B8882A;
+
+  /* Two-side accent: faded blue ink (A) vs red ink (B) — the two pens */
+  --a:      #2E5C7E;   --a-soft: rgba(46, 92, 126, 0.12);
+  --b:      #A8321F;   --b-soft: rgba(168, 50, 31, 0.12);
+
+  --line:        rgba(42, 37, 32, 0.10);
+  --line-strong: rgba(42, 37, 32, 0.18);
+
+  /* Fonts — serif body that reads like printed prose */
+  --ff-display: 'EB Garamond', 'Garamond', Georgia, serif;
+  --ff-body:    'Crimson Pro', 'Crimson Text', 'Garamond', Georgia, serif;
+  --ff-mono:    'Courier Prime', 'Courier New', monospace;
+  --ff-ui:      'Inter Tight', system-ui, sans-serif;
   --halo: 0.15;
 }
 :root[data-theme="dark"]{
-  --cream:#0E0B07; --cream-2:#16110B; --cream-3:#1B150E;
-  --ink:#F2EBDC; --ink-mid:#C8BFAF; --ink-dim:#8E867A; --ink-faint:#5A544B;
-  --red:#E15640; --red-soft:#F0795F; --red-bg:rgba(225,86,64,0.10);
-  --gold:#D4A857;
-  --a:#7FB3C6; --a-soft:rgba(127,179,198,0.14);
-  --b:#E25B43; --b-soft:rgba(226,91,67,0.14);
-  --line:rgba(247,242,234,0.06); --line-strong:rgba(247,242,234,0.12);
+  /* Dark mode: brown-leather feel rather than pure black */
+  --cream:   #1B1611;   --cream-2: #221C16;   --cream-3: #2A2218;
+  --ink:     #ECE0CB;   --ink-mid: #C2B8A2;   --ink-dim: #8F8773;   --ink-faint: #5E574A;
+  --red:     #D6664A;   --red-soft: #E37C5E;   --red-bg: rgba(214, 102, 74, 0.10);
+  --gold:    #D4A857;
+  --a:       #7BAACB;   --a-soft: rgba(123, 170, 203, 0.14);
+  --b:       #DC6849;   --b-soft: rgba(220, 104, 73, 0.14);
+  --line:        rgba(236, 224, 203, 0.07);
+  --line-strong: rgba(236, 224, 203, 0.14);
 }
+
+/* Tag styling for the new "(A)" / "(B)" suffix in the hero versus line.
+   Smaller, same colour as the side label, monospace for a little
+   "specimen tag" feel. */
+.ab-tag {
+  font-family: var(--ff-mono);
+  font-size: 0.55em;
+  letter-spacing: 0.08em;
+  vertical-align: 0.25em;
+  opacity: 0.75;
+  margin-left: 0.15em;
+}
+.a-name .ab-tag { color: var(--a); }
+.b-name .ab-tag { color: var(--b); }
 
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
@@ -772,11 +823,16 @@ function badge(slot){if(!slot||!slot.source)return'';return `<span class="src-ba
 function fmtTime(s){return `${Math.floor(s/60)}:${Math.floor(s%60).toString().padStart(2,'0')}`}
 
 // Two-tone the headline by wrapping creator names in side-coloured spans.
+// If the LLM used full video titles, REPLACE them with the short "A" / "B"
+// tags (in the same colour) — the names are right above in the <h1>, so
+// repeating them in the H2 just bloats it. "A does this. B does that." reads
+// cleaner than "Lyrical Morning Forest does this. Urgent Morning Forest does
+// that." for a body that's already labelled.
 function twoToneHeadline(text, va, vb){
   let html = esc(text);
   const escName = n => esc(n).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  if (va.display_name) html = html.replace(new RegExp(`\\b${escName(va.display_name)}\\b`, 'g'), `<span class="a-side">${esc(va.display_name)}</span>`);
-  if (vb.display_name) html = html.replace(new RegExp(`\\b${escName(vb.display_name)}\\b`, 'g'), `<span class="b-side">${esc(vb.display_name)}</span>`);
+  if (va.display_name) html = html.replace(new RegExp(`\\b${escName(va.display_name)}\\b`, 'g'), `<span class="a-side">A</span>`);
+  if (vb.display_name) html = html.replace(new RegExp(`\\b${escName(vb.display_name)}\\b`, 'g'), `<span class="b-side">B</span>`);
   // Italicise *body*, *head*, *retention*, *spread* style emphases the LLM may use.
   html = html.replace(/\*([^*]+)\*/g, '<em>$1</em>');
   return html;
@@ -819,9 +875,9 @@ function renderHero(c, va, vb){
       </div>
     </div>
     <h1 class="hero-versus">
-      <span class="a-name">${esc(va.display_name)}</span>
+      <span class="a-name">${esc(va.display_name)} <span class="ab-tag">(A)</span></span>
       <span class="vs-mark">vs</span>
-      <span class="b-name">${esc(vb.display_name)}</span>
+      <span class="b-name">${esc(vb.display_name)} <span class="ab-tag">(B)</span></span>
     </h1>
     <div class="hero-eyebrow">Frame 01 · Two Cognitive Recipes</div>
     <h2 class="${headlineSizeClass} has-badge">${badge(headline)}${twoToneHeadline(headline.value, va, vb)}</h2>
@@ -1082,9 +1138,15 @@ const ANNOTATION_STOPWORDS = new Set([
 
 // Map a piece of text to colored spans where each word's color = the brain
 // system with the highest absolute timeseries value at that word's mapped
-// timestep. Skips stop-words so the highlighted vocabulary is the
-// meaning-carrying words, not every "the". Falls back to plain text if
-// dimensions are missing.
+// timestep. SPARSE by design — the user flagged "everything is getting
+// highlighted, which is not good." Rules:
+//   1. Skip stop-words and short tokens (already filtered before)
+//   2. Skip words where the dominant system's activation isn't STRONG
+//      enough relative to the field (must be top + significantly above runner-up)
+//   3. Lighter visual: just a thin underline, no background. Reads as
+//      a hint, not a highlight.
+//   4. Hard cap: at most ~1 in 5 meaningful tokens get annotated, evenly
+//      distributed so it feels intentional rather than dense.
 function annotateText(text, dimensions, side){
   if (!text || !dimensions || !dimensions.length) return esc(text || '');
   const seriesKey = side === 'a' ? 'timeseries_a' : 'timeseries_b';
@@ -1094,22 +1156,56 @@ function annotateText(text, dimensions, side){
   const charsPerStep = Math.max(1, text.length / numSteps);
   const tokens = text.split(/(\s+)/);  // keep separators as tokens
   let pos = 0;
-  return tokens.map(tok => {
+  // First pass: identify candidate tokens with their dominance scores.
+  const candidates = [];
+  tokens.forEach((tok, idx) => {
+    if (!tok || /^\s+$/.test(tok)) return;
+    const step = Math.min(numSteps - 1, Math.floor(pos / charsPerStep));
+    const bare = tok.replace(/[^\w'-]/g, '').toLowerCase();
+    if (!bare || bare.length < 4 || ANNOTATION_STOPWORDS.has(bare)) return;
+    const ds = dominanceScore(dimensions, seriesKey, step);
+    // dominanceScore returns {sys, top, gap}. Only highlight when:
+    //   - top activation is meaningfully high (|v| >= 0.55 in [0,1] scale, where 0.5 = baseline)
+    //   - AND it leads runner-up by a clear margin (>= 0.12)
+    if (ds && ds.top >= 0.55 && ds.gap >= 0.12) {
+      candidates.push({ idx, sys: ds.sys, strength: ds.top + ds.gap });
+    }
+  });
+  // Second pass: pick top ~1/5 by strength so the annotation feels curated.
+  const cap = Math.max(1, Math.round(candidates.length / 5));
+  const keep = new Set(
+    candidates.sort((a,b) => b.strength - a.strength).slice(0, cap).map(c => c.idx)
+  );
+  // Render
+  pos = 0;
+  return tokens.map((tok, idx) => {
     if (!tok) return '';
     if (/^\s+$/.test(tok)) { pos += tok.length; return tok; }
-    const step = Math.min(numSteps - 1, Math.floor(pos / charsPerStep));
     pos += tok.length;
-    // Skip stop-words and very short tokens (punctuation, single letters).
-    const bare = tok.replace(/[^\w'-]/g, '').toLowerCase();
-    if (!bare || bare.length < 3 || ANNOTATION_STOPWORDS.has(bare)) return esc(tok);
-    const dom = dominantSystem(dimensions, seriesKey, step);
-    if (!dom) return esc(tok);
-    const color = SYSTEM_COLOR[dom] || '#888';
-    const sysName = SYSTEM_FULL[dom] || dom;
-    // Stronger highlight: 28% bg + 2.5px underline so the system actually
-    // reads as the dominant colour, plus a tooltip with the system name.
-    return `<span class="txt-seg" data-sys="${dom}" title="${esc(sysName)}" style="background:${hexAlpha(color, 0.28)};border-bottom:2.5px solid ${color}">${esc(tok)}</span>`;
+    if (!keep.has(idx)) return esc(tok);
+    const sys = candidates.find(c => c.idx === idx).sys;
+    const color = SYSTEM_COLOR[sys] || '#888';
+    const sysName = SYSTEM_FULL[sys] || sys;
+    // Thin underline only — no background. Reads as a quiet pointer.
+    return `<span class="txt-seg" data-sys="${sys}" title="${esc(sysName)}" style="border-bottom:1.5px solid ${color}">${esc(tok)}</span>`;
   }).join('');
+}
+
+// Like dominantSystem() but also returns the runner-up's value so we can
+// gate on "is this REALLY the dominant system, or just barely?"
+function dominanceScore(dimensions, seriesKey, step){
+  let best = -Infinity, second = -Infinity, bestSys = null;
+  for (const d of dimensions){
+    const arr = d[seriesKey];
+    if (!arr || step >= arr.length) continue;
+    // Distance from baseline 0.5 (after the new [0,1] normalisation).
+    // Big values either above (excited) or below (suppressed) baseline are dominant.
+    const v = Math.abs((arr[step] || 0.5) - 0.5) + 0.5;  // map distance-from-baseline back to [0.5, 1] for thresholding
+    if (v > best) { second = best; best = v; bestSys = d.key || d.system || d.id || d.name; }
+    else if (v > second) { second = v; }
+  }
+  if (!bestSys) return null;
+  return { sys: bestSys, top: best, gap: best - second };
 }
 
 function dominantSystem(dimensions, seriesKey, step){
