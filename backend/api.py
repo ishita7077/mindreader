@@ -30,7 +30,6 @@ from backend.model_service import TribeService
 from backend.narrative import build_headline
 from backend.preflight import build_preflight_report
 from backend.result_semantics import enrich_dimension_payload, winner_summary
-from backend.insight_engine import build_insight_payload
 from backend.runtime import runtime_to_dict
 from backend.schemas import DiffRequest, JobStartResponse, ReportRequest
 from backend.scorer import score_predictions
@@ -308,19 +307,17 @@ def _build_diff_result(
     and the identical-texts short-circuit paths."""
     modality = payload.modality()
     # For text mode the transcript is the original input. For audio/video the
-    # caller passes the WhisperX-aligned word stream so the insight engine and
-    # results recall card both have access to the actual content of the
-    # stimulus rather than empty fallbacks.
+    # caller passes the WhisperX-aligned word stream so the recall card has
+    # access to the actual content of the stimulus rather than empty fallbacks.
     if modality == "text":
         transcript_a = transcript_a or (payload.text_a or "")
         transcript_b = transcript_b or (payload.text_b or "")
-    insights = build_insight_payload(
-        dimension_rows,
-        warnings,
-        narrative_tone=_narrative_tone(),
-        text_a=transcript_a,
-        text_b=transcript_b,
-    )
+    # insight_engine.py removed May 25 2026. The legacy template engine that
+    # produced `insights.headline` etc. was deterministic word-salad nobody
+    # reads anymore (only results-legacy.html consumed it, and we don't ship
+    # that page). Editorial vocabulary it contained was ported to
+    # backend/results/lib/dimension_framing.py and fed into the Wave 0
+    # analyst pass via evidence_packet.as_prompt_block().
     meta: dict[str, Any] = {
         "model_revision": tribe_service.model_revision,
         "atlas": "HCP_MMP1.0",
@@ -367,7 +364,6 @@ def _build_diff_result(
     return {
         "diff": diff,
         "dimensions": dimension_rows,
-        "insights": insights,
         "vertex_delta_b64": f32_b64(vertex_delta),
         "vertex_a_b64": f32_b64(vertex_a),
         "vertex_b_b64": f32_b64(vertex_b),

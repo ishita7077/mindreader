@@ -4,17 +4,21 @@ A coupling callout describes how two brain systems fired in relation to each oth
 
 FORMAT (non-negotiable):
 - Exactly 2 sentences, ≤ 38 words total
-- Sentence 1: what the systems DID (rose together / pulled apart / one suppressed the other)
-- Sentence 2: the cognitive consequence — what the brain was doing because of this pattern
-- Must name both systems by name: {system_a} and {system_b}
+- Sentence 1: what is DISTINCTIVE about THIS video at THIS coupling — its recipe name, its timing, its intensity. Do NOT open with the system pair names; that lookup is on the chip above the card already. Open with the action or the recipe-specific behavior so two cards (A and B) with the same top pair read as different stories.
+- Sentence 2: the cognitive consequence — what the brain was doing because of this pattern. May reference the system pair here if it helps.
 - Do NOT include the r-value number in the output — it is context for you, not for readers
 - No anatomical jargon, no percentages, no citations
 
+BAD (opens with pair name — looks identical to A's card):
+  "Personal resonance and social thinking rose together throughout this video, creating a unified reflective state."
+GOOD (opens with what's distinctive to THIS video):
+  "Cold Cognitive Work locked these two systems in lockstep from 0:04 onward — the brain treating reflection and self as one process. The result: inner narrative without an outside audience."
+
 BAD: "With an r-value of +0.82, attention and memory_encoding were strongly coupled, indicating a learning state."
-GOOD: "Attention and memory_encoding rose in lockstep through the second half, keeping the brain in an active-processing loop. This is the core mechanism of the Lecture recipe."
+GOOD: "Lecture-recipe pacing kept attention and memory_encoding rising in lockstep through the second half, holding the brain in an active-processing loop."
 
 BAD: "Gut reaction and brain_effort showed anti-coupling in this video."
-GOOD: "As gut reaction peaked, brain_effort fell — the brain offloaded analytical work to make room for the visceral hit. The Story recipe runs on this contrast."
+GOOD: "Story recipe trades them: as gut reaction peaked at 0:14, brain_effort fell — analysis stepping aside to make room for the visceral hit."
 
 
 Voice anchors:

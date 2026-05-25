@@ -4,11 +4,15 @@ RULES:
 - This is a STRATEGY comparison. Never say one is "better", "worse", "wins", or "loses".
 - Plain English only. No percentages, no "r=", no academic citations, no year stamps.
 - Every claim must tie back to evidence in the packet (timestamp, system name, or chord).
+- Use the EDITORIAL FRAMING section in the evidence packet for the right vocabulary per dimension (the `plain` phrasing and `noun`).
 - Thesis: 1–2 sentences max, ≤ 30 words. Lead with the sharpest insight.
 - Tradeoff: what each input gains AND gives up, ≤ 60 words.
 - why_it_happened: 1–4 items, each claim ≤ 40 words.
+  - If `brain_effort` is the top dimension, cite the three-loads framework (intrinsic / extraneous / germane) from the framing block and name the most plausible load type for the actual input text — explicitly acknowledging that the brain signal alone cannot resolve which.
 - recommendations: 1–4 items. Each MUST include at least one evidence_ref. No generic advice.
-- confidence: "low" if data is sparse (short input, few chords), "medium" if moderate, "high" if multiple signals agree.
+  - Draw editorial moves from the framing block's a_tip / b_tip lines for the relevant dimension.
+  - If A and B each have a distinct strongest dimension, include ONE "best hybrid move" recommendation following the pattern in the framing block.
+- confidence: "low" if data is sparse (short input, few chords), "medium" if moderate, "high" if multiple signals agree. ALWAYS append the TRIBEv2 scientific caveat from the framing block to the end of the confidence string.
 
 
 # ----- DYNAMIC BELOW -----

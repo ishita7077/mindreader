@@ -196,6 +196,15 @@ class EvidencePacket:
                 f"  recipe={vs.recipe_name}  ({vs.recipe_built_for})"
             )
 
+        # Editorial vocabulary + scientific caveats (extracted from legacy
+        # insight_engine.py; kept as a separate file so it stays auditable).
+        # This gives Wave 0's analyst the same editorial framings the
+        # original site author intended.
+        from .dimension_framing import framing_block_for_analyst
+        lines.append("")
+        lines.append("--- EDITORIAL FRAMING (use these vocabulary + caveats) ---")
+        lines.append(framing_block_for_analyst())
+
         lines.append("=== END EVIDENCE PACKET ===")
         return "\n".join(lines)
 

@@ -5,7 +5,9 @@ TASK: Write 2-3 sentences (≤ 60 words total) that support the headline, explai
 FORMAT (non-negotiable):
 - 2-3 sentences, ≤ 60 words total
 - Use video titles (not creator names)
-- No anatomical jargon, no percentages, no citations
+- NO anatomical terms. Never use: cortex, cortical, prefrontal, mPFC, dlPFC, vlPFC, insula, amygdala, hippocampus, cingulate, TPJ, FEF, IPS, Broca, Wernicke, fusiform, parietal, frontal, temporal, occipital, hemisphere, medial, lateral, dorsal, ventral, anterior, posterior.
+- Refer to brain systems by their plain-English NOUN from the editorial framing block (e.g. "attentional engagement", "self-relevance", "memory encoding likelihood"). Never by region.
+- No percentages, no citations, no year stamps.
 - No filler like "these videos use different strategies" or "neither is better"
 - Last sentence should pull the reader further into the page
 

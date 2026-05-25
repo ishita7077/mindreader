@@ -158,7 +158,6 @@ from backend.duration_utils import (
     trim_to_duration,
 )
 from backend.heatmap import compute_vertex_delta, generate_heatmap_artifact
-from backend.insight_engine import build_insight_payload
 from backend.media_features import audio_envelope, peak_moments, video_keyframes
 from backend.model_service import TribeService
 from backend.narrative import build_headline
@@ -427,18 +426,11 @@ def _build_response(
     request_id = str(uuid.uuid4())
     if not job_id:
         job_id = str(uuid.uuid4())
-    # Insight engine reads transcript_a/b to detect content quality
-    # ("Personal, direct language", "Corporate jargon", etc.) and weave that
-    # into the discovery headline. Audio/video paths feed it the WhisperX
-    # transcript so they get the same content-aware narrative as text mode
-    # instead of the generic "Version A vs Version B" fallback.
-    insights = build_insight_payload(
-        dimension_rows,
-        warnings,
-        narrative_tone=os.environ.get("BRAIN_DIFF_NARRATIVE_TONE", "sober"),
-        text_a=transcript_a,
-        text_b=transcript_b,
-    )
+    # insight_engine.py removed May 25 2026. Its 6-bucket template engine
+    # was producing word-salad nobody reads (only results-legacy.html
+    # consumed `insights.headline`, and we don't ship that page). Editorial
+    # vocabulary it contained was ported to backend/results/lib/dimension_framing.py
+    # and feeds into Wave 0 analyst pass via evidence_packet.as_prompt_block().
     heatmap = generate_heatmap_artifact(vertex_delta)
     meta: dict[str, Any] = {
         "model_revision": tribe_service.model_revision,
@@ -495,7 +487,6 @@ def _build_response(
     response: dict[str, Any] = {
         "diff": diff,
         "dimensions": dimension_rows,
-        "insights": insights,
         "vertex_delta_b64": f32_b64(vertex_delta),
         "vertex_a_b64": f32_b64(vertex_a),
         "vertex_b_b64": f32_b64(vertex_b),
