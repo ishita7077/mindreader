@@ -1383,10 +1383,16 @@ function setActiveRegion(sys){
     else { el.classList.remove('active'); el.classList.add('dim'); }
   });
   document.querySelectorAll('.brain-tab').forEach(t => t.classList.toggle('active', t.dataset.region === sys));
-  document.getElementById('tt-name').textContent = SYSTEM_FULL[sys];
-  document.getElementById('tt-region').textContent = `${SYSTEM_REGION[sys]} — Δ ${delta>=0?'+':''}${delta.toFixed(2)}`;
-  document.getElementById('tt-text').textContent = `${SYSTEM_FULL[sys]} mean ${meanA.toFixed(2)} (${va.display_name}) vs ${meanB.toFixed(2)} (${vb.display_name}). Hub for ${(va.hub_node===sys?va.display_name:'')+(vb.hub_node===sys?(va.hub_node===sys?' and ':'')+vb.display_name:'')||'neither video'}.`;
-  document.getElementById('brain-meta-citation').textContent = SYSTEM_REGION[sys];
+  // Defensive null guards — `tt-name`, `tt-region`, `tt-text`, `brain-meta-citation`
+  // belong to a legacy tooltip UI that no longer exists on text-results.html.
+  // Setting .textContent on a null DOM node threw a TypeError that aborted
+  // initInteractions() — and the Dimension Detail tab click handler is
+  // registered later in that same function, so it never wired up.
+  const setText = (id, txt) => { const el = document.getElementById(id); if (el) el.textContent = txt; };
+  setText('tt-name', SYSTEM_FULL[sys]);
+  setText('tt-region', `${SYSTEM_REGION[sys]} — Δ ${delta>=0?'+':''}${delta.toFixed(2)}`);
+  setText('tt-text', `${SYSTEM_FULL[sys]} mean ${meanA.toFixed(2)} (${va.display_name}) vs ${meanB.toFixed(2)} (${vb.display_name}). Hub for ${(va.hub_node===sys?va.display_name:'')+(vb.hub_node===sys?(va.hub_node===sys?' and ':'')+vb.display_name:'')||'neither video'}.`);
+  setText('brain-meta-citation', SYSTEM_REGION[sys]);
   const pos = REGION_POSITIONS[sys];
   const anchor = document.getElementById('tt-anchor'), connector = document.getElementById('tt-connector');
   if (anchor) { anchor.setAttribute('cx', pos.cx); anchor.setAttribute('cy', pos.cy); }
