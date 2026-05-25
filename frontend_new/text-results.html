@@ -1564,6 +1564,15 @@ function initScrubber(){
   const scrubber = document.getElementById('scrubber'), handle = document.getElementById('scrubber-handle');
   const fill = document.getElementById('scrubber-fill'), timeEl = document.getElementById('scrubber-time');
   const playBtn = document.getElementById('play-btn');
+  // Defensive: if the scrubber/play-button DOM didn't render (text-results
+  // page doesn't always include them), bail cleanly so the rest of
+  // initInteractions (Dimension Detail tab handler, network draws,
+  // chart) still wires up. Previously: undefined.addEventListener threw
+  // a TypeError that aborted the whole init chain → flat chart.
+  if (!scrubber || !playBtn) {
+    console.warn('initScrubber: scrubber or play button missing — skipping scrubber init');
+    return;
+  }
 
   function update(t){
     currentTime = Math.max(0, Math.min(dur, t));
