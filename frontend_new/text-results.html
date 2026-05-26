@@ -14,7 +14,7 @@
        Inter Tight retained for utility chrome.
      Old fonts (Fraunces, Newsreader, JetBrains Mono) left in CSS fallback chains
      for the case where the new fonts fail to load. -->
-<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Crimson+Pro:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Inter+Tight:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Crimson+Pro:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Caveat:wght@400;500;700&family=Kalam:wght@300;400;700&family=Inter+Tight:wght@400;500;600&display=swap" rel="stylesheet">
 <script>(function(){var r=document.documentElement;try{var t=localStorage.getItem('braindiff-theme');if(t==='dark')r.setAttribute('data-theme','dark');}catch(e){}})();</script>
 <style>
 /* ── LAB-NOTEBOOK THEME v2 — FULL LEGAL-PAD MODE ─────────────────────────
@@ -57,12 +57,65 @@
   --line:        rgba(24, 20, 16, 0.10);
   --line-strong: rgba(24, 20, 16, 0.20);
 
-  /* Fonts — keep the print-paper feel */
-  --ff-display: 'EB Garamond', 'Garamond', Georgia, serif;
+  /* Fonts — handwritten display + printed-paper body + typewriter mono */
+  --ff-display: 'Caveat', 'Architects Daughter', 'Marker Felt', cursive;     /* hero + section headings — handwriting */
+  --ff-display-print: 'EB Garamond', 'Garamond', Georgia, serif;             /* printed-paper alt for captions / footnotes */
   --ff-body:    'Crimson Pro', 'Crimson Text', 'Garamond', Georgia, serif;
+  --ff-hand:    'Kalam', 'Caveat', cursive;                                  /* secondary handwriting for marginalia */
   --ff-mono:    'Courier Prime', 'Courier New', monospace;
   --ff-ui:      'Inter Tight', system-ui, sans-serif;
   --halo: 0.15;
+  --ink-strong: var(--ink);
+}
+
+/* ── PLATE STYLE (replaces rounded cards) — a flat printed-page panel with
+   hairline rules above + below, transparent body, FIG label in red mono. */
+.plate {
+  background: transparent !important;
+  border: none !important;
+  border-top: 2px solid var(--ink) !important;
+  border-bottom: 1px solid var(--ink-mid) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding-top: 1.1rem !important;
+  padding-bottom: 1.6rem !important;
+}
+.cc-fig {
+  font-family: var(--ff-mono);
+  color: var(--red);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+}
+.connect-stat-note {
+  font-family: var(--ff-body);
+  font-size: 12px;
+  font-style: italic;
+  color: var(--ink-mid);
+  margin-top: 0.35rem;
+  line-height: 1.4;
+}
+.hero-versus,
+.hero-eyebrow,
+.frame-eyebrow,
+.cta-headline {
+  font-family: var(--ff-display) !important;
+  font-weight: 500;
+  letter-spacing: 0.005em;
+}
+.hero-h1, .hero-h1--medium, .hero-h1--short {
+  font-family: var(--ff-display) !important;
+  font-weight: 500;
+}
+.margin-note {
+  position: absolute;
+  left: 0;
+  font-family: var(--ff-hand);
+  font-size: 13px;
+  line-height: 1.35;
+  color: var(--red);
+  width: 90px;
+  transform: rotate(-2deg);
+  opacity: 0.85;
 }
 
 /* Legal-pad ruled lines — a 30px-tall horizontal-rule pattern across the
@@ -404,6 +457,35 @@ nav.scrolled{background:rgba(247,242,234,.96);backdrop-filter:blur(16px);border-
 .cta-headline{font-family:var(--ff-display);font-style:italic;font-weight:300;font-size:clamp(1.5rem,2.7vw,2.2rem);line-height:1.4;color:var(--ink);max-width:680px;margin:0 auto 2.2rem}
 .cta-headline em{color:var(--red)}
 .cta-row{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+/* Hero scribble row — replaces the 3 big action-cta boxes. Reads as a
+   handwritten note pointing at the rest of the page. */
+.hero-scribble-row {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-top: 2.5rem;
+  font-family: var(--ff-hand);
+  font-size: 18px;
+  color: var(--red);
+  flex-wrap: wrap;
+}
+.hero-scribble-arrow {
+  font-size: 28px;
+  transform: rotate(8deg) translateY(-2px);
+  display: inline-block;
+  margin-right: 0.3rem;
+}
+.hero-scribble-link {
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-style: wavy;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+  color: var(--ink);
+  transition: color 0.2s;
+}
+.hero-scribble-link:hover { color: var(--red); }
+.hero-scribble-sep { color: var(--ink-faint); }
 .cta-primary{font-family:var(--ff-mono);font-size:10px;letter-spacing:.15em;text-transform:uppercase;background:var(--red);color:white;padding:.9rem 1.85rem;text-decoration:none;transition:all .2s;border:none;cursor:pointer;border-radius:3px;font-weight:500}
 .cta-primary:hover{background:#A82318;transform:translateY(-1px)}
 .cta-ghost{font-family:var(--ff-mono);font-size:10px;letter-spacing:.15em;text-transform:uppercase;border:1px solid var(--line-strong);color:var(--ink);padding:.9rem 1.85rem;text-decoration:none;transition:all .2s;border-radius:3px;font-weight:500}
@@ -939,19 +1021,21 @@ function renderHero(c, va, vb){
       </div>
     </div>
 
-    <div class="action-cta-grid hero-cta-row">
-      <button class="action-cta" onclick="document.getElementById('frame-2').scrollIntoView({behavior:'smooth'})">
-        <div><div class="action-cta-num">01</div><div class="action-cta-title">${contentVerb() === 'read' ? 'Read the annotated text' : (contentVerb() === 'listen to' ? 'Hear it second-by-second' : 'Watch the chord progression')}</div></div>
-        <div class="action-cta-arrow">↓</div>
-      </button>
-      <button class="action-cta" onclick="document.getElementById('frame-3').scrollIntoView({behavior:'smooth'})">
-        <div><div class="action-cta-num">02</div><div class="action-cta-title">Inspect the system-level view</div></div>
-        <div class="action-cta-arrow">↓</div>
-      </button>
-      <button class="action-cta" onclick="window.location.href='/launch'">
-        <div><div class="action-cta-num">03</div><div class="action-cta-title">Compare your own two ${esc(noun)}</div></div>
-        <div class="action-cta-arrow">↗</div>
-      </button>
+    <!-- The 3 action prompts, re-styled as inline notebook scribbles
+         instead of three big rounded boxes. Reads as a margin note. -->
+    <div class="hero-scribble-row">
+      <span class="hero-scribble-arrow">↘</span>
+      <span class="hero-scribble-link" onclick="document.getElementById('frame-2').scrollIntoView({behavior:'smooth'})">
+        ${contentVerb() === 'read' ? 'read the annotated text' : (contentVerb() === 'listen to' ? 'hear it second-by-second' : 'watch the chord progression')}
+      </span>
+      <span class="hero-scribble-sep">·</span>
+      <span class="hero-scribble-link" onclick="document.getElementById('frame-3').scrollIntoView({behavior:'smooth'})">
+        inspect the system view
+      </span>
+      <span class="hero-scribble-sep">·</span>
+      <span class="hero-scribble-link" onclick="window.location.href='/launch'">
+        run your own ${esc(noun)} comparison ↗
+      </span>
     </div>
   </section>`;
 }
@@ -1044,22 +1128,11 @@ function renderStrategyInsight(c, va, vb, matchA, matchB, descA, descB){
 }
 
 function renderFrame2(c, va, vb){
-  // ── Frame 02 for TEXT / AUDIO mode: waveform + chord progression
-  // (mirroring the video Frame 02), with the annotated text as a
-  // secondary read-along view below.
-  //
-  // Data sources:
-  //   - text/audio waveform: RESULT.meta.media_features?.waveform_a/b
-  //     (200 RMS bins, [0,1], from gTTS audio in text mode or the
-  //     original audio in audio mode)
-  //   - chord moments: c.slots.chord_moments[] (deterministic detection
-  //     from cortical timeseries crossing threshold)
-  //   - dimensions: RESULT.dimensions[] (per-second 7-system timeseries
-  //     used for the per-word colour mapping in the secondary view)
+  // Frame 02 — REWORKED: waveforms removed (user feedback: "DDS waveforms
+  // are not adding any value"). Read-along promoted from a hidden <details>
+  // to the main body of this frame. The read-along now also highlights
+  // words that SUPPORT the headline's contrast claim (see annotateText).
   const meta = (RESULT && RESULT.meta) || {};
-  const mf = meta.media_features || (RESULT && RESULT.media_features) || {};
-  const waveA = Array.isArray(mf.waveform_a) ? mf.waveform_a : [];
-  const waveB = Array.isArray(mf.waveform_b) ? mf.waveform_b : [];
   const textA = meta.text_a || (RESULT && RESULT.transcript_a) || (va.transcript || '');
   const textB = meta.text_b || (RESULT && RESULT.transcript_b) || (vb.transcript || '');
   const dimensions = (RESULT && RESULT.dimensions) || [];
@@ -1068,38 +1141,28 @@ function renderFrame2(c, va, vb){
   const durA = Math.max(1, Math.round(va.duration_seconds || meta.text_a_timesteps || 30));
   const durB = Math.max(1, Math.round(vb.duration_seconds || meta.text_b_timesteps || 30));
   const noun = contentNoun();
-  const verb = contentVerb();
+  const headlineText = (c.slots.headline && c.slots.headline.value) || '';
 
   return `
   <section class="frame" id="frame-2">
     <div class="frame-meta-row">
-      <div class="frame-num reveal">Frame 02 · The ${noun === 'video' ? 'Chord Progression' : (noun === 'audio clip' ? 'Audio Progression' : 'Spoken Progression')}</div>
+      <div class="frame-num reveal">Frame 02 · Read along</div>
       <div class="frame-num-r reveal">${totalChords > 0 ? `${totalChords} chord${totalChords===1?'':'s'} · ` : ''}${dimensions.length || 7} systems · 1Hz</div>
     </div>
-    <h2 class="frame-h2 reveal d1">How each ${noun} <em>plays its chords.</em></h2>
+    <h2 class="frame-h2 reveal d1">Watch the brain <em>follow the words.</em></h2>
     <p class="frame-sub reveal d2 has-badge" style="position:relative">
       ${badge(c.slots.frame2_sub)}
       ${c.slots.frame2_sub && c.slots.frame2_sub.value
         ? esc(c.slots.frame2_sub.value)
-        : `Each ${noun} runs through TRIBE v2's seven cortical systems. A chord fires when two systems cross threshold at the same second and hold — that's where the cognitive strategy becomes visible.`}
+        : `Each ${noun}'s words are coloured by the brain system most engaged when that word landed. Coloured stretches are where the contrast in the headline above is being driven.`}
     </p>
 
-    <!-- Two stacked waveform tracks. Each track shows the TTS-derived (text)
-         or original (audio) RMS envelope for that side, with chord pins
-         overlaid at their firing timestamps. -->
-    <div class="audio-tracks reveal d1">
-      ${renderAudioTrack('a', va.display_name, waveA, durA, moments.filter(m => m.video === 'video_a'), c)}
-      ${renderAudioTrack('b', vb.display_name, waveB, durB, moments.filter(m => m.video === 'video_b'), c)}
-    </div>
-
     ${totalChords === 0
-      ? `<div class="chord-empty-note reveal">No chord crossed threshold this run — typical for shorter ${contentNounPlural()}. The seven systems still fired and shaped the response; you can see their interplay in the systems view below.</div>`
+      ? `<div class="chord-empty-note reveal">No chord crossed threshold this run — typical for shorter ${contentNounPlural()}. The seven systems still fired and shaped the response; see the network and dimension views below.</div>`
       : ''}
 
-    <!-- Secondary view: per-word annotation by dominant brain system.
-         Useful for ${noun} mode to see which words pulled which systems. -->
-    <details class="annotated-text-details reveal d2">
-      <summary>Read along — phrase-by-phrase brain system attribution</summary>
+    <!-- Read-along promoted to main panel (was a hidden <details>) -->
+    <div class="readalong-panel reveal d2">
       <div class="dim-legend">
         ${CANONICAL_SYSTEMS.map(sys => `
           <span class="dim-badge" style="--dim-color:${SYSTEM_COLOR[sys]}">
@@ -1113,7 +1176,7 @@ function renderFrame2(c, va, vb){
             <span class="text-panel-label">${esc(va.display_name)}</span>
             <span class="text-panel-chars">${durA}s · ${textA.length} chars</span>
           </div>
-          <div class="text-body">${annotateText(textA, dimensions, 'a')}</div>
+          <div class="text-body">${annotateText(textA, dimensions, 'a', headlineText)}</div>
         </div>
         <div class="text-panel b">
           <div class="text-panel-head">
@@ -1121,10 +1184,10 @@ function renderFrame2(c, va, vb){
             <span class="text-panel-label">${esc(vb.display_name)}</span>
             <span class="text-panel-chars">${durB}s · ${textB.length} chars</span>
           </div>
-          <div class="text-body">${annotateText(textB, dimensions, 'b')}</div>
+          <div class="text-body">${annotateText(textB, dimensions, 'b', headlineText)}</div>
         </div>
       </div>
-    </details>
+    </div>
   </section>`;
 }
 
@@ -1188,41 +1251,58 @@ const ANNOTATION_STOPWORDS = new Set([
 //      a hint, not a highlight.
 //   4. Hard cap: at most ~1 in 5 meaningful tokens get annotated, evenly
 //      distributed so it feels intentional rather than dense.
-function annotateText(text, dimensions, side){
+function annotateText(text, dimensions, side, headlineText){
   if (!text || !dimensions || !dimensions.length) return esc(text || '');
   const seriesKey = side === 'a' ? 'timeseries_a' : 'timeseries_b';
   const numSteps = (dimensions[0] && dimensions[0][seriesKey] && dimensions[0][seriesKey].length) || 0;
   if (numSteps === 0) return esc(text);
 
+  // HEADLINE-DRIVEN: only highlight words pulled by systems the headline
+  // is actually talking about. Match keywords in the headline against each
+  // system's vocabulary; restrict candidates to those systems.
+  const headlineLower = (headlineText || '').toLowerCase();
+  const SYS_KEYWORDS = {
+    personal_resonance:  ['personal', 'self', 'resonan', 'reflect', 'introspect', 'inward', 'moral'],
+    attention:           ['attention', 'attend', 'focus', 'salience', 'grab', 'spotlight'],
+    brain_effort:        ['effort', 'cognitive', 'work', 'think', 'reasoning'],
+    gut_reaction:        ['gut', 'visceral', 'feel', 'sensation', 'react', 'spark', 'immediacy'],
+    memory_encoding:     ['memory', 'encoding', 'remember', 'stick', 'retention'],
+    social_thinking:     ['social', 'audience', 'people', 'other', 'shared', 'conversation'],
+    language_depth:      ['language', 'meaning', 'word', 'linguistic', 'semantic', 'depth'],
+  };
+  const allow = new Set();
+  Object.entries(SYS_KEYWORDS).forEach(([sys, kws]) => {
+    if (kws.some(k => headlineLower.includes(k))) allow.add(sys);
+  });
+  const allowSystems = allow.size > 0 ? allow : null;  // fallback: all systems
+
   const charsPerStep = Math.max(1, text.length / numSteps);
-  const tokens = text.split(/(\s+)/);  // keep separators as tokens
+  const tokens = text.split(/(\s+)/);
   let pos = 0;
-  // First pass: identify candidate tokens with their dominance scores.
+  let meaningfulCount = 0;
   const candidates = [];
   tokens.forEach((tok, idx) => {
     if (!tok || /^\s+$/.test(tok)) return;
     const step = Math.min(numSteps - 1, Math.floor(pos / charsPerStep));
     const bare = tok.replace(/[^\w'-]/g, '').toLowerCase();
     if (!bare || bare.length < 4 || ANNOTATION_STOPWORDS.has(bare)) return;
+    meaningfulCount++;
     const ds = dominanceScore(dimensions, seriesKey, step);
-    // dominanceScore returns {sys, top, gap}. Looser gates than the prior
-    // pass (which left the read-along completely empty in the Pope test):
-    //   - top activation just needs to be ABOVE baseline (>= 0.50 — any
-    //     time the dominant system is above resting state)
-    //   - AND it leads runner-up by even a small margin (>= 0.04)
-    // Combined with the cap-by-strength below, this still keeps the
-    // density tasteful (~1 in 3-4 meaningful tokens) without producing
-    // an empty page.
-    if (ds && ds.top >= 0.50 && ds.gap >= 0.04) {
+    if (!ds) return;
+    if (allowSystems && !allowSystems.has(ds.sys)) return;
+    if (ds.top >= 0.50 && ds.gap >= 0.04) {
       candidates.push({ idx, sys: ds.sys, strength: ds.top + ds.gap });
     }
   });
-  // Second pass: keep ~1 in 3 meaningful tokens, biased toward strongest.
-  const cap = Math.max(2, Math.round(candidates.length / 3));
+  // ~1 in 4 meaningful tokens cap, but loosen if coverage too thin.
+  const tightCap = Math.max(1, Math.round(meaningfulCount / 4));
+  const minCov   = Math.max(2, Math.floor(meaningfulCount * 0.10));
+  let keepCount = candidates.length;
+  if (candidates.length > tightCap) keepCount = tightCap;
+  if (candidates.length > 0 && candidates.length < minCov) keepCount = candidates.length;
   const keep = new Set(
-    candidates.sort((a,b) => b.strength - a.strength).slice(0, cap).map(c => c.idx)
+    candidates.sort((a,b) => b.strength - a.strength).slice(0, keepCount).map(c => c.idx)
   );
-  // Render
   pos = 0;
   return tokens.map((tok, idx) => {
     if (!tok) return '';
@@ -1232,8 +1312,8 @@ function annotateText(text, dimensions, side){
     const sys = candidates.find(c => c.idx === idx).sys;
     const color = SYSTEM_COLOR[sys] || '#888';
     const sysName = SYSTEM_FULL[sys] || sys;
-    // Thin underline only — no background. Reads as a quiet pointer.
-    return `<span class="txt-seg" data-sys="${sys}" title="${esc(sysName)}" style="border-bottom:1.5px solid ${color}">${esc(tok)}</span>`;
+    // Yellow-highlighter notebook effect: subtle 18% bg tint + 1.5px underline.
+    return `<span class="txt-seg" data-sys="${sys}" title="${esc(sysName)}" style="background:${hexAlpha(color, 0.18)};border-bottom:1.5px solid ${color};padding:0 2px;border-radius:1px">${esc(tok)}</span>`;
   }).join('');
 }
 
@@ -1304,7 +1384,6 @@ function renderFrame3(c, va, vb){
           ${renderConnectCard('a', va, va.coupling_matrix, va.integration_score, va.hub_node)}
           ${renderConnectCard('b', vb, vb.coupling_matrix, vb.integration_score, vb.hub_node)}
         </div>
-        <p style="margin-top:1rem;font-family:var(--ff-mono);font-size:10px;color:var(--ink-dim);letter-spacing:.05em;text-align:center">Hover any edge in the network to see the r-value. The pill-picker is gone — explore directly.</p>
       </div>
       <div class="frame3-panel" data-panel="dimension">
         <div class="dim-pills">
@@ -1397,8 +1476,7 @@ function renderCallouts(c, va, vb, callouts){
     const v = slot.value;
     cards.push(`<div class="connect-callout ${klass} ${hidden?'is-hidden':''} has-badge"${id?` id="${id}"`:''}>
       ${badge(slot)}
-      <div class="cc-eyebrow">${esc(sideLabel)} · ${esc(headerText)}</div>
-      <div class="cc-pair">${esc(truncateAtWord(v.split('.')[0], 80))}<span class="r-val"></span></div>
+      <div class="cc-eyebrow"><span class="cc-fig">FIG ${figNum(klass)}</span> · ${esc(sideLabel)} · ${esc(headerText)}</div>
       <div class="cc-text">${esc(v)}</div>
     </div>`);
   };
@@ -1419,11 +1497,19 @@ function renderCallouts(c, va, vb, callouts){
 }
 
 function renderConnectCard(side, video, matrix, integration, hubNode){
-  const titleByIntegration = (integration||0) >= 0.35 ? 'Tightly integrated' : (integration||0) <= 0.20 ? 'Decoupled, parallel' : 'Mixed coupling';
+  const integ = integration || 0;
+  const titleByIntegration = integ >= 0.35 ? 'Tightly integrated' : integ <= 0.20 ? 'Decoupled, parallel' : 'Mixed coupling';
+  // Plain-English gloss for non-scientist readers — the score on its own
+  // means nothing without context.
+  const integrationExplain = integ >= 0.35
+    ? 'all seven brain systems were rising and falling together — a coordinated network'
+    : integ <= 0.20
+    ? 'systems ran on independent tracks — parallel pipelines, not one network'
+    : 'mixed: some systems coupled tightly, others ran independently';
   return `
-  <div class="connect-card">
+  <div class="connect-card plate">
     <div class="connect-card-header">
-      <span class="connect-card-label ${side}">${esc(video.display_name)} · ${side.toUpperCase()}</span>
+      <span class="connect-card-label ${side}">FIG ${side==='a'?'4.1':'4.2'} · ${esc(video.display_name)} · ${side.toUpperCase()}</span>
       <span class="connect-card-title">${esc(titleByIntegration)}</span>
     </div>
     <div class="connect-svg-wrap">
@@ -1431,10 +1517,27 @@ function renderConnectCard(side, video, matrix, integration, hubNode){
       <div class="connect-edge-tooltip" id="connect-tt-${side}"></div>
     </div>
     <div class="connect-stats">
-      <div class="connect-stat"><div class="connect-stat-label">INTEGRATION</div><div class="connect-stat-val">${(integration||0).toFixed(2)}</div></div>
-      <div class="connect-stat"><div class="connect-stat-label">HUB NODE</div><div class="connect-stat-val">${esc(SYSTEM_DISPLAY[hubNode]||hubNode||'—')}</div></div>
+      <div class="connect-stat">
+        <div class="connect-stat-label">INTEGRATION</div>
+        <div class="connect-stat-val">${integ.toFixed(2)}</div>
+        <div class="connect-stat-note">${esc(integrationExplain)}</div>
+      </div>
+      <div class="connect-stat">
+        <div class="connect-stat-label">HUB NODE</div>
+        <div class="connect-stat-val">${esc(SYSTEM_DISPLAY[hubNode]||hubNode||'—')}</div>
+        <div class="connect-stat-note">the system most strongly tied to all others</div>
+      </div>
     </div>
   </div>`;
+}
+
+// Map a card class to a Figure number for the FIG x.y label format.
+// Keeps figures sequential within Frame 3 (Network Coordination).
+function figNum(klass){
+  return ({
+    'cleo-strong': '3.1', 'beast-strong': '3.2',
+    'cleo-weak':   '3.3', 'beast-weak':   '3.4',
+  })[klass] || '3.0';
 }
 
 function renderCTA(c){
@@ -1892,14 +1995,66 @@ function drawTV(dim){
     document.getElementById('curve-a-fill').setAttribute('d', pA + ` L ${x(n-1)} ${padT+chartH} L ${x(0)} ${padT+chartH} Z`);
     document.getElementById('curve-b-fill').setAttribute('d', pB + ` L ${x(n-1)} ${padT+chartH} L ${x(0)} ${padT+chartH} Z`);
   } else {
-    const dPts = sA.map((v,i) => sB[i]-v);
-    const dMax = Math.max(...dPts.map(Math.abs), 0.5);
-    const yD = v => padT + chartH/2 - (v/dMax)*(chartH/2);
-    const pB = dPts.map((v,i) => `${i===0?'M':'L'} ${x(i)} ${yD(v)}`).join(' ');
-    document.getElementById('curve-a').setAttribute('d','');
+    // DELTA mode — show (B − A) as a single line, centred on 0.5 (the
+    // chart's baseline for the normalised [0,1] scale). Above = B stronger,
+    // below = A stronger. The line was previously invisible because the
+    // delta math centred on 0.5*chartH but no baseline line was drawn,
+    // and curve-a was hidden — so users saw only the crosshair tooltip
+    // without a curve. Fix: keep BOTH curves in delta view too, drawn
+    // faded, AND add a bold (B − A) line in the page red on top.
+    const pA = sA.map((v,i) => `${i===0?'M':'L'} ${x(i)} ${y(v)}`).join(' ');
+    const pB = sB.map((v,i) => `${i===0?'M':'L'} ${x(i)} ${y(v)}`).join(' ');
+    document.getElementById('curve-a').setAttribute('d', pA);
     document.getElementById('curve-b').setAttribute('d', pB);
-    document.getElementById('curve-a-fill').setAttribute('d','');
-    document.getElementById('curve-b-fill').setAttribute('d', pB + ` L ${x(n-1)} ${yD(0)} L ${x(0)} ${yD(0)} Z`);
+    // Fade the underlying curves in delta mode so the contrast line pops.
+    document.getElementById('curve-a').setAttribute('opacity','0.25');
+    document.getElementById('curve-b').setAttribute('opacity','0.25');
+    document.getElementById('curve-a-fill').setAttribute('d', '');
+    document.getElementById('curve-b-fill').setAttribute('d', '');
+    // Map delta into the chart space, centred on y(0.5).
+    // A delta of +0.5 plots at y(1.0) (top), −0.5 at y(0.0) (bottom).
+    const yMid = y(0.5);
+    const yDelta = v => padT + (0.5 - (v/2 + 0.5)) * 0 + (yMid - v * chartH/2);
+    // dPts in [−1, +1]; we draw to fit. Cap at ±0.5 visually so a single
+    // outlier doesn't compress the rest of the line.
+    const dPts = sA.map((v,i) => Math.max(-0.99, Math.min(0.99, sB[i] - v)));
+    const pDelta = dPts.map((v,i) => `${i===0?'M':'L'} ${x(i)} ${yDelta(v)}`).join(' ');
+    // We don't have a third <path> in the SVG, so reuse curve-b-fill as the
+    // delta line: clear its existing area-fill role, give it a stroke.
+    const deltaPath = document.getElementById('curve-b-fill');
+    deltaPath.setAttribute('d', pDelta);
+    deltaPath.setAttribute('fill', 'none');
+    deltaPath.setAttribute('stroke', 'var(--ink-strong, #2A2520)');
+    deltaPath.setAttribute('stroke-width', '2.4');
+    deltaPath.setAttribute('opacity', '1');
+    // Draw the zero (= baseline = 0.5 in absolute) line under it.
+    // (Tiny dashed line. Inline so we don't need another SVG element.)
+    // No-op if zero-line already exists from a prior render — clean it.
+    const svg = deltaPath.ownerSVGElement;
+    let zeroLine = document.getElementById('delta-zero-line');
+    if (!zeroLine) {
+      zeroLine = document.createElementNS('http://www.w3.org/2000/svg','line');
+      zeroLine.setAttribute('id','delta-zero-line');
+      zeroLine.setAttribute('stroke', 'rgba(42,37,32,0.35)');
+      zeroLine.setAttribute('stroke-dasharray', '3 3');
+      zeroLine.setAttribute('stroke-width', '1');
+      svg.appendChild(zeroLine);
+    }
+    zeroLine.setAttribute('x1', x(0));
+    zeroLine.setAttribute('x2', x(n-1));
+    zeroLine.setAttribute('y1', yMid);
+    zeroLine.setAttribute('y2', yMid);
+    zeroLine.style.display = '';
+  }
+  // When switching BACK to absolute, hide the zero-line if it exists.
+  if (currentMode === 'absolute'){
+    const z = document.getElementById('delta-zero-line'); if (z) z.style.display = 'none';
+    // Also restore curve opacity that delta mode dimmed.
+    document.getElementById('curve-a').setAttribute('opacity', '1');
+    document.getElementById('curve-b').setAttribute('opacity', '1');
+    // And reset the fill paths back to area-fill mode.
+    document.getElementById('curve-b-fill').setAttribute('fill', 'var(--b-soft, rgba(199,61,36,0.12))');
+    document.getElementById('curve-b-fill').setAttribute('stroke', 'none');
   }
 }
 </script>

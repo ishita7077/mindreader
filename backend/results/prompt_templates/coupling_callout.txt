@@ -1,25 +1,31 @@
-You are writing one coupling callout for the Network Coordination panel on a Brain Diff results page.
+You are writing one short callout for the Network Coordination panel on a BrainDiff results page.
 
-A coupling callout describes how two brain systems fired in relation to each other — and what that means for this video's cognitive strategy.
+A coupling callout describes how two brain systems fired in relation to each other in ONE specific video, and what that pattern means for a non-scientist reader.
+
+WRITE FOR A SMART NON-SCIENTIST. They are reading this on a phone, fast. They do not know neuroscience.
 
 FORMAT (non-negotiable):
-- Exactly 2 sentences. ≤ 22 WORDS TOTAL. This is a small card, not an essay.
-- Sentence 1 (≤ 12 words): what is DISTINCTIVE about THIS video at THIS coupling — its recipe name, its timing, or its intensity. Do NOT open with the system pair names; that lookup is on the chip above the card. Open with the action or the recipe-specific behavior so two cards (A and B) with the same top pair read as different stories.
-- Sentence 2 (≤ 10 words): the cognitive consequence in one tight phrase.
-- Do NOT include the r-value number in the output — it is context for you, not for readers
-- No anatomical jargon, no percentages, no citations
-- NEVER write more than 22 words total. If you can't say it in 22, cut.
+- 2 sentences total, ≤ 22 words combined.
+- Sentence 1: What HAPPENED with these systems in plain English. Open with something distinctive to THIS video (recipe behaviour, a timestamp, a moment) — NOT the system pair names. The reader can see the pair name in the chip above the card.
+- Sentence 2: WHY it matters for the viewer's experience — what the brain was actually doing. End with a payoff phrase the reader can take away.
+- No anatomy. No "cortex", "prefrontal", "insula", percentages, r-values, citations.
+- No filler like "this means", "in other words", "essentially".
+- Plain English. Conversational. The kind of one-liner a thoughtful friend would text you.
 
-BAD (opens with pair name — looks identical to A's card):
-  "Personal resonance and social thinking rose together throughout this video, creating a unified reflective state."
-GOOD (opens with what's distinctive to THIS video):
-  "Cold Cognitive Work locked these two systems in lockstep from 0:04 onward — the brain treating reflection and self as one process. The result: inner narrative without an outside audience."
+BAD (jargon, dense, name-leads):
+  "Personal resonance and social thinking rose together throughout this video, creating a unified reflective state for introspective content."
+GOOD (plain, distinctive, payoff):
+  "The Pope's voice locked self-reflection and audience-awareness into one motion. You felt him thinking and you thinking, at the same time."
 
-BAD: "With an r-value of +0.82, attention and memory_encoding were strongly coupled, indicating a learning state."
-GOOD: "Lecture-recipe pacing kept attention and memory_encoding rising in lockstep through the second half, holding the brain in an active-processing loop."
+BAD (academic):
+  "With an r-value of +0.82, attention and memory_encoding were strongly coupled, indicating a learning state."
+GOOD (concrete + payoff):
+  "Mid-lecture, your attention and your memory were synced — every word landed AND stuck. Built to teach."
 
-BAD: "Gut reaction and brain_effort showed anti-coupling in this video."
-GOOD: "Story recipe trades them: as gut reaction peaked at 0:14, brain_effort fell — analysis stepping aside to make room for the visceral hit."
+BAD (no contrast):
+  "Gut reaction and brain_effort showed anti-coupling in this video."
+GOOD (vivid):
+  "Gut feeling spiked just as your thinking stepped back — the brain making room for the hit. Story logic, not argument logic."
 
 
 Voice anchors:
@@ -28,7 +34,7 @@ Voice anchors:
 # ----- DYNAMIC BELOW -----
 
 Video: {video_display_name}
-Coupling: {system_a} ↔ {system_b} ({descriptor})
-This video's recipe: {recipe_name}
+Recipe: {recipe_name} — {recipe_plain_summary}
+The two systems firing together: {system_a} ↔ {system_b} ({descriptor})
 
-Write the 2-sentence callout now. Output only the callout — no explanation, no quotes.
+Write the 2-sentence callout now, ≤ 22 words combined. Plain English. Output only the callout — no quotes, no explanation.

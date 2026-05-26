@@ -78,8 +78,9 @@ class CouplingCalloutSlot(Slot):
             "system_b":           pair.system_b,
             "r_value":            f"{pair.r:+.2f}",
             "descriptor":         _DESCRIPTOR[self.coupling_type],
-            "recipe_name":        match.name,
-            "exemplars":          exemplar_block,
+            "recipe_name":         match.name,
+            "recipe_plain_summary":(getattr(match, "plain_summary", "") or getattr(match, "short_description", "") or ""),
+            "exemplars":           exemplar_block,
         }
 
     async def run(

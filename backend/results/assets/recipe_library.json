@@ -1,9 +1,9 @@
 {
-  "version": "1.0",
+  "version": "1.1",
   "library": [
     {
       "id": "slow-build-deep-encode",
-      "name": "Slow Build → Deep Encode",
+      "name": "Slow Build \u2192 Deep Encode",
       "short_description": "Gradual attention, language and memory engagement, late reasoning climax",
       "description_template": "Gradual attention building over the runtime, deep language network engagement, memory encoding throughout, climax in a Reasoning Beat in the back half.",
       "built_for_tag": "retention",
@@ -14,20 +14,27 @@
           "brain_effort": ">=0.45",
           "gut_reaction": "<=0.40"
         },
-        "characteristic_chords": ["learning-moment", "reasoning-beat"],
+        "characteristic_chords": [
+          "learning-moment",
+          "reasoning-beat"
+        ],
         "chord_timing_pattern": "chords cluster in second half of runtime",
         "integration_score": ">=0.35",
-        "hub_node_candidates": ["memory_encoding", "language_depth"]
+        "hub_node_candidates": [
+          "memory_encoding",
+          "language_depth"
+        ]
       },
       "exemplar_videos": [
         "Cleo Abram - Huge If True - Quantum Computing intro",
         "Vox - The Search for the Meaning of the Universe",
         "Veritasium - The Discovery That Transformed Pi"
-      ]
+      ],
+      "plain_summary": "Pulls you in slowly, makes you remember it later"
     },
     {
       "id": "visceral-hook-low-effort-hold",
-      "name": "Visceral Hook → Low-Effort Hold",
+      "name": "Visceral Hook \u2192 Low-Effort Hold",
       "short_description": "Immediate insula spike, sustained low cognitive load, late emotional close",
       "description_template": "Immediate anterior insula spike in the opening seconds, sustained low cognitive effort across the middle, late Emotional Impact in the closing third.",
       "built_for_tag": "spread",
@@ -37,21 +44,28 @@
           "brain_effort": "<=0.40",
           "personal_resonance": ">=0.50"
         },
-        "characteristic_chords": ["visceral-hit", "emotional-impact"],
+        "characteristic_chords": [
+          "visceral-hit",
+          "emotional-impact"
+        ],
         "chord_timing_pattern": "visceral hit in first 10s, emotional impact in last 15s",
         "integration_score": "<=0.30",
-        "hub_node_candidates": ["gut_reaction", "personal_resonance"],
+        "hub_node_candidates": [
+          "gut_reaction",
+          "personal_resonance"
+        ],
         "anti_coupling": "effort_x_gut < -0.20"
       },
       "exemplar_videos": [
         "MrBeast - Beast Games intro",
         "MrBeast - Last to Leave Circle Wins $500,000",
         "Dude Perfect - Trick Shot Battles"
-      ]
+      ],
+      "plain_summary": "Gut-punch first, easy ride after \u2014 built for sharing"
     },
     {
       "id": "personal-social-story",
-      "name": "Personal → Social → Story",
+      "name": "Personal \u2192 Social \u2192 Story",
       "short_description": "Self-relevance opens, theory-of-mind takes over, narrative integration sustains",
       "description_template": "Self-relevance opens the runtime, theory-of-mind activates as characters appear, narrative integration sustains the back half through the close.",
       "built_for_tag": "parasocial bond",
@@ -60,16 +74,23 @@
           "personal_resonance": ">=0.55",
           "social_thinking": ">=0.50"
         },
-        "characteristic_chords": ["emotional-impact", "social-resonance"],
+        "characteristic_chords": [
+          "emotional-impact",
+          "social-resonance"
+        ],
         "chord_timing_pattern": "personal resonance peaks first 15s, social peaks 20-40s",
         "integration_score": ">=0.30",
-        "hub_node_candidates": ["personal_resonance", "social_thinking"]
+        "hub_node_candidates": [
+          "personal_resonance",
+          "social_thinking"
+        ]
       },
       "exemplar_videos": [
         "Casey Neistat - vlog",
         "Emma Chamberlain - lifestyle vlog",
         "Marques Brownlee - product reaction"
-      ]
+      ],
+      "plain_summary": "Feels personal, then social \u2014 like a friend telling you a story"
     },
     {
       "id": "cold-cognitive-work",
@@ -84,21 +105,27 @@
           "personal_resonance": "<=0.35",
           "gut_reaction": "<=0.35"
         },
-        "characteristic_chords": ["reasoning-beat"],
+        "characteristic_chords": [
+          "reasoning-beat"
+        ],
         "chord_timing_pattern": "reasoning beats spread across runtime, no visceral or emotional chords",
         "integration_score": ">=0.30",
-        "hub_node_candidates": ["brain_effort", "language_depth"]
+        "hub_node_candidates": [
+          "brain_effort",
+          "language_depth"
+        ]
       },
       "exemplar_videos": [
         "Khan Academy - chemistry tutorial",
         "MIT OCW - lecture clip",
         "fast.ai - coding tutorial"
-      ]
+      ],
+      "plain_summary": "Makes you think hard, doesn't try to make you feel"
     },
     {
       "id": "feel-think-feel",
-      "name": "Feel → Think → Feel",
-      "short_description": "Visceral open, reasoning middle, emotional close — the classic three-act",
+      "name": "Feel \u2192 Think \u2192 Feel",
+      "short_description": "Visceral open, reasoning middle, emotional close \u2014 the classic three-act",
       "description_template": "Visceral hit in the opening, reasoning beat in the middle, emotional impact at the close. The three-act persuasion structure mapped onto the cortex.",
       "built_for_tag": "persuasion",
       "fingerprint": {
@@ -107,19 +134,24 @@
           "brain_effort": ">=0.45",
           "personal_resonance": ">=0.45"
         },
-        "characteristic_chords": ["visceral-hit", "reasoning-beat", "emotional-impact"],
-        "chord_timing_pattern": "visceral first 15s, reasoning 20-40s, emotional last 15s — in order",
+        "characteristic_chords": [
+          "visceral-hit",
+          "reasoning-beat",
+          "emotional-impact"
+        ],
+        "chord_timing_pattern": "visceral first 15s, reasoning 20-40s, emotional last 15s \u2014 in order",
         "integration_score": ">=0.35"
       },
       "exemplar_videos": [
         "TED Talk - average format",
         "PSA campaign - long-form",
         "documentary trailer"
-      ]
+      ],
+      "plain_summary": "Hits emotionally, makes you think, then hits again \u2014 persuasion"
     },
     {
       "id": "setup-reveal",
-      "name": "Setup → Reveal",
+      "name": "Setup \u2192 Reveal",
       "short_description": "Sustained attention and theory-of-mind building, late visceral spike",
       "description_template": "Sustained attention and theory-of-mind building over most of the runtime, late visceral spike in the closing seconds. The narrative payoff structure.",
       "built_for_tag": "narrative payoff",
@@ -128,7 +160,9 @@
           "attention": ">=0.55",
           "social_thinking": ">=0.45"
         },
-        "characteristic_chords": ["visceral-hit"],
+        "characteristic_chords": [
+          "visceral-hit"
+        ],
         "chord_timing_pattern": "no chords in first 40s, visceral or emotional chord in last 20s",
         "rate_of_change": "gut reaction shows sharp inflection in last 20%"
       },
@@ -136,7 +170,8 @@
         "comedy sketch with punchline",
         "horror trailer",
         "magic reveal video"
-      ]
+      ],
+      "plain_summary": "Builds tension, then pays off \u2014 built for narrative payoff"
     },
     {
       "id": "pure-attention-spike",
@@ -158,12 +193,13 @@
         "static spectacle clip",
         "ASMR-style content",
         "satisfying-loop video"
-      ]
+      ],
+      "plain_summary": "Grabs attention fast, doesn't try to do anything else"
     },
     {
       "id": "empty-calories",
       "name": "Empty Calories",
-      "short_description": "Visceral firing without any other cortical engagement — body without mind",
+      "short_description": "Visceral firing without any other cortical engagement \u2014 body without mind",
       "description_template": "Sustained visceral response without recruitment of memory, language, or self-relevance systems. The body reacts; the mind disengages. Often diagnostic of bad incentives.",
       "built_for_tag": "shock",
       "fingerprint": {
@@ -173,19 +209,22 @@
           "language_depth": "<=0.35",
           "personal_resonance": "<=0.35"
         },
-        "characteristic_chords": ["visceral-hit"],
+        "characteristic_chords": [
+          "visceral-hit"
+        ],
         "integration_score": "<=0.20"
       },
       "exemplar_videos": [
         "shock content - low-quality",
         "rage-bait clip",
         "outrage-cycle reaction video"
-      ]
+      ],
+      "plain_summary": "Feels intense in the moment, leaves nothing behind"
     },
     {
       "id": "talking-head-reasoning",
       "name": "Talking Head Reasoning",
-      "short_description": "Language and effort with moderate social — straight argument delivery",
+      "short_description": "Language and effort with moderate social \u2014 straight argument delivery",
       "description_template": "Language network and dorsolateral prefrontal effort engaged throughout, moderate theory-of-mind activation tracking the speaker. Argument delivery, no visceral or memory peaks.",
       "built_for_tag": "argumentation",
       "fingerprint": {
@@ -194,14 +233,17 @@
           "brain_effort": ">=0.50",
           "social_thinking": ">=0.40"
         },
-        "characteristic_chords": ["reasoning-beat"],
+        "characteristic_chords": [
+          "reasoning-beat"
+        ],
         "integration_score": ">=0.30"
       },
       "exemplar_videos": [
         "podcast clip - long-form interview",
         "explainer creator - solo to-camera",
         "lecture format"
-      ]
+      ],
+      "plain_summary": "Someone thinking out loud at you \u2014 argument-building"
     },
     {
       "id": "cinematic-build",
@@ -215,14 +257,18 @@
           "social_thinking": ">=0.50",
           "personal_resonance": ">=0.45"
         },
-        "characteristic_chords": ["emotional-impact", "social-resonance"],
+        "characteristic_chords": [
+          "emotional-impact",
+          "social-resonance"
+        ],
         "integration_score": ">=0.40"
       },
       "exemplar_videos": [
         "film trailer - prestige drama",
         "documentary - long-form",
         "narrative ad - 60s+"
-      ]
+      ],
+      "plain_summary": "Layers on tension and beauty \u2014 built for immersion"
     },
     {
       "id": "rapid-cuts-no-anchor",
@@ -235,14 +281,17 @@
           "attention": "high_variance",
           "memory_encoding": "<=0.40"
         },
-        "characteristic_chords": ["pure-attention-spike"],
+        "characteristic_chords": [
+          "pure-attention-spike"
+        ],
         "integration_score": "<=0.25"
       },
       "exemplar_videos": [
         "TikTok compilation",
         "reaction video - high cut rate",
         "highlight reel"
-      ]
+      ],
+      "plain_summary": "Fast novelty hits without sticking \u2014 scroll-feed shape"
     },
     {
       "id": "emotional-arc-no-reasoning",
@@ -256,34 +305,42 @@
           "gut_reaction": ">=0.50",
           "brain_effort": "<=0.40"
         },
-        "characteristic_chords": ["emotional-impact"],
+        "characteristic_chords": [
+          "emotional-impact"
+        ],
         "integration_score": ">=0.30"
       },
       "exemplar_videos": [
         "personal essay video",
-        "vulnerability post — long form",
+        "vulnerability post \u2014 long form",
         "tribute / memoir clip"
-      ]
+      ],
+      "plain_summary": "Pure feeling, no logic \u2014 emotional resonance"
     },
     {
       "id": "social-modeling-heavy",
       "name": "Social Modeling Heavy",
       "short_description": "Theory-of-mind dominant, other systems supporting role",
-      "description_template": "Right temporoparietal junction activation dominant across the runtime — the cortex is constantly modeling other minds. Other systems play supporting roles.",
+      "description_template": "Right temporoparietal junction activation dominant across the runtime \u2014 the cortex is constantly modeling other minds. Other systems play supporting roles.",
       "built_for_tag": "social processing",
       "fingerprint": {
         "system_means_pattern": {
           "social_thinking": ">=0.60",
           "personal_resonance": ">=0.40"
         },
-        "characteristic_chords": ["social-resonance"],
-        "hub_node_candidates": ["social_thinking"]
+        "characteristic_chords": [
+          "social-resonance"
+        ],
+        "hub_node_candidates": [
+          "social_thinking"
+        ]
       },
       "exemplar_videos": [
         "interview clip - emotional",
         "drama scene - dialogue heavy",
         "celebrity profile"
-      ]
+      ],
+      "plain_summary": "Heavy on reading other people \u2014 relationships and motives"
     },
     {
       "id": "language-heavy-narration",
@@ -298,13 +355,16 @@
           "brain_effort": "<=0.45"
         },
         "characteristic_chords": [],
-        "hub_node_candidates": ["language_depth"]
+        "hub_node_candidates": [
+          "language_depth"
+        ]
       },
       "exemplar_videos": [
         "audiobook clip - performed",
         "narrative podcast",
         "voice-over dominant ad"
-      ]
+      ],
+      "plain_summary": "Wordy and dense \u2014 the writing carries the work"
     },
     {
       "id": "memory-anchored",
@@ -316,20 +376,25 @@
         "system_means_pattern": {
           "memory_encoding": ">=0.60"
         },
-        "characteristic_chords": ["learning-moment"],
-        "hub_node_candidates": ["memory_encoding"]
+        "characteristic_chords": [
+          "learning-moment"
+        ],
+        "hub_node_candidates": [
+          "memory_encoding"
+        ]
       },
       "exemplar_videos": [
         "reveal-format video",
         "structured listicle",
         "step-by-step demo"
-      ]
+      ],
+      "plain_summary": "Built to stick in memory \u2014 vivid concrete details"
     },
     {
       "id": "tight-integration-balanced",
       "name": "Tight Integration, Balanced Pull",
       "short_description": "All seven systems coordinating tightly, no single system dominant",
-      "description_template": "High integration score with all seven systems coupling at moderate to strong levels. No single system dominates — the cortex operates as a unified network throughout.",
+      "description_template": "High integration score with all seven systems coupling at moderate to strong levels. No single system dominates \u2014 the cortex operates as a unified network throughout.",
       "built_for_tag": "complete experience",
       "fingerprint": {
         "system_means_pattern": "all_systems_in_range_0.45_to_0.65",
@@ -339,13 +404,14 @@
         "prestige TV pilot",
         "high-craft short film",
         "feature trailer - critical favorite"
-      ]
+      ],
+      "plain_summary": "All systems firing together \u2014 complete experience"
     },
     {
       "id": "decoupled-parallel",
       "name": "Decoupled Parallel Pipelines",
       "short_description": "Multiple systems firing strongly but independent of each other",
-      "description_template": "Several cortical systems show strong activation, but with low pairwise coupling. Each system operates in its own lane — the cortex processes the content as parallel streams rather than an integrated experience.",
+      "description_template": "Several cortical systems show strong activation, but with low pairwise coupling. Each system operates in its own lane \u2014 the cortex processes the content as parallel streams rather than an integrated experience.",
       "built_for_tag": "multi-track stimulus",
       "fingerprint": {
         "integration_score": "<=0.20",
@@ -355,16 +421,18 @@
         "music video with rapid context switches",
         "experimental short - non-narrative",
         "highlight compilation - multiple genres"
-      ]
+      ],
+      "plain_summary": "Multiple things running in parallel without merging"
     },
     {
       "id": "uncategorized",
       "name": "Uncategorized",
       "short_description": "Cortical signature does not match any current library entry",
-      "description_template": "This video's cortical signature does not match any recipe currently in the Brain Diff library at confidence ≥ 0.6. Closest match noted in audit logs.",
+      "description_template": "This video's cortical signature does not match any recipe currently in the Brain Diff library at confidence \u2265 0.6. Closest match noted in audit logs.",
       "built_for_tag": "novel pattern",
       "fingerprint": null,
-      "exemplar_videos": []
+      "exemplar_videos": [],
+      "plain_summary": "Doesn't fit any named pattern \u2014 its own thing"
     }
   ]
 }

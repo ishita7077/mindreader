@@ -1,0 +1,89 @@
+/* ─────────────────────────────────────────────────────────────────────────
+   BrainDiff — shared lab-notebook theme
+   ─────────────────────────────────────────────────────────────────────────
+   Loaded by every page on the site (text-results, run, input, methodology,
+   research, etc.) so the colour + font palette stays consistent.
+
+   Tokens here override page-local :root because this file is linked AFTER
+   the inline <style> block on each page.
+
+   Visual feel: yellow legal-pad paper with red rule margin + faint
+   horizontal lines, EB Garamond / Crimson Pro serif body, Caveat
+   handwritten display, Courier Prime mono, oxblood-red ink.
+
+   Do not put page-specific component styles here — only tokens, base
+   typography, and the body::before / body::after notebook chrome. */
+
+:root {
+  /* Paper — warm legal-pad yellow */
+  --cream:   #F4ECC9;
+  --cream-2: #ECE3BA;
+  --cream-3: #DFD49E;
+  --rule-color:   rgba(168, 50, 31, 0.10);
+  --margin-color: rgba(168, 50, 31, 0.20);
+
+  /* Ink */
+  --ink:        #181410;
+  --ink-mid:    #3D352D;
+  --ink-dim:    #6E6452;
+  --ink-faint:  #9E9272;
+  --ink-strong: #181410;
+
+  /* Red — correction pen */
+  --red:      #9F2715;
+  --red-soft: #C04632;
+  --red-bg:   rgba(159, 39, 21, 0.08);
+  --gold:     #A07118;
+
+  /* Two-side: A faded blue ink, B oxblood red */
+  --a:      #1F4A6E;   --a-soft: rgba(31, 74, 110, 0.13);
+  --b:      #9F2715;   --b-soft: rgba(159, 39, 21, 0.13);
+
+  --line:        rgba(24, 20, 16, 0.10);
+  --line-strong: rgba(24, 20, 16, 0.20);
+
+  /* Fonts */
+  --ff-display:       'Caveat', 'Architects Daughter', 'Marker Felt', cursive;
+  --ff-display-print: 'EB Garamond', 'Garamond', Georgia, serif;
+  --ff-body:          'Crimson Pro', 'Crimson Text', 'Garamond', Georgia, serif;
+  --ff-hand:          'Kalam', 'Caveat', cursive;
+  --ff-mono:          'Courier Prime', 'Courier New', monospace;
+  --ff-ui:            'Inter Tight', system-ui, sans-serif;
+  --halo: 0.15;
+}
+
+:root[data-theme="dark"]{
+  --cream:   #1A1610;   --cream-2: #221C15;   --cream-3: #2A2218;
+  --ink:     #ECE0CB;   --ink-mid: #C2B8A2;   --ink-dim: #8F8773;   --ink-faint: #5E574A;
+  --ink-strong: #ECE0CB;
+  --red:     #D6664A;   --red-soft: #E37C5E;   --red-bg: rgba(214, 102, 74, 0.10);
+  --gold:    #D4A857;
+  --a:       #7BAACB;   --a-soft: rgba(123, 170, 203, 0.14);
+  --b:       #DC6849;   --b-soft: rgba(220, 104, 73, 0.14);
+  --line:        rgba(236, 224, 203, 0.07);
+  --line-strong: rgba(236, 224, 203, 0.14);
+}
+
+/* Body — paper background with subtle ruled lines and red margin. */
+body {
+  background: var(--cream);
+  color: var(--ink);
+  font-family: var(--ff-body);
+  font-size: 17px;
+  line-height: 1.7;
+}
+
+/* Body chrome (rule lines + red margin) — opt-in via body.notebook-paper.
+   Pages that want the ruled-paper look add the class; pages that don't
+   (admin dashboards, etc.) keep a clean background. */
+body.notebook-paper::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    linear-gradient(to right, transparent 95px, var(--margin-color) 95px, var(--margin-color) 96px, transparent 96px),
+    repeating-linear-gradient(to bottom, transparent 0, transparent 29px, var(--rule-color) 29px, var(--rule-color) 30px);
+}
+body.notebook-paper > * { position: relative; z-index: 1; }

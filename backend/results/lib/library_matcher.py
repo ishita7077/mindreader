@@ -49,6 +49,7 @@ class RecipeScore:
     description_template: str
     score: float
     breakdown: dict[str, float]
+    plain_summary: str = ""        # plain-English gloss for non-scientist readers
 
 
 @dataclass
@@ -61,6 +62,8 @@ class MatchResult:
     score_breakdown: dict[str, float]
     closest_entry_if_uncategorized: RecipeScore | None = None
     all_scores: list[RecipeScore] = field(default_factory=list)  # for audit logging
+    plain_summary: str = ""        # plain-English gloss for non-scientist readers
+    short_description: str = ""    # older technical short description (kept as fallback)
 
 
 # ────────────────────────────────────────────────────────────
@@ -102,6 +105,7 @@ def match_recipe(video: VideoSignature) -> MatchResult:
             description_template=entry.get("description_template", ""),
             score=round(weighted, 4),
             breakdown={k: round(v, 4) for k, v in breakdown.items()},
+            plain_summary=entry.get("plain_summary", "") or entry.get("short_description", ""),
         ))
 
     scores.sort(key=lambda s: s.score, reverse=True)
@@ -116,6 +120,8 @@ def match_recipe(video: VideoSignature) -> MatchResult:
             confidence=top.score,
             score_breakdown=top.breakdown,
             all_scores=scores,
+            plain_summary=top.plain_summary,
+            short_description=top.description_template,
         )
 
     # Below threshold: uncategorized, but record the closest.
@@ -128,6 +134,8 @@ def match_recipe(video: VideoSignature) -> MatchResult:
         score_breakdown=top.breakdown,
         closest_entry_if_uncategorized=top,
         all_scores=scores,
+        plain_summary=(uncategorized.get("plain_summary", "Doesn't fit any named pattern") if uncategorized else "Doesn't fit any named pattern"),
+        short_description=(uncategorized.get("short_description", "") if uncategorized else ""),
     )
 
 
