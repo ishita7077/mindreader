@@ -250,7 +250,7 @@ def _ensure_warm() -> None:
         # process the rest of the current job and any follow-up jobs without
         # re-loading TRIBE.
         print("[RP-15] warmup_complete_main_thread", flush=True)
-        log.info("[RP-15] warmup_complete_main_thread — TRIBE ready, Gemma still loading in background")
+        log.info("[RP-15] warmup_complete_main_thread — TRIBE ready, Anthropic HTTP client ready in background")
 
 
 def _warm_llm_background() -> None:
@@ -359,7 +359,7 @@ def _generate_results_content(
         return None
     try:
         if progress:
-            progress.emit("generating_content", "Writing the page copy with LLaMA...")
+            progress.emit("generating_content", "Writing the page copy with Claude...")
         # score_predictions returns per-second 'timeseries' per dim already.
         # Adapter shape: {dim_name: [v0..vT]} per video.
         ts_a = {k: list(v.get("timeseries", [])) for k, v in scores_a.items()}

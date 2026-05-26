@@ -455,7 +455,7 @@ def generate_content_for_worker(
 ) -> dict[str, Any]:
     """Run the full content pipeline. Returns {comparison_id, content, audit_log_path}.
 
-    `use_stub=True` skips loading LLaMA — useful for worker smoke tests and CI.
+    `use_stub=True` skips the Anthropic backend — useful for worker smoke tests and CI.
     """
     cmp_id = comparison_id(video_a_id, video_b_id, analysis_version)
     rid = new_run_id()
