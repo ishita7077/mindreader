@@ -160,6 +160,7 @@ class RecipeMatchSlot(Slot):
             assembled = {
                 "library_id":      match.library_id,
                 "name":            match.name,
+                "plain_summary":   match.plain_summary,
                 "built_for_tag":   match.built_for_tag,
                 "confidence":      match.confidence,
                 "score_breakdown": match.score_breakdown,
@@ -184,9 +185,13 @@ class RecipeMatchSlot(Slot):
 
         # Final assembled value — uses last validated rationale OR the default if both attempts failed.
         # Even when LLM rationale fails, the deterministic match is still good — emit ok with template fallback.
+        # plain_summary is the one-line plain-English gloss for non-scientist readers — the frontend
+        # uses this in place of the technical recipe name so "Talking Head Reasoning" becomes
+        # "Someone thinking out loud at you — argument-building".
         final = {
             "library_id":      match.library_id,
             "name":            match.name,
+            "plain_summary":   match.plain_summary,
             "built_for_tag":   match.built_for_tag,
             "confidence":      match.confidence,
             "score_breakdown": match.score_breakdown,

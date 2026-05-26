@@ -203,14 +203,17 @@ nav.scrolled{background:rgba(247,242,234,.96);backdrop-filter:blur(16px);border-
 .hero-eyebrow-meta{font-family:var(--ff-mono);font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--red);font-weight:500;display:flex;align-items:center;gap:.7rem}
 .hero-eyebrow-meta::after{content:'';display:inline-block;width:24px;height:1px;background:var(--red);opacity:.5}
 .hero-files{font-family:var(--ff-mono);font-size:9.5px;color:var(--ink-dim);letter-spacing:.04em}
-.hero-versus{font-family:var(--ff-display);font-style:italic;font-weight:300;font-size:clamp(1.2rem,2.2vw,1.8rem);line-height:1;color:var(--ink);margin-bottom:2.4rem}
+.hero-versus{font-family:var(--ff-display);font-weight:400;font-size:clamp(1.2rem,2.2vw,1.8rem);line-height:1;color:var(--ink);margin-bottom:2.4rem}
 .hero-versus .a-name{color:var(--a)}.hero-versus .b-name{color:var(--b)}
 .hero-versus .vs-mark{color:var(--ink-dim);font-size:.65em;margin:0 .5rem}
 .hero-grid{display:grid;grid-template-columns:1.05fr 1fr;gap:4rem;align-items:start}
 .hero-eyebrow{font-family:var(--ff-mono);font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--red);font-weight:500;margin-bottom:1rem;display:flex;align-items:center;gap:.6rem}
 .hero-eyebrow::after{content:'';display:inline-block;width:18px;height:1px;background:var(--red);opacity:.5}
 .hero-h1{font-family:var(--ff-display);font-weight:300;font-size:clamp(1.7rem,3.2vw,2.65rem);line-height:1.12;color:var(--ink);margin-bottom:1.1rem;letter-spacing:-.005em}
-.hero-h1 em{font-style:italic;color:var(--red);font-weight:400}
+/* Headline emphasis — NO italic (was AI-slop italic-red). Use a soft
+   yellow-highlighter background instead so the emphasis reads as a
+   marker-pen highlight, not a fancy italicised flourish. */
+.hero-h1 em{font-style:normal;color:var(--ink);font-weight:500;background:var(--hi-yellow-bg);box-shadow:inset 0 -0.18em 0 var(--hi-yellow-bg);padding:0 2px;border-radius:1px}
 .hero-h1 .b-side{color:var(--b);font-style:normal}
 .hero-h1 .a-side{color:var(--a);font-style:normal}
 .hero-body{font-size:1rem;color:var(--ink-mid);line-height:1.7;margin-bottom:1.6rem;max-width:560px}
@@ -219,7 +222,7 @@ nav.scrolled{background:rgba(247,242,234,.96);backdrop-filter:blur(16px);border-
 .action-cta{background:transparent;border:1px solid var(--line-strong);padding:.85rem .9rem .95rem;cursor:pointer;text-align:left;transition:all .25s ease;color:inherit;font-family:inherit;display:flex;flex-direction:column;justify-content:space-between;min-height:108px;border-radius:4px}
 .action-cta:hover{background:var(--cream-2);border-color:var(--red);transform:translateY(-2px)}
 .action-cta-num{font-family:var(--ff-mono);font-size:9px;color:var(--red);letter-spacing:.12em;margin-bottom:.55rem}
-.action-cta-title{font-family:var(--ff-display);font-style:italic;font-weight:400;font-size:.93rem;line-height:1.25;color:var(--ink);margin-bottom:.4rem}
+.action-cta-title{font-family:var(--ff-display);font-weight:500;font-size:.93rem;line-height:1.25;color:var(--ink);margin-bottom:.4rem}
 .action-cta-arrow{font-family:var(--ff-mono);font-size:.92rem;color:var(--red);align-self:flex-end;transition:transform .25s}
 .action-cta:hover .action-cta-arrow{transform:translateX(3px)}
 
@@ -230,7 +233,7 @@ nav.scrolled{background:rgba(247,242,234,.96);backdrop-filter:blur(16px);border-
 .brain-svg-wrap svg{width:100%;height:auto;display:block;overflow:visible;filter:drop-shadow(0 14px 40px rgba(26,20,16,.13)) drop-shadow(0 4px 12px rgba(26,20,16,.07))}
 .brain-tooltip{position:absolute;background:var(--ink);color:var(--cream);padding:.95rem 1.15rem 1.05rem;border-radius:5px;width:262px;z-index:5;box-shadow:0 10px 28px rgba(26,20,16,.18);transition:all .4s cubic-bezier(.4,0,.2,1);top:0;left:0}
 :root[data-theme="dark"] .brain-tooltip{background:var(--cream-2);color:var(--ink)}
-.tt-name{font-family:var(--ff-display);font-style:italic;font-weight:300;font-size:1.05rem;color:var(--cream);margin-bottom:.25rem}
+.tt-name{font-family:var(--ff-display);font-weight:500;font-size:1.05rem;color:var(--cream);margin-bottom:.25rem}
 :root[data-theme="dark"] .tt-name{color:var(--ink)}
 .tt-region{font-family:var(--ff-mono);font-size:9px;letter-spacing:.15em;color:var(--a);margin-bottom:.55rem;text-transform:uppercase;font-weight:500}
 .tt-text{font-size:.81rem;color:rgba(247,242,234,.78);line-height:1.55;margin-bottom:0}
@@ -251,16 +254,22 @@ nav.scrolled{background:rgba(247,242,234,.96);backdrop-filter:blur(16px);border-
 :root[data-theme="dark"] .strategy-insight{background:var(--cream-2)}
 .si-header{display:flex;justify-content:space-between;align-items:baseline;padding-bottom:.95rem;border-bottom:1px solid var(--line);margin-bottom:1.1rem}
 .si-eyebrow{font-family:var(--ff-mono);font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--red);font-weight:500}
-.si-tag{font-family:var(--ff-mono);font-size:9px;letter-spacing:.05em;color:var(--ink-dim);font-style:italic}
+.si-tag{font-family:var(--ff-mono);font-size:9px;letter-spacing:.05em;color:var(--ink-dim)}
 .si-plays{display:flex;flex-direction:column;gap:1.1rem}
 .si-play{padding-left:1rem;border-left:3px solid;position:relative}
 .si-play.a{border-left-color:var(--a)}.si-play.b{border-left-color:var(--b)}
 .si-play-side{font-family:var(--ff-mono);font-size:9px;letter-spacing:.18em;text-transform:uppercase;font-weight:500;margin-bottom:.3rem}
 .si-play.a .si-play-side{color:var(--a)}.si-play.b .si-play-side{color:var(--b)}
-.si-play-name{font-family:var(--ff-display);font-style:italic;font-weight:400;font-size:1.18rem;color:var(--ink);margin-bottom:.45rem;line-height:1.15;letter-spacing:-.005em}
+.si-play-name{font-family:var(--ff-display);font-weight:500;font-size:1.18rem;color:var(--ink);margin-bottom:.45rem;line-height:1.2;letter-spacing:-.005em}
+/* Technical recipe name shown as a small monospace tag UNDER the plain-English
+   gloss, so curious readers can still see the library_id-style name without
+   it being the dominant headline. */
+.si-play-tech{font-family:var(--ff-mono);font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-faint);margin:-.15rem 0 .5rem}
 .si-play-desc{font-size:.92rem;color:var(--ink-mid);line-height:1.6}
-.si-play-desc em{font-style:italic;color:var(--ink);font-weight:500}
-.si-footer{margin-top:1.2rem;padding-top:.95rem;border-top:1px solid var(--line);font-family:var(--ff-display);font-style:italic;font-size:.88rem;color:var(--ink-dim);line-height:1.55}
+/* LLM-marked *emphasis* in descriptions — render as bold ink, not italic.
+   (Italic emphasis inside body copy reads as AI-decorative slop.) */
+.si-play-desc em{font-style:normal;color:var(--ink);font-weight:600}
+.si-footer{margin-top:1.2rem;padding-top:.95rem;border-top:1px solid var(--line);font-family:var(--ff-display);font-size:.88rem;color:var(--ink-dim);line-height:1.55}
 
 /* ── REVEAL ─── */
 .reveal{opacity:0;transform:translateY(28px);transition:opacity .9s ease,transform .9s ease}
@@ -274,9 +283,11 @@ nav.scrolled{background:rgba(247,242,234,.96);backdrop-filter:blur(16px);border-
 .frame-num::after{content:'';display:inline-block;width:24px;height:1px;background:var(--red);opacity:.5}
 .frame-num-r{font-family:var(--ff-mono);font-size:9.5px;color:var(--ink-dim);letter-spacing:.05em}
 .frame-h2{font-family:var(--ff-display);font-weight:300;font-size:clamp(1.85rem,3.2vw,2.7rem);line-height:1.12;color:var(--ink);margin-bottom:1rem;letter-spacing:-.01em;max-width:920px}
-.frame-h2 em{font-style:italic;color:var(--red);font-weight:400}
+/* H2 emphasis — yellow-highlighter marker, no italic, no red. */
+.frame-h2 em{font-style:normal;color:var(--ink);font-weight:500;background:var(--hi-yellow-bg);box-shadow:inset 0 -0.18em 0 var(--hi-yellow-bg);padding:0 2px;border-radius:1px}
 .frame-sub{font-size:1rem;color:var(--ink-mid);line-height:1.74;max-width:760px;margin-bottom:3rem}
-.frame-sub em{font-style:italic;color:var(--ink)}
+/* Frame-sub emphasis — bold ink, no italic. */
+.frame-sub em{font-style:normal;color:var(--ink);font-weight:600}
 
 /* ── FRAME 2 ─── */
 .video-pair-static{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:2.2rem}
@@ -331,7 +342,7 @@ nav.scrolled{background:rgba(247,242,234,.96);backdrop-filter:blur(16px);border-
 .transcript-col-header{font-family:var(--ff-mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:.65rem;display:flex;justify-content:space-between;align-items:center;font-weight:500}
 .transcript-col.a .transcript-col-header{color:var(--a)}.transcript-col.b .transcript-col-header{color:var(--b)}
 .transcript-time-tag{color:var(--ink-dim);letter-spacing:.05em;font-weight:400}
-.transcript-line-display{font-family:var(--ff-display);font-style:italic;font-size:.93rem;line-height:1.5;color:var(--ink);min-height:55px;transition:opacity .35s ease}
+.transcript-line-display{font-family:var(--ff-display);font-size:.93rem;line-height:1.5;color:var(--ink);min-height:55px;transition:opacity .35s ease}
 .transcript-line-display.fading{opacity:0}
 
 /* ── CHORD DETAIL — DARK MERGED PANEL ─── */
@@ -341,16 +352,16 @@ nav.scrolled{background:rgba(247,242,234,.96);backdrop-filter:blur(16px);border-
 .cdm-eyebrow{font-family:var(--ff-mono);font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:#D4A857;font-weight:500;display:block;margin-bottom:.4rem}
 .cdm-time{font-family:var(--ff-mono);font-size:10px;letter-spacing:.06em;color:rgba(232,222,200,.55);display:block;margin-bottom:1.5rem}
 .cdm-time .side-a{color:#7FB3C6}.cdm-time .side-b{color:#E15640}
-.cdm-name{font-family:var(--ff-display);font-style:italic;font-weight:300;font-size:2.4rem;line-height:1.05;color:#F2EBDC;margin-bottom:1rem;letter-spacing:-.01em}
+.cdm-name{font-family:var(--ff-display);font-weight:500;font-size:2.4rem;line-height:1.05;color:#F2EBDC;margin-bottom:1rem;letter-spacing:-.01em}
 .cdm-formula{display:inline-block;font-family:var(--ff-mono);font-size:10px;letter-spacing:.06em;background:rgba(184,136,42,.15);color:#D4A857;padding:.5rem .85rem;border-radius:3px;border:1px solid rgba(184,136,42,.3);margin-bottom:1.4rem}
 .cdm-meaning{font-family:var(--ff-body);font-size:.96rem;line-height:1.7;color:rgba(232,222,200,.78);margin-bottom:1.6rem}
 .cdm-content-section{padding-top:1.2rem;border-top:1px solid rgba(232,222,200,.10)}
 .cdm-content-label{font-family:var(--ff-mono);font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:rgba(232,222,200,.45);font-weight:500;display:block;margin-bottom:.7rem}
-.cdm-quote{padding:.7rem .9rem;border-left:2px solid;background:rgba(232,222,200,.04);border-radius:0 3px 3px 0;font-family:var(--ff-display);font-style:italic;font-size:.92rem;line-height:1.5;color:#F2EBDC}
+.cdm-quote{padding:.7rem .9rem;border-left:2px solid;background:rgba(232,222,200,.04);border-radius:0 3px 3px 0;font-family:var(--ff-display);font-size:.92rem;line-height:1.5;color:#F2EBDC}
 .cdm-quote.a{border-left-color:#7FB3C6}.cdm-quote.b{border-left-color:#E15640}
 .cdm-quote-tag{font-family:var(--ff-mono);font-size:8.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:500;font-style:normal;display:block;margin-bottom:.4rem}
 .cdm-quote.a .cdm-quote-tag{color:#7FB3C6}.cdm-quote.b .cdm-quote-tag{color:#E15640}
-.cdm-context{margin-top:1rem;font-family:var(--ff-body);font-style:italic;font-size:.91rem;line-height:1.6;color:rgba(232,222,200,.70);padding-left:.8rem;border-left:1px dashed rgba(212,168,87,.3)}
+.cdm-context{margin-top:1rem;font-family:var(--ff-body);font-size:.91rem;line-height:1.6;color:rgba(232,222,200,.70);padding-left:.8rem;border-left:1px dashed rgba(212,168,87,.3)}
 .cdm-spec{margin-top:1.2rem;padding:1.3rem 1.4rem 1.1rem;border:1px solid rgba(232,222,200,.12);border-radius:5px;background:rgba(0,0,0,.18)}
 .cdm-spec-header{font-family:var(--ff-mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:rgba(232,222,200,.55);font-weight:500;margin-bottom:1.3rem}
 .cdm-spec-grid{display:flex;flex-direction:column;gap:.55rem;margin-bottom:.95rem}
@@ -360,7 +371,7 @@ nav.scrolled{background:rgba(247,242,234,.96);backdrop-filter:blur(16px);border-
 .cdm-cell{height:32px;border-radius:2.5px;transition:opacity .4s ease}
 .cdm-spec-axis{display:grid;grid-template-columns:120px 1fr;gap:.85rem;align-items:center;padding-top:.65rem;border-top:1px solid rgba(232,222,200,.08)}
 .cdm-spec-axis-marks{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;font-family:var(--ff-mono);font-size:9.5px;color:rgba(232,222,200,.45);letter-spacing:.04em;text-align:center}
-.cdm-spec-note{font-family:var(--ff-mono);font-size:9.5px;letter-spacing:.05em;color:rgba(212,168,87,.7);text-align:center;margin-top:.85rem;font-style:italic}
+.cdm-spec-note{font-family:var(--ff-mono);font-size:9.5px;letter-spacing:.05em;color:rgba(212,168,87,.7);text-align:center;margin-top:.85rem}
 
 /* ── FRAME 3 TABS ─── */
 .frame3-tabs{display:flex;gap:2.5rem;border-bottom:1px solid var(--line);margin-bottom:2.2rem;padding-bottom:0}
@@ -401,12 +412,12 @@ nav.scrolled{background:rgba(247,242,234,.96);backdrop-filter:blur(16px);border-
 .connect-card-header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:1rem}
 .connect-card-label{font-family:var(--ff-mono);font-size:9px;letter-spacing:.18em;text-transform:uppercase;font-weight:500}
 .connect-card-label.a{color:var(--a)}.connect-card-label.b{color:var(--b)}
-.connect-card-title{font-family:var(--ff-display);font-style:italic;font-weight:300;font-size:.92rem;color:var(--ink-mid)}
+.connect-card-title{font-family:var(--ff-display);font-weight:500;font-size:.92rem;color:var(--ink)}
 .connect-svg-wrap{position:relative;width:100%;aspect-ratio:1/1;max-width:360px;margin:0 auto}
 .connect-svg{width:100%;height:auto}
 .connect-edge-tooltip{position:absolute;background:var(--ink);color:var(--cream);padding:.55rem .8rem;border-radius:4px;font-family:var(--ff-mono);font-size:11px;pointer-events:none;opacity:0;transition:opacity .15s;z-index:10;box-shadow:0 4px 14px rgba(26,20,16,.2)}
 .connect-edge-tooltip.visible{opacity:1}
-.connect-edge-tooltip .tt-pair{font-family:var(--ff-display);font-style:italic;font-size:13px;display:block;margin-bottom:2px}
+.connect-edge-tooltip .tt-pair{font-family:var(--ff-display);font-weight:600;font-size:13px;display:block;margin-bottom:2px}
 .connect-edge-tooltip .tt-r{font-weight:500;letter-spacing:.04em}
 .connect-stats{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-top:1.3rem;text-align:left}
 .connect-stat{padding:.65rem .85rem;background:var(--cream-2);border-radius:3px}
@@ -454,38 +465,56 @@ nav.scrolled{background:rgba(247,242,234,.96);backdrop-filter:blur(16px);border-
 .export-btn:hover{border-color:var(--red);color:var(--red)}
 .cta{padding:6rem 3rem;text-align:center;border-top:1px solid var(--line);position:relative;max-width:1400px;margin:0 auto}
 .cta-eyebrow{font-family:var(--ff-mono);font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--red);font-weight:500;margin-bottom:1.6rem}
-.cta-headline{font-family:var(--ff-display);font-style:italic;font-weight:300;font-size:clamp(1.5rem,2.7vw,2.2rem);line-height:1.4;color:var(--ink);max-width:680px;margin:0 auto 2.2rem}
-.cta-headline em{color:var(--red)}
+.cta-headline{font-family:var(--ff-display);font-weight:500;font-size:clamp(1.5rem,2.7vw,2.2rem);line-height:1.4;color:var(--ink);max-width:680px;margin:0 auto 2.2rem}
+/* CTA emphasis — yellow-highlighter swipe, never italic-red. */
+.cta-headline em{font-style:normal;color:var(--ink);font-weight:600;background:var(--hi-yellow-bg);box-shadow:inset 0 -0.18em 0 var(--hi-yellow-bg);padding:0 3px;border-radius:1px}
 .cta-row{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
-/* Hero scribble row — replaces the 3 big action-cta boxes. Reads as a
-   handwritten note pointing at the rest of the page. */
-.hero-scribble-row {
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
-  margin-top: 2.5rem;
-  font-family: var(--ff-hand);
-  font-size: 18px;
-  color: var(--red);
-  flex-wrap: wrap;
+/* Hero nudge grid — three boxes that read like an academic figure caption
+   pointing at the rest of the page. Each has a 4–6 word teaser computed
+   from the actual data so the box doesn't just say "read along" — it
+   says "read along → 'damascus' lights up A". Box 4 ("run your own")
+   lives in the page footer only, per user feedback. */
+.hero-nudge-grid{
+  display:grid;grid-template-columns:repeat(3, 1fr);gap:1rem;
+  margin-top:2.6rem;
 }
-.hero-scribble-arrow {
-  font-size: 28px;
-  transform: rotate(8deg) translateY(-2px);
-  display: inline-block;
-  margin-right: 0.3rem;
+@media (max-width:780px){
+  .hero-nudge-grid{grid-template-columns:1fr}
 }
-.hero-scribble-link {
-  cursor: pointer;
-  text-decoration: underline;
-  text-decoration-style: wavy;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 4px;
-  color: var(--ink);
-  transition: color 0.2s;
+.hero-nudge{
+  display:flex;flex-direction:column;align-items:flex-start;text-align:left;
+  background:var(--cream);border:1px solid var(--line-strong);border-radius:5px;
+  padding:1rem 1.15rem 1rem;cursor:pointer;font-family:inherit;color:var(--ink);
+  transition:border-color .18s, background .18s, transform .12s;
+  position:relative;
 }
-.hero-scribble-link:hover { color: var(--red); }
-.hero-scribble-sep { color: var(--ink-faint); }
+.hero-nudge:hover{
+  border-color:var(--ink);background:var(--cream-2);transform:translateY(-1px);
+}
+.hero-nudge-eyebrow{
+  font-family:var(--ff-mono);font-size:9px;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--red);font-weight:500;margin-bottom:.5rem;
+}
+.hero-nudge-title{
+  font-family:var(--ff-display);font-weight:500;font-size:1.05rem;
+  color:var(--ink);line-height:1.2;margin-bottom:.35rem;
+}
+/* Teaser uses a yellow highlighter swipe so the data preview reads as a
+   marker-pen note pulled out of the result. */
+.hero-nudge-teaser{
+  font-family:var(--ff-body);font-size:.88rem;color:var(--ink-mid);
+  line-height:1.4;
+  background:var(--hi-yellow-bg);
+  box-shadow:inset 0 -0.16em 0 var(--hi-yellow-bg);
+  padding:1px 4px;border-radius:2px;align-self:flex-start;
+}
+.hero-nudge-arrow{
+  font-family:var(--ff-mono);font-size:14px;color:var(--ink-dim);
+  position:absolute;right:1rem;top:.95rem;transition:transform .18s, color .18s;
+}
+.hero-nudge:hover .hero-nudge-arrow{
+  color:var(--ink);transform:translateY(3px);
+}
 .cta-primary{font-family:var(--ff-mono);font-size:10px;letter-spacing:.15em;text-transform:uppercase;background:var(--red);color:white;padding:.9rem 1.85rem;text-decoration:none;transition:all .2s;border:none;cursor:pointer;border-radius:3px;font-weight:500}
 .cta-primary:hover{background:#A82318;transform:translateY(-1px)}
 .cta-ghost{font-family:var(--ff-mono);font-size:10px;letter-spacing:.15em;text-transform:uppercase;border:1px solid var(--line-strong);color:var(--ink);padding:.9rem 1.85rem;text-decoration:none;transition:all .2s;border-radius:3px;font-weight:500}
@@ -535,6 +564,79 @@ footer span{color:var(--red)}
    used on the landing page). Replaces the previous flat 2D SVG. */
 .hero-brain-stage{position:relative;width:100%;aspect-ratio:1/1;max-width:560px;margin:0 auto}
 .hero-brain-canvas{width:100%;height:100%;display:block}
+
+/* Floating A vs B readout pinned over the brain — shows the current
+   hovered system's mean for A, B, and Δ in big numbers so the contrast
+   reads at a glance. Replaces "the brain is a toy" — actual values
+   are visible without leaving the brain pane. */
+.brain-ab-readout{
+  position:absolute;top:.6rem;right:.6rem;
+  background:rgba(252,248,238,0.96);
+  border:1px solid var(--line-strong);border-radius:5px;
+  padding:.6rem .75rem .55rem;
+  min-width:178px;max-width:220px;
+  box-shadow:0 4px 14px rgba(26,26,26,0.08);
+  z-index:2;
+  font-family:var(--ff-body);
+}
+:root[data-theme="dark"] .brain-ab-readout{background:rgba(35,35,35,0.96)}
+.brain-ab-eyebrow{
+  font-family:var(--ff-mono);font-size:9px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-dim);font-weight:500;
+  margin-bottom:.4rem;line-height:1.2;
+}
+.brain-ab-row{
+  display:grid;grid-template-columns:1fr 1fr 1fr;gap:.35rem;
+}
+.brain-ab-cell{
+  display:flex;flex-direction:column;align-items:flex-start;
+  padding:.25rem .35rem .3rem;border-radius:3px;background:var(--cream-2);
+}
+.brain-ab-cell.a{border-left:3px solid var(--a)}
+.brain-ab-cell.b{border-left:3px solid var(--b)}
+.brain-ab-cell.delta{border-left:3px solid var(--hi-yellow)}
+.brain-ab-tag{
+  font-family:var(--ff-mono);font-size:8.5px;letter-spacing:.15em;
+  text-transform:uppercase;color:var(--ink-dim);font-weight:600;
+}
+.brain-ab-val{
+  font-family:var(--ff-mono);font-size:14px;font-weight:600;color:var(--ink);
+  margin-top:1px;
+}
+.brain-ab-cell.a .brain-ab-val{color:var(--a)}
+.brain-ab-cell.b .brain-ab-val{color:var(--b)}
+.brain-ab-region{
+  font-family:var(--ff-mono);font-size:8.5px;letter-spacing:.06em;
+  color:var(--ink-faint);margin-top:.5rem;line-height:1.3;
+  border-top:1px dashed var(--line);padding-top:.4rem;
+  display:none;  /* shown only when a region is active (initBrainRegionHover) */
+}
+.brain-ab-readout.is-active .brain-ab-region{display:block}
+
+/* The 7-system region picker under the brain. Hover a pill to brightly
+   highlight its data in the readout. Each pill carries its system colour
+   so the highlight feels anchored to that pill. */
+.brain-region-row{
+  display:flex;flex-wrap:wrap;gap:.35rem;justify-content:center;
+  margin-top:1rem;max-width:480px;margin-left:auto;margin-right:auto;
+}
+.brain-region-pill{
+  display:inline-flex;align-items:center;gap:.4rem;
+  font-family:var(--ff-mono);font-size:9.5px;letter-spacing:.12em;
+  text-transform:uppercase;font-weight:500;color:var(--ink-mid);
+  background:transparent;border:1px solid var(--line-strong);
+  padding:.38rem .65rem;border-radius:3px;cursor:pointer;
+  transition:background .14s, border-color .14s, color .14s, transform .12s;
+}
+.brain-region-dot{
+  width:9px;height:9px;border-radius:50%;background:var(--pill-color);
+  box-shadow:0 0 0 2px var(--pill-bg);
+}
+.brain-region-pill:hover,
+.brain-region-pill.is-active{
+  background:var(--pill-bg);border-color:var(--pill-color);color:var(--ink);
+}
+.brain-region-pill:hover{transform:translateY(-1px)}
 .hero-brain-caption{
   display:flex;flex-direction:column;align-items:center;gap:.35rem;
   margin-top:1.25rem;text-align:center;
@@ -607,7 +709,7 @@ body:not(.dev-mode) .src-badge{display:none !important}
 .chord-empty-note{
   margin:1.2rem auto 0;max-width:680px;text-align:center;
   font-family:var(--ff-body);font-size:.95rem;color:var(--ink-dim);
-  font-style:italic;line-height:1.55;
+  line-height:1.55;
 }
 
 /* Collapsible annotated text — secondary read-along view below the
@@ -732,14 +834,28 @@ const SYSTEM_REGION = {
 // Greens dropped (they vibrate on yellow). Each system gets a colour
 // from a different anatomy-textbook stain family (sienna, oxblood,
 // indigo, terracotta, ochre, plum, umber).
+// 7 brain systems → highlighter palette. No red, no orange, no warm
+// Anthropic coral. Each system gets a distinct highlighter colour that
+// survives on an ivory page. Read-along uses translucent fills below.
 const SYSTEM_COLOR = {
-  personal_resonance: '#8B5E2C',   // umber
-  attention:          '#A23A1F',   // oxblood
-  brain_effort:       '#2C4F6E',   // indigo ink
-  gut_reaction:       '#B8492B',   // burnt sienna
-  memory_encoding:    '#6E4A77',   // plum
-  social_thinking:    '#7A5A2E',   // walnut
-  language_depth:     '#5C7A40',   // muted olive (darkened — no longer fights yellow)
+  personal_resonance: '#7C5BB4',   // highlighter PURPLE
+  attention:          '#2B5189',   // ink NAVY (lead)
+  brain_effort:       '#1A3E73',   // deeper navy
+  gut_reaction:       '#E66EA0',   // highlighter PINK (no orange/red)
+  memory_encoding:    '#F2CE3F',   // highlighter YELLOW
+  social_thinking:    '#6CB85D',   // highlighter GREEN
+  language_depth:     '#4DAFC5',   // highlighter CYAN
+};
+// Translucent fills for inline highlights — these read as actual marker
+// strokes on top of body text.
+const SYSTEM_COLOR_BG = {
+  personal_resonance: 'rgba(124, 91, 180, 0.24)',
+  attention:          'rgba(43, 81, 137, 0.20)',
+  brain_effort:       'rgba(26, 62, 115, 0.20)',
+  gut_reaction:       'rgba(230, 110, 160, 0.26)',
+  memory_encoding:    'rgba(242, 206, 63, 0.32)',
+  social_thinking:    'rgba(108, 184, 93, 0.28)',
+  language_depth:     'rgba(77, 175, 197, 0.28)',
 };
 // SVG region positions on the brain (matched to v7).
 const REGION_POSITIONS = {
@@ -1013,31 +1129,119 @@ function renderHero(c, va, vb){
       <div class="hero-rhs">
         <div class="hero-brain-stage">
           <canvas id="heroResultsBrain" class="hero-brain-canvas" aria-label="Cortical contrast between ${esc(va.display_name)} and ${esc(vb.display_name)}"></canvas>
+          <!-- A vs B readout that floats over the brain. Pinned in the
+               top-right corner so the rotating mesh isn't occluded. The
+               actual values come from whatever region the user is hovering
+               on (see initBrainRegionHover below). -->
+          <div class="brain-ab-readout" id="brainABReadout">
+            <div class="brain-ab-eyebrow" id="brainABRegion">hover a system below</div>
+            <div class="brain-ab-row">
+              <div class="brain-ab-cell a"><span class="brain-ab-tag">A</span><span class="brain-ab-val" id="brainABValA">—</span></div>
+              <div class="brain-ab-cell b"><span class="brain-ab-tag">B</span><span class="brain-ab-val" id="brainABValB">—</span></div>
+              <div class="brain-ab-cell delta"><span class="brain-ab-tag">Δ</span><span class="brain-ab-val" id="brainABValD">—</span></div>
+            </div>
+            <div class="brain-ab-region" id="brainABAnatomical"></div>
+          </div>
         </div>
         <div class="hero-brain-caption">
           <span class="hero-brain-cap-eyebrow">Cortical contrast</span>
           <span class="hero-brain-cap-text">Warmer = ${esc(vb.display_name)} stronger · Cooler = ${esc(va.display_name)} stronger</span>
         </div>
+        <!-- 7-system region picker. Hover a pill to brightly highlight
+             that region's A vs B values in the readout above. Clicking
+             pulls the brain canvas attention via mountBrain's setHighlight.
+             This is what makes the brain interactive without a toy 3D pick. -->
+        <div class="brain-region-row" id="brainRegionRow">
+          ${CANONICAL_SYSTEMS.map(sys => `
+            <button class="brain-region-pill" type="button" data-sys="${sys}" style="--pill-color:${SYSTEM_COLOR[sys]};--pill-bg:${SYSTEM_COLOR_BG[sys]}">
+              <span class="brain-region-dot"></span>${SYSTEM_DISPLAY[sys]}
+            </button>`).join('')}
+        </div>
       </div>
     </div>
 
-    <!-- The 3 action prompts, re-styled as inline notebook scribbles
-         instead of three big rounded boxes. Reads as a margin note. -->
-    <div class="hero-scribble-row">
-      <span class="hero-scribble-arrow">↘</span>
-      <span class="hero-scribble-link" onclick="document.getElementById('frame-2').scrollIntoView({behavior:'smooth'})">
-        ${contentVerb() === 'read' ? 'read the annotated text' : (contentVerb() === 'listen to' ? 'hear it second-by-second' : 'watch the chord progression')}
-      </span>
-      <span class="hero-scribble-sep">·</span>
-      <span class="hero-scribble-link" onclick="document.getElementById('frame-3').scrollIntoView({behavior:'smooth'})">
-        inspect the system view
-      </span>
-      <span class="hero-scribble-sep">·</span>
-      <span class="hero-scribble-link" onclick="window.location.href='/launch'">
-        run your own ${esc(noun)} comparison ↗
-      </span>
-    </div>
+    ${renderNudgeBoxes(c, va, vb)}
   </section>`;
+}
+
+// ─── NUDGE BOXES (3 navigational + "run your own" is in the footer only) ──
+// Replaces the old scribble row. Each box has a 4–6 word teaser computed
+// from real data — so the box doesn't just say "read along", it says
+// "read along → 'damascus' lights up A".
+//
+// Boxes:
+//   1. Read the annotated text      — strongest contrast word from headline
+//   2. Inspect Network Coordination — strongest coupling pair across A or B
+//   3. See Dimension Detail         — system with biggest |B − A| delta
+//   (4. Run your own — lives ONLY in the page footer now, not in the hero.)
+function renderNudgeBoxes(c, va, vb){
+  // Box 1 teaser: pick the most-emphasised word from the headline. If the
+  // headline has an <em> span (or *emphasis*), use that; otherwise first
+  // 3 words of the body.
+  let box1Teaser = 'see which words pulled which system';
+  const hl = (c.slots && c.slots.headline && c.slots.headline.value) || '';
+  const emMatch = hl.match(/\*([^*]+)\*|<em>([^<]+)<\/em>/i);
+  if (emMatch) {
+    const word = (emMatch[1] || emMatch[2] || '').trim().split(/\s+/).slice(0, 3).join(' ');
+    if (word) box1Teaser = `“${word.toLowerCase()}” lit up which system`;
+  }
+  // Box 2 teaser: strongest |r| pair across either side.
+  let box2Teaser = 'which two systems fired together';
+  try {
+    const mats = [{m: va.coupling_matrix, who: va.display_name}, {m: vb.coupling_matrix, who: vb.display_name}];
+    let best = {r: 0, i: 0, j: 1, who: ''};
+    for (const {m, who} of mats) {
+      if (!m) continue;
+      for (let i = 0; i < CANONICAL_SYSTEMS.length; i++) {
+        for (let j = i + 1; j < CANONICAL_SYSTEMS.length; j++) {
+          const r = (m[i] && typeof m[i][j] === 'number') ? m[i][j] : 0;
+          if (Math.abs(r) > Math.abs(best.r)) best = {r, i, j, who};
+        }
+      }
+    }
+    if (Math.abs(best.r) > 0.10) {
+      const a = SYSTEM_DISPLAY[CANONICAL_SYSTEMS[best.i]];
+      const b = SYSTEM_DISPLAY[CANONICAL_SYSTEMS[best.j]];
+      box2Teaser = `${a} ↔ ${b} (r=${best.r >= 0 ? '+' : ''}${best.r.toFixed(2)})`;
+    }
+  } catch(e) { /* keep fallback */ }
+  // Box 3 teaser: dimension with biggest |B − A| in system means.
+  let box3Teaser = 'see one system’s full time series';
+  try {
+    let bestSys = '', bestDelta = 0;
+    for (const sys of CANONICAL_SYSTEMS) {
+      const a = Number((va.system_means || {})[sys] || 0);
+      const b = Number((vb.system_means || {})[sys] || 0);
+      const d = b - a;
+      if (Math.abs(d) > Math.abs(bestDelta)) { bestDelta = d; bestSys = sys; }
+    }
+    if (bestSys) {
+      const who = bestDelta >= 0 ? (vb.display_name || 'B') : (va.display_name || 'A');
+      box3Teaser = `${SYSTEM_DISPLAY[bestSys]}: ${bestDelta >= 0 ? '+' : ''}${bestDelta.toFixed(2)} for ${who}`;
+    }
+  } catch(e) { /* keep fallback */ }
+
+  return `
+    <div class="hero-nudge-grid">
+      <button class="hero-nudge" type="button" onclick="document.getElementById('frame-2').scrollIntoView({behavior:'smooth'})">
+        <div class="hero-nudge-eyebrow">01 · Read along</div>
+        <div class="hero-nudge-title">Read the annotated ${esc(contentNoun())}</div>
+        <div class="hero-nudge-teaser">${esc(box1Teaser)}</div>
+        <div class="hero-nudge-arrow">↓</div>
+      </button>
+      <button class="hero-nudge" type="button" onclick="document.getElementById('frame-3').scrollIntoView({behavior:'smooth'})">
+        <div class="hero-nudge-eyebrow">02 · Network</div>
+        <div class="hero-nudge-title">Inspect Network Coordination</div>
+        <div class="hero-nudge-teaser">${esc(box2Teaser)}</div>
+        <div class="hero-nudge-arrow">↓</div>
+      </button>
+      <button class="hero-nudge" type="button" onclick="document.getElementById('frame-3').scrollIntoView({behavior:'smooth'})">
+        <div class="hero-nudge-eyebrow">03 · Dimensions</div>
+        <div class="hero-nudge-title">See Dimension Detail</div>
+        <div class="hero-nudge-teaser">${esc(box3Teaser)}</div>
+        <div class="hero-nudge-arrow">↓</div>
+      </button>
+    </div>`;
 }
 
 function renderBrain(c, va, vb){
@@ -1103,6 +1307,12 @@ function renderBrain(c, va, vb){
 }
 
 function renderStrategyInsight(c, va, vb, matchA, matchB, descA, descB){
+  // Use the plain-English gloss as the headline ("Someone thinking out loud
+  // at you — argument-building") rather than the technical recipe name
+  // ("Talking Head Reasoning"). The technical name is still shown as a
+  // smaller monospace tag below so curious readers can still see it.
+  const plainA = matchA.plain_summary || matchA.name || '';
+  const plainB = matchB.plain_summary || matchB.name || '';
   return `
   <div class="strategy-insight">
     <div class="si-header">
@@ -1113,13 +1323,15 @@ function renderStrategyInsight(c, va, vb, matchA, matchB, descA, descB){
       <div class="si-play a has-badge">
         ${badge(c.slots.recipe_match.video_a)}
         <div class="si-play-side">${esc((va.display_name||'').toUpperCase())} RUNS</div>
-        <h4 class="si-play-name">${esc(matchA.name)}</h4>
+        <h4 class="si-play-name">${esc(plainA)}</h4>
+        <div class="si-play-tech">${esc(matchA.name || '')}</div>
         <p class="si-play-desc has-badge">${badge(descA)}${rich(descA.value)}</p>
       </div>
       <div class="si-play b has-badge">
         ${badge(c.slots.recipe_match.video_b)}
         <div class="si-play-side">${esc((vb.display_name||'').toUpperCase())} RUNS</div>
-        <h4 class="si-play-name">${esc(matchB.name)}</h4>
+        <h4 class="si-play-name">${esc(plainB)}</h4>
+        <div class="si-play-tech">${esc(matchB.name || '')}</div>
         <p class="si-play-desc has-badge">${badge(descB)}${rich(descB.value)}</p>
       </div>
     </div>
@@ -1149,7 +1361,7 @@ function renderFrame2(c, va, vb){
       <div class="frame-num reveal">Frame 02 · Read along</div>
       <div class="frame-num-r reveal">${totalChords > 0 ? `${totalChords} chord${totalChords===1?'':'s'} · ` : ''}${dimensions.length || 7} systems · 1Hz</div>
     </div>
-    <h2 class="frame-h2 reveal d1">Watch the brain <em>follow the words.</em></h2>
+    <h2 class="frame-h2 reveal d1">Read along ${noun==='video' ? '— frame by frame' : ''}.</h2>
     <p class="frame-sub reveal d2 has-badge" style="position:relative">
       ${badge(c.slots.frame2_sub)}
       ${c.slots.frame2_sub && c.slots.frame2_sub.value
@@ -1274,16 +1486,26 @@ function annotateText(text, dimensions, side, headlineText){
   Object.entries(SYS_KEYWORDS).forEach(([sys, kws]) => {
     if (kws.some(k => headlineLower.includes(k))) allow.add(sys);
   });
-  const allowSystems = allow.size > 0 ? allow : null;  // fallback: all systems
+  // If the headline filter would leave us with zero candidates, FALL BACK
+  // to allowing all systems (so the Pope-read-along-empty bug doesn't
+  // recur). We still apply the activation gate below so noisy text never
+  // produces dense highlighting.
+  let allowSystems = allow.size > 0 ? allow : null;
 
   const charsPerStep = Math.max(1, text.length / numSteps);
   const tokens = text.split(/(\s+)/);
   let pos = 0;
   let meaningfulCount = 0;
   const candidates = [];
+  // BUG FIX: prior version never advanced `pos` here, so every meaningful
+  // token was scored against step 0 (~the first 17% of the timeseries).
+  // That's why annotations would only ever cluster at the start of long
+  // texts. Now `pos` advances per-token like the final render loop does.
   tokens.forEach((tok, idx) => {
-    if (!tok || /^\s+$/.test(tok)) return;
+    if (!tok) return;
+    if (/^\s+$/.test(tok)) { pos += tok.length; return; }
     const step = Math.min(numSteps - 1, Math.floor(pos / charsPerStep));
+    pos += tok.length;
     const bare = tok.replace(/[^\w'-]/g, '').toLowerCase();
     if (!bare || bare.length < 4 || ANNOTATION_STOPWORDS.has(bare)) return;
     meaningfulCount++;
@@ -1294,6 +1516,24 @@ function annotateText(text, dimensions, side, headlineText){
       candidates.push({ idx, sys: ds.sys, strength: ds.top + ds.gap });
     }
   });
+  // If headline-system filtering produced ZERO candidates, retry without
+  // the filter so the page never shows an empty read-along (the
+  // Pope-address bug). Loosens the gates too so SOMETHING shows.
+  if (candidates.length === 0 && allowSystems !== null) {
+    pos = 0;
+    tokens.forEach((tok, idx) => {
+      if (!tok) return;
+      if (/^\s+$/.test(tok)) { pos += tok.length; return; }
+      const step = Math.min(numSteps - 1, Math.floor(pos / charsPerStep));
+      pos += tok.length;
+      const bare = tok.replace(/[^\w'-]/g, '').toLowerCase();
+      if (!bare || bare.length < 4 || ANNOTATION_STOPWORDS.has(bare)) return;
+      const ds = dominanceScore(dimensions, seriesKey, step);
+      if (ds && ds.top >= 0.50 && ds.gap >= 0.03) {
+        candidates.push({ idx, sys: ds.sys, strength: ds.top + ds.gap });
+      }
+    });
+  }
   // ~1 in 4 meaningful tokens cap, but loosen if coverage too thin.
   const tightCap = Math.max(1, Math.round(meaningfulCount / 4));
   const minCov   = Math.max(2, Math.floor(meaningfulCount * 0.10));
@@ -1313,7 +1553,8 @@ function annotateText(text, dimensions, side, headlineText){
     const color = SYSTEM_COLOR[sys] || '#888';
     const sysName = SYSTEM_FULL[sys] || sys;
     // Yellow-highlighter notebook effect: subtle 18% bg tint + 1.5px underline.
-    return `<span class="txt-seg" data-sys="${sys}" title="${esc(sysName)}" style="background:${hexAlpha(color, 0.18)};border-bottom:1.5px solid ${color};padding:0 2px;border-radius:1px">${esc(tok)}</span>`;
+    const bg = SYSTEM_COLOR_BG[sys] || hexAlpha(color, 0.24);
+    return `<span class="txt-seg" data-sys="${sys}" title="${esc(sysName)}" style="background:${bg};border-bottom:1.5px solid ${color};padding:1px 3px;border-radius:1px">${esc(tok)}</span>`;
   }).join('');
 }
 
@@ -1362,6 +1603,11 @@ function renderFrame3(c, va, vb){
   const matchA = c.slots.recipe_match.video_a.value, matchB = c.slots.recipe_match.video_b.value;
   const callouts = c.slots.coupling_callouts;
   const meta = (RESULT && RESULT.meta) || {};
+  // Plain-English gloss for each match. Fall back to the technical name if
+  // plain_summary isn't on the payload (legacy results before recipe_match
+  // slot was extended with plain_summary).
+  const plainA = matchA.plain_summary || matchA.name || '';
+  const plainB = matchB.plain_summary || matchB.name || '';
   return `
   <section class="frame" id="frame-3">
     <div class="frame-meta-row">
@@ -1369,7 +1615,7 @@ function renderFrame3(c, va, vb){
       <div class="frame-num-r reveal">7 systems · within-${esc(contentNoun())} coupling and per-dimension comparison</div>
     </div>
     <h2 class="frame-h2 reveal d1">The systems behind <em>each play.</em></h2>
-    <p class="frame-sub reveal d2"><em>${esc(va.display_name)}</em> ran <em>${esc(matchA.name)}</em>; <em>${esc(vb.display_name)}</em> ran <em>${esc(matchB.name)}</em>. Both are built from the same seven cortical systems — coupled differently and pulled at different times. <em>Network Coordination</em> shows how each ${esc(contentNoun())}'s systems coupled within itself. <em>Dimension Detail</em> breaks down each system's full time series across both ${esc(contentNounPlural())}.</p>
+    <p class="frame-sub reveal d2"><em>${esc(va.display_name)}</em> is <em>${esc(plainA)}</em>; <em>${esc(vb.display_name)}</em> is <em>${esc(plainB)}</em>. Both are built from the same seven cortical systems — coupled differently and pulled at different times. <em>Network Coordination</em> shows how each ${esc(contentNoun())}'s systems coupled within itself. <em>Dimension Detail</em> breaks down each system's full time series across both ${esc(contentNounPlural())}.</p>
     <div class="reveal d1">
       <div class="frame3-tabs">
         <button class="frame3-tab active" data-panel="network">Network Coordination</button>
@@ -1377,7 +1623,7 @@ function renderFrame3(c, va, vb){
       </div>
       <div class="frame3-panel active" data-panel="network">
         <div class="connect-explainer">
-          <strong>Did Memory and Language fire together — or separately?</strong> If two cortical systems consistently rose and fell at the same moments across the runtime, they're <em>coupled</em>. If one's activity meant the other went quiet, they're <em>anti-coupled</em>. If they peaked at different times, they're <em>decoupled</em>. Coupling tells you each video's cortical strategy: integrated network, parallel pipelines, or active suppression.
+          <strong>Which systems fired together?</strong> Two systems are <em>coupled</em> when they rise and fall together; <em>anti-coupled</em> when one quiets the other; <em>decoupled</em> when they peak at different times.
         </div>
         ${renderCallouts(c, va, vb, callouts)}
         <div class="connect-grid">
@@ -1497,38 +1743,41 @@ function renderCallouts(c, va, vb, callouts){
 }
 
 function renderConnectCard(side, video, matrix, integration, hubNode){
-  const integ = integration || 0;
-  const titleByIntegration = integ >= 0.35 ? 'Tightly integrated' : integ <= 0.20 ? 'Decoupled, parallel' : 'Mixed coupling';
-  // Plain-English gloss for non-scientist readers — the score on its own
-  // means nothing without context.
-  const integrationExplain = integ >= 0.35
-    ? 'all seven brain systems were rising and falling together — a coordinated network'
-    : integ <= 0.20
-    ? 'systems ran on independent tracks — parallel pipelines, not one network'
-    : 'mixed: some systems coupled tightly, others ran independently';
+  // Card title used to be a generic gloss ("Tightly integrated"). The user
+  // asked for the actual coupling pair name instead — that's far more
+  // informative ("Personal ↔ Social" tells you what's coupled; "Tightly
+  // integrated" tells you almost nothing).
+  // Find the strongest |r| pair from the coupling matrix.
+  let bestI = 0, bestJ = 1, bestR = 0;
+  const n = CANONICAL_SYSTEMS.length;
+  for (let i = 0; i < n; i++) {
+    for (let j = i + 1; j < n; j++) {
+      const r = (matrix && matrix[i] && typeof matrix[i][j] === 'number') ? matrix[i][j] : 0;
+      if (Math.abs(r) > Math.abs(bestR)) { bestR = r; bestI = i; bestJ = j; }
+    }
+  }
+  const sysA = CANONICAL_SYSTEMS[bestI], sysB = CANONICAL_SYSTEMS[bestJ];
+  const labelA = SYSTEM_DISPLAY[sysA] || sysA;
+  const labelB = SYSTEM_DISPLAY[sysB] || sysB;
+  const sign = bestR >= 0 ? '+' : '';
+  const rStr = `${sign}${bestR.toFixed(2)}`;
+  const pairTitle = `${labelA} ↔ ${labelB} · r=${rStr}`;
   return `
   <div class="connect-card plate">
     <div class="connect-card-header">
       <span class="connect-card-label ${side}">FIG ${side==='a'?'4.1':'4.2'} · ${esc(video.display_name)} · ${side.toUpperCase()}</span>
-      <span class="connect-card-title">${esc(titleByIntegration)}</span>
+      <span class="connect-card-title">strongest: ${esc(pairTitle)}</span>
     </div>
     <div class="connect-svg-wrap">
       <svg class="connect-svg" id="connect-${side}" viewBox="0 0 320 320"></svg>
       <div class="connect-edge-tooltip" id="connect-tt-${side}"></div>
     </div>
-    <div class="connect-stats">
-      <div class="connect-stat">
-        <div class="connect-stat-label">INTEGRATION</div>
-        <div class="connect-stat-val">${integ.toFixed(2)}</div>
-        <div class="connect-stat-note">${esc(integrationExplain)}</div>
-      </div>
-      <div class="connect-stat">
-        <div class="connect-stat-label">HUB NODE</div>
-        <div class="connect-stat-val">${esc(SYSTEM_DISPLAY[hubNode]||hubNode||'—')}</div>
-        <div class="connect-stat-note">the system most strongly tied to all others</div>
-      </div>
-    </div>
   </div>`;
+  // Integration + Hub Node + System Means stats row REMOVED per user
+  // feedback ("Integration 0.62 also coordinated, 0.50 also coordinated —
+  // can't understand. Let's remove the integration part. Hub Node, and
+  // system means."). The numbers without context were confusing more
+  // than they explained.
 }
 
 // Map a card class to a Figure number for the FIG x.y label format.
@@ -1568,10 +1817,16 @@ function renderFooter(c){
   // (TRIBEv2 SKU, CC BY-NC license string, raw comparison ID, voice hash)
   // that leaked technical details to non-technical readers. Comparison ID
   // moves to a copy-friendly position in the dev banner instead.
+  // "Run your own comparison" lives here per user feedback — kept out of
+  // the hero so the hero stays focused on the result the reader landed on.
+  const noun = contentNounPlural();
   return `
   <footer>
     <div>Brain Diff — predicting the cortex from content. <a href="/methodology" style="color:inherit">Methodology</a> · <a href="/research" style="color:inherit">Research</a></div>
-    <div title="Comparison ID — handy for support">${esc((c.comparison_id || '').slice(0,8))}</div>
+    <div style="display:flex;align-items:center;gap:1.2rem">
+      <a href="/launch" style="color:var(--red);font-weight:500">Run your own ${esc(noun)} comparison →</a>
+      <span title="Comparison ID — handy for support">${esc((c.comparison_id || '').slice(0,8))}</span>
+    </div>
   </footer>`;
 }
 
@@ -1612,9 +1867,80 @@ function initInteractions(){
   initChordPins();
   initConnectNetworks();
   initDimensionChart();
+  initBrainRegionHover();
   // Initial chord render
   const moments = CONTENT.slots.chord_moments || [];
   if (moments.length) renderChordDetail(0);
+}
+
+// ─── BRAIN REGION HOVER ───────────────────────────────────────────────
+// Wire the 7-pill region row under the brain to the floating A vs B
+// readout pinned over the canvas. On hover (and on click) we:
+//   1. update the readout with bright A/B/Δ values for that region
+//   2. show the anatomical region name + brain area
+//   3. mark the pill is-active for visual confirmation
+// Click also tries to push the highlight down into the Three.js brain
+// via window.__brainHandle.setHighlight (set by mountResultsBrain when
+// available).
+function initBrainRegionHover(){
+  const row = document.getElementById('brainRegionRow');
+  if (!row) return;
+  const readout = document.getElementById('brainABReadout');
+  const regionEl = document.getElementById('brainABRegion');
+  const aEl  = document.getElementById('brainABValA');
+  const bEl  = document.getElementById('brainABValB');
+  const dEl  = document.getElementById('brainABValD');
+  const anaEl = document.getElementById('brainABAnatomical');
+  const pills = row.querySelectorAll('.brain-region-pill');
+  const va = CONTENT.videos.video_a, vb = CONTENT.videos.video_b;
+
+  function paint(sys){
+    if (!sys || !va.system_means || !vb.system_means) return;
+    const a = Number(va.system_means[sys] || 0);
+    const b = Number(vb.system_means[sys] || 0);
+    const d = b - a;
+    if (regionEl) regionEl.textContent = SYSTEM_FULL[sys] || sys;
+    if (aEl) aEl.textContent = a.toFixed(2);
+    if (bEl) bEl.textContent = b.toFixed(2);
+    if (dEl) {
+      dEl.textContent = (d >= 0 ? '+' : '') + d.toFixed(2);
+      // Tint the Δ cell border by who's stronger
+      const cell = dEl.closest('.brain-ab-cell');
+      if (cell) cell.style.borderLeftColor = d >= 0 ? 'var(--b)' : 'var(--a)';
+    }
+    if (anaEl) anaEl.textContent = SYSTEM_REGION[sys] || '';
+    if (readout) readout.classList.add('is-active');
+    pills.forEach(p => p.classList.toggle('is-active', p.dataset.sys === sys));
+    // Push the highlight into the 3D brain if available.
+    try {
+      const handle = window.__brainHandle;
+      if (handle && typeof handle.setHighlight === 'function') {
+        const SYS_TO_REGION = {
+          personal_resonance:'personal_resonance', attention:'attention_salience',
+          brain_effort:'brain_effort', gut_reaction:'gut_reaction',
+          memory_encoding:'memory_encoding', social_thinking:'social_thinking',
+          language_depth:'language_depth',
+        };
+        handle.setHighlight(SYS_TO_REGION[sys] || sys);
+      }
+    } catch(e){ /* brain handle is optional */ }
+  }
+
+  pills.forEach(pill => {
+    pill.addEventListener('mouseenter', () => paint(pill.dataset.sys));
+    pill.addEventListener('focus',      () => paint(pill.dataset.sys));
+    pill.addEventListener('click',      () => paint(pill.dataset.sys));
+  });
+
+  // Auto-pick the biggest-delta system at boot so the readout doesn't
+  // sit empty when the page first loads.
+  let bestSys = '', bestDelta = 0;
+  for (const sys of CANONICAL_SYSTEMS){
+    const a = Number((va.system_means||{})[sys] || 0);
+    const b = Number((vb.system_means||{})[sys] || 0);
+    if (Math.abs(b - a) > Math.abs(bestDelta)){ bestDelta = b - a; bestSys = sys; }
+  }
+  if (bestSys) paint(bestSys);
 }
 
 function setActiveRegion(sys){
@@ -1995,47 +2321,41 @@ function drawTV(dim){
     document.getElementById('curve-a-fill').setAttribute('d', pA + ` L ${x(n-1)} ${padT+chartH} L ${x(0)} ${padT+chartH} Z`);
     document.getElementById('curve-b-fill').setAttribute('d', pB + ` L ${x(n-1)} ${padT+chartH} L ${x(0)} ${padT+chartH} Z`);
   } else {
-    // DELTA mode — show (B − A) as a single line, centred on 0.5 (the
-    // chart's baseline for the normalised [0,1] scale). Above = B stronger,
-    // below = A stronger. The line was previously invisible because the
-    // delta math centred on 0.5*chartH but no baseline line was drawn,
-    // and curve-a was hidden — so users saw only the crosshair tooltip
-    // without a curve. Fix: keep BOTH curves in delta view too, drawn
-    // faded, AND add a bold (B − A) line in the page red on top.
-    const pA = sA.map((v,i) => `${i===0?'M':'L'} ${x(i)} ${y(v)}`).join(' ');
-    const pB = sB.map((v,i) => `${i===0?'M':'L'} ${x(i)} ${y(v)}`).join(' ');
-    document.getElementById('curve-a').setAttribute('d', pA);
-    document.getElementById('curve-b').setAttribute('d', pB);
-    // Fade the underlying curves in delta mode so the contrast line pops.
-    document.getElementById('curve-a').setAttribute('opacity','0.25');
-    document.getElementById('curve-b').setAttribute('opacity','0.25');
+    // DELTA mode — clean (B − A) line on a y-axis labeled −0.5 … 0 … +0.5.
+    // Above the dashed midline: B is stronger. Below: A is stronger.
+    // Previous version faded both curves and overlaid a delta line that
+    // shared an axis with absolute values — readers couldn't tell what
+    // the axis meant. New version hides absolute curves entirely so the
+    // chart is single-signal: just the contrast.
+    document.getElementById('curve-a').setAttribute('d', '');
+    document.getElementById('curve-b').setAttribute('d', '');
+    document.getElementById('curve-a').setAttribute('opacity','0');
+    document.getElementById('curve-b').setAttribute('opacity','0');
     document.getElementById('curve-a-fill').setAttribute('d', '');
-    document.getElementById('curve-b-fill').setAttribute('d', '');
-    // Map delta into the chart space, centred on y(0.5).
-    // A delta of +0.5 plots at y(1.0) (top), −0.5 at y(0.0) (bottom).
-    const yMid = y(0.5);
-    const yDelta = v => padT + (0.5 - (v/2 + 0.5)) * 0 + (yMid - v * chartH/2);
-    // dPts in [−1, +1]; we draw to fit. Cap at ±0.5 visually so a single
-    // outlier doesn't compress the rest of the line.
-    const dPts = sA.map((v,i) => Math.max(-0.99, Math.min(0.99, sB[i] - v)));
+
+    // Map delta in [−0.5, +0.5] across the FULL chart height, centred on
+    // the midline. A delta of +0.5 plots at the top, −0.5 at the bottom.
+    const yMid = padT + chartH / 2;
+    const yDelta = v => yMid - (v / 0.5) * (chartH / 2);
+    // Cap visual range so a single outlier doesn't redefine the scale.
+    const dPts = sA.map((v,i) => Math.max(-0.5, Math.min(0.5, sB[i] - v)));
     const pDelta = dPts.map((v,i) => `${i===0?'M':'L'} ${x(i)} ${yDelta(v)}`).join(' ');
-    // We don't have a third <path> in the SVG, so reuse curve-b-fill as the
-    // delta line: clear its existing area-fill role, give it a stroke.
+    // Re-use curve-b-fill as the delta line element.
     const deltaPath = document.getElementById('curve-b-fill');
     deltaPath.setAttribute('d', pDelta);
     deltaPath.setAttribute('fill', 'none');
-    deltaPath.setAttribute('stroke', 'var(--ink-strong, #2A2520)');
-    deltaPath.setAttribute('stroke-width', '2.4');
+    deltaPath.setAttribute('stroke', 'var(--ink-strong, #0E0E0E)');
+    deltaPath.setAttribute('stroke-width', '2.2');
     deltaPath.setAttribute('opacity', '1');
-    // Draw the zero (= baseline = 0.5 in absolute) line under it.
-    // (Tiny dashed line. Inline so we don't need another SVG element.)
-    // No-op if zero-line already exists from a prior render — clean it.
+
     const svg = deltaPath.ownerSVGElement;
+
+    // Zero baseline (B = A).
     let zeroLine = document.getElementById('delta-zero-line');
     if (!zeroLine) {
       zeroLine = document.createElementNS('http://www.w3.org/2000/svg','line');
       zeroLine.setAttribute('id','delta-zero-line');
-      zeroLine.setAttribute('stroke', 'rgba(42,37,32,0.35)');
+      zeroLine.setAttribute('stroke', 'rgba(26,26,26,0.45)');
       zeroLine.setAttribute('stroke-dasharray', '3 3');
       zeroLine.setAttribute('stroke-width', '1');
       svg.appendChild(zeroLine);
@@ -2045,11 +2365,37 @@ function drawTV(dim){
     zeroLine.setAttribute('y1', yMid);
     zeroLine.setAttribute('y2', yMid);
     zeroLine.style.display = '';
+
+    // Y-axis labels: +0.5 (top, B stronger), 0 (midline), −0.5 (bottom, A stronger).
+    // Drawn fresh on every redraw so they update with chart resize.
+    document.querySelectorAll('.delta-axis-label').forEach(el => el.remove());
+    const makeLabel = (yPos, txt, anchor='end') => {
+      const t = document.createElementNS('http://www.w3.org/2000/svg','text');
+      t.setAttribute('class','delta-axis-label');
+      t.setAttribute('x', anchor === 'end' ? padL - 6 : padL + chartW + 6);
+      t.setAttribute('y', yPos);
+      t.setAttribute('text-anchor', anchor);
+      t.setAttribute('dominant-baseline','middle');
+      t.setAttribute('font-family','Courier Prime, Courier New, monospace');
+      t.setAttribute('font-size','10');
+      t.setAttribute('fill','rgba(26,26,26,0.7)');
+      t.textContent = txt;
+      svg.appendChild(t);
+    };
+    makeLabel(padT, '+0.5');
+    makeLabel(yMid, '0');
+    makeLabel(padT + chartH, '−0.5');
+    // "B stronger" / "A stronger" side labels on the right gutter.
+    const vbName = (CONTENT.videos.video_b.display_name || 'B').slice(0,12);
+    const vaName = (CONTENT.videos.video_a.display_name || 'A').slice(0,12);
+    makeLabel(padT + 12, `↑ ${vbName} stronger`, 'start');
+    makeLabel(padT + chartH - 12, `↓ ${vaName} stronger`, 'start');
   }
-  // When switching BACK to absolute, hide the zero-line if it exists.
+  // When switching BACK to absolute, hide the zero-line + delta labels.
   if (currentMode === 'absolute'){
     const z = document.getElementById('delta-zero-line'); if (z) z.style.display = 'none';
-    // Also restore curve opacity that delta mode dimmed.
+    document.querySelectorAll('.delta-axis-label').forEach(el => el.remove());
+    // Restore curve opacity that delta mode hid.
     document.getElementById('curve-a').setAttribute('opacity', '1');
     document.getElementById('curve-b').setAttribute('opacity', '1');
     // And reset the fill paths back to area-fill mode.
@@ -2098,12 +2444,20 @@ window.mountResultsBrain = function mountResultsBrain(){
   }
 
   try {
-    mountBrain(canvas, {
+    // mountBrain returns a control handle with setHighlight(regionKey).
+    // We expose it on window so the brain-region-pill row (initBrainRegionHover)
+    // can push the active region into the mesh as the user hovers pills.
+    // lensMode + initialRegion are needed so setHighlight actually paints
+    // a region via the lens-mode path instead of just rotating.
+    const handle = mountBrain(canvas, {
       rotation: true,
       rotationSpeed: 0.06,
       useRealMesh: true,
       diffRegions,
+      lensMode: true,
+      initialRegion: 'gut_reaction',
     });
+    window.__brainHandle = handle || null;
   } catch (err) {
     console.error('[text-results] mountBrain failed:', err);
   }

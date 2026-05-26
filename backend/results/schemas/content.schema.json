@@ -133,6 +133,8 @@
           "properties": {
             "library_id":       {"type": "string"},
             "name":             {"type": "string"},
+            "plain_summary":    {"type": "string", "description": "One-line plain-English gloss for non-scientist readers — used in the UI instead of the technical recipe name."},
+            "built_for_tag":    {"type": "string"},
             "confidence":       {"type": "number", "minimum": 0, "maximum": 1},
             "score_breakdown":  {"type": "object", "additionalProperties": {"type": "number"}},
             "rationale":        {"type": "string"}

@@ -1,89 +1,93 @@
 /* ─────────────────────────────────────────────────────────────────────────
-   BrainDiff — shared lab-notebook theme
+   BrainDiff — shared academic theme
    ─────────────────────────────────────────────────────────────────────────
-   Loaded by every page on the site (text-results, run, input, methodology,
-   research, etc.) so the colour + font palette stays consistent.
+   Visual direction: clean academic paper (Harvard / Stanford undergrad
+   research page). Ivory background, EB Garamond serif body, navy ink for
+   accents, multiple HIGHLIGHTER colours for emphasis. No red, no orange,
+   no warm "Anthropic" coral, no handwriting fonts, no ruled paper.
 
-   Tokens here override page-local :root because this file is linked AFTER
-   the inline <style> block on each page.
-
-   Visual feel: yellow legal-pad paper with red rule margin + faint
-   horizontal lines, EB Garamond / Crimson Pro serif body, Caveat
-   handwritten display, Courier Prime mono, oxblood-red ink.
-
-   Do not put page-specific component styles here — only tokens, base
-   typography, and the body::before / body::after notebook chrome. */
+   Loaded by every page on the site so the palette stays consistent.
+   Tokens here override page-local :root because this file links AFTER
+   each page's inline <style>.
+*/
 
 :root {
-  /* Paper — warm legal-pad yellow */
-  --cream:   #F4ECC9;
-  --cream-2: #ECE3BA;
-  --cream-3: #DFD49E;
-  --rule-color:   rgba(168, 50, 31, 0.10);
-  --margin-color: rgba(168, 50, 31, 0.20);
+  /* Paper — clean ivory, the white of an academic journal page */
+  --cream:   #FCF8EE;
+  --cream-2: #F4EFE2;
+  --cream-3: #E9E2D0;
+  --rule-color:   transparent;   /* no ruled paper */
+  --margin-color: transparent;   /* no red margin line */
 
   /* Ink */
-  --ink:        #181410;
-  --ink-mid:    #3D352D;
-  --ink-dim:    #6E6452;
-  --ink-faint:  #9E9272;
-  --ink-strong: #181410;
+  --ink:        #1A1A1A;
+  --ink-mid:    #4A4A4A;
+  --ink-dim:    #7A7A7A;
+  --ink-faint:  #A8A8A8;
+  --ink-strong: #0E0E0E;
 
-  /* Red — correction pen */
-  --red:      #9F2715;
-  --red-soft: #C04632;
-  --red-bg:   rgba(159, 39, 21, 0.08);
-  --gold:     #A07118;
+  /* Navy accent — replaces all the prior reds. Used for:
+     section eyebrows, links, the A-side label, FIG numbers,
+     primary CTA. Academic-paper-cover blue. */
+  --red:      #1A3E73;    /* keeping the token name for backward-compat,
+                              but the VALUE is navy. Any code reading
+                              var(--red) now gets navy. */
+  --red-soft: #2B5189;
+  --red-bg:   rgba(26, 62, 115, 0.07);
+  --gold:     #8C6A1D;
 
-  /* Two-side: A faded blue ink, B oxblood red */
-  --a:      #1F4A6E;   --a-soft: rgba(31, 74, 110, 0.13);
-  --b:      #9F2715;   --b-soft: rgba(159, 39, 21, 0.13);
+  /* Two-side accents — navy (A) vs academic-purple (B). Strong contrast
+     without resorting to warm/red tones. */
+  --a:      #1A3E73;   --a-soft: rgba(26, 62, 115, 0.13);
+  --b:      #4F2A8C;   --b-soft: rgba(79, 42, 140, 0.13);
 
-  --line:        rgba(24, 20, 16, 0.10);
-  --line-strong: rgba(24, 20, 16, 0.20);
+  --line:        rgba(26, 26, 26, 0.10);
+  --line-strong: rgba(26, 26, 26, 0.20);
 
-  /* Fonts */
-  --ff-display:       'Caveat', 'Architects Daughter', 'Marker Felt', cursive;
+  /* Fonts — printed-paper academic. No handwriting. */
+  --ff-display:       'EB Garamond', 'Garamond', Georgia, serif;
   --ff-display-print: 'EB Garamond', 'Garamond', Georgia, serif;
-  --ff-body:          'Crimson Pro', 'Crimson Text', 'Garamond', Georgia, serif;
-  --ff-hand:          'Kalam', 'Caveat', cursive;
+  --ff-body:          'EB Garamond', 'Crimson Pro', 'Crimson Text', Georgia, serif;
+  --ff-hand:          'EB Garamond', Georgia, serif;          /* no handwriting; alias to serif */
   --ff-mono:          'Courier Prime', 'Courier New', monospace;
   --ff-ui:            'Inter Tight', system-ui, sans-serif;
   --halo: 0.15;
+
+  /* ── HIGHLIGHTER PALETTE ──────────────────────────────────────────────
+     Used for the 7 brain systems and for inline read-along highlights.
+     Each colour has a SOLID variant (for chips/dots/borders) and an
+     ALPHA variant (for actual highlighter-stroke text backgrounds).
+     Picked so they survive on an ivory page without screaming. */
+  --hi-yellow:       #F2CE3F;   --hi-yellow-bg:  rgba(242, 206, 63, 0.32);
+  --hi-green:        #6CB85D;   --hi-green-bg:   rgba(108, 184, 93, 0.28);
+  --hi-pink:         #E66EA0;   --hi-pink-bg:    rgba(230, 110, 160, 0.26);
+  --hi-cyan:         #4DAFC5;   --hi-cyan-bg:    rgba(77, 175, 197, 0.28);
+  --hi-purple:       #7C5BB4;   --hi-purple-bg:  rgba(124, 91, 180, 0.24);
+  --hi-navy:         #2B5189;   --hi-navy-bg:    rgba(43, 81, 137, 0.20);
+  --hi-sepia:        #8C6A1D;   --hi-sepia-bg:   rgba(140, 106, 29, 0.22);
 }
 
 :root[data-theme="dark"]{
-  --cream:   #1A1610;   --cream-2: #221C15;   --cream-3: #2A2218;
-  --ink:     #ECE0CB;   --ink-mid: #C2B8A2;   --ink-dim: #8F8773;   --ink-faint: #5E574A;
-  --ink-strong: #ECE0CB;
-  --red:     #D6664A;   --red-soft: #E37C5E;   --red-bg: rgba(214, 102, 74, 0.10);
+  --cream:   #1A1A1A;   --cream-2: #232323;   --cream-3: #2C2C2C;
+  --ink:     #ECECEC;   --ink-mid: #C0C0C0;   --ink-dim: #8B8B8B;   --ink-faint: #5E5E5E;
+  --ink-strong: #FFFFFF;
+  --red:     #6B8FBF;   --red-soft: #8AAAD0;   --red-bg: rgba(107, 143, 191, 0.10);
   --gold:    #D4A857;
-  --a:       #7BAACB;   --a-soft: rgba(123, 170, 203, 0.14);
-  --b:       #DC6849;   --b-soft: rgba(220, 104, 73, 0.14);
-  --line:        rgba(236, 224, 203, 0.07);
-  --line-strong: rgba(236, 224, 203, 0.14);
+  --a:       #6B8FBF;   --a-soft: rgba(107, 143, 191, 0.14);
+  --b:       #A38AD0;   --b-soft: rgba(163, 138, 208, 0.14);
+  --line:        rgba(236, 236, 236, 0.07);
+  --line-strong: rgba(236, 236, 236, 0.14);
 }
 
-/* Body — paper background with subtle ruled lines and red margin. */
+/* Body — clean paper background, no ruled lines. */
 body {
   background: var(--cream);
   color: var(--ink);
   font-family: var(--ff-body);
   font-size: 17px;
-  line-height: 1.7;
+  line-height: 1.65;
 }
 
-/* Body chrome (rule lines + red margin) — opt-in via body.notebook-paper.
-   Pages that want the ruled-paper look add the class; pages that don't
-   (admin dashboards, etc.) keep a clean background. */
-body.notebook-paper::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-  background:
-    linear-gradient(to right, transparent 95px, var(--margin-color) 95px, var(--margin-color) 96px, transparent 96px),
-    repeating-linear-gradient(to bottom, transparent 0, transparent 29px, var(--rule-color) 29px, var(--rule-color) 30px);
-}
-body.notebook-paper > * { position: relative; z-index: 1; }
+/* Reset the prior notebook-paper chrome so it can't reappear. */
+body.notebook-paper::before { content: none; }
+body.notebook-paper > * { position: static; z-index: auto; }

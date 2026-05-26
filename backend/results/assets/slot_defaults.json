@@ -28,7 +28,7 @@
     "status": "generic"
   },
   "recipe_description": {
-    "value": "The brain signature for this video did not match a named recipe in the current library. Closest match noted in audit logs. *Built for novel pattern.*",
+    "value": "The brain signature for this piece did not match a named recipe in the current library. Closest match noted in audit logs. *Built for novel pattern.*",
     "source": "fallback",
     "status": "generic"
   },
@@ -43,7 +43,7 @@
     "status": "generic"
   },
   "coupling_callout": {
-    "value": "These two systems showed a measurable correlation across this video's runtime — a pattern in how the brain coordinated them during this content.",
+    "value": "These two systems showed a measurable correlation across the runtime — a pattern in how the brain coordinated them throughout.",
     "source": "fallback",
     "status": "generic"
   }
