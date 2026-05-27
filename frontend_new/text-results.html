@@ -14,62 +14,84 @@
        Inter Tight retained for utility chrome.
      Old fonts (Fraunces, Newsreader, JetBrains Mono) left in CSS fallback chains
      for the case where the new fonts fail to load. -->
-<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Crimson+Pro:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Caveat:wght@400;500;700&family=Kalam:wght@300;400;700&family=Inter+Tight:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Crimson+Pro:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Inter+Tight:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./assets/theme.css">
 <script>(function(){var r=document.documentElement;try{var t=localStorage.getItem('braindiff-theme');if(t==='dark')r.setAttribute('data-theme','dark');}catch(e){}})();</script>
 <style>
-/* ── LAB-NOTEBOOK THEME v2 — FULL LEGAL-PAD MODE ─────────────────────────
-   The first pass was too timid (still felt like cream paper). This is the
-   real treatment:
-     - YELLOW legal-pad background, not cream
-     - Faint horizontal rule lines on the body (printed pencil rules)
-     - Near-black ink for body text (pencil + ink), not warm charcoal
-     - Faded blue ink (A) + red pen ink (B) for accents
-     - System colours retuned to a desaturated biology-textbook palette:
-       sienna, oxblood, ochre, olive — never sage-green-on-yellow which
-       fights the background.
+/* ── ACADEMIC THEME — Harvard / Stanford undergrad research page ─────────
+   Ivory background, EB Garamond serif, navy + black ink, multiple
+   highlighter colours for emphasis. No yellow legal pad, no ruled paper,
+   no Caveat handwriting, no red/orange/Anthropic warmth. Repeated here
+   in the inline <style> because theme.css alone was orphaned — keep both
+   in sync.
 */
 :root {
-  /* Paper — proper yellow legal-pad, not beige */
-  --cream:   #F4EBC2;   /* primary page surface — legal-pad yellow */
-  --cream-2: #ECE0B0;   /* card surfaces — slightly darker pad sheet */
-  --cream-3: #DACFA0;   /* edges */
+  /* Paper — clean ivory, the white of an academic journal page */
+  --cream:   #FCF8EE;
+  --cream-2: #F4EFE2;
+  --cream-3: #E9E2D0;
+  --rule-color:   transparent;   /* no ruled paper */
+  --margin-color: transparent;   /* no red margin line */
 
-  /* Faint horizontal rule pattern — applied via body::before so it tiles */
-  --rule-color: rgba(168, 50, 31, 0.10);   /* red rule lines, very faint */
-  --margin-color: rgba(168, 50, 31, 0.20); /* left red margin line on legal pad */
+  /* Ink */
+  --ink:        #1A1A1A;
+  --ink-mid:    #4A4A4A;
+  --ink-dim:    #7A7A7A;
+  --ink-faint:  #A8A8A8;
+  --ink-strong: #0E0E0E;
 
-  /* Ink — pencil + ink, near-black on yellow */
-  --ink:       #181410;   /* body text — almost-black graphite */
-  --ink-mid:   #3D352D;
-  --ink-dim:   #6E6452;
-  --ink-faint: #9E9272;
+  /* Navy accent — replaces all the prior reds. --red token kept for
+     back-compat but the VALUE is navy. */
+  --red:      #1A3E73;
+  --red-soft: #2B5189;
+  --red-bg:   rgba(26, 62, 115, 0.07);
+  --gold:     #8C6A1D;
 
-  /* Red ink — classic correction pen */
-  --red:      #9F2715;
-  --red-soft: #C04632;
-  --red-bg:   rgba(159, 39, 21, 0.08);
-  --gold:     #A07118;
+  /* Two-side accents — navy (A) vs academic-purple (B). */
+  --a:      #1A3E73;   --a-soft: rgba(26, 62, 115, 0.13);
+  --b:      #4F2A8C;   --b-soft: rgba(79, 42, 140, 0.13);
 
-  /* Two-side accent: faded blue fountain-pen ink (A) vs oxblood red pen (B) */
-  --a:      #1F4A6E;   --a-soft: rgba(31, 74, 110, 0.13);
-  --b:      #9F2715;   --b-soft: rgba(159, 39, 21, 0.13);
+  --line:        rgba(26, 26, 26, 0.10);
+  --line-strong: rgba(26, 26, 26, 0.20);
 
-  --line:        rgba(24, 20, 16, 0.10);
-  --line-strong: rgba(24, 20, 16, 0.20);
-
-  /* Fonts — handwritten display + printed-paper body + typewriter mono */
-  --ff-display: 'Caveat', 'Architects Daughter', 'Marker Felt', cursive;     /* hero + section headings — handwriting */
-  --ff-display-print: 'EB Garamond', 'Garamond', Georgia, serif;             /* printed-paper alt for captions / footnotes */
-  --ff-body:    'Crimson Pro', 'Crimson Text', 'Garamond', Georgia, serif;
-  --ff-hand:    'Kalam', 'Caveat', cursive;                                  /* secondary handwriting for marginalia */
-  --ff-mono:    'Courier Prime', 'Courier New', monospace;
-  --ff-ui:      'Inter Tight', system-ui, sans-serif;
+  /* Fonts — academic serif. No handwriting. */
+  --ff-display:       'EB Garamond', 'Garamond', Georgia, serif;
+  --ff-display-print: 'EB Garamond', 'Garamond', Georgia, serif;
+  --ff-body:          'EB Garamond', 'Crimson Pro', 'Crimson Text', Georgia, serif;
+  --ff-hand:          'EB Garamond', Georgia, serif;          /* alias to serif — no handwriting */
+  --ff-mono:          'Courier Prime', 'Courier New', monospace;
+  --ff-ui:            'Inter Tight', system-ui, sans-serif;
   --halo: 0.15;
-  --ink-strong: var(--ink);
+
+  /* HIGHLIGHTER PALETTE — 7 colours, used for both the 7 brain systems
+     and inline read-along emphasis. Each has a SOLID variant (chips/dots)
+     and an ALPHA bg variant (highlighter-pen strokes on body text). */
+  --hi-yellow:       #F2CE3F;   --hi-yellow-bg:  rgba(242, 206, 63, 0.32);
+  --hi-green:        #6CB85D;   --hi-green-bg:   rgba(108, 184, 93, 0.28);
+  --hi-pink:         #E66EA0;   --hi-pink-bg:    rgba(230, 110, 160, 0.26);
+  --hi-cyan:         #4DAFC5;   --hi-cyan-bg:    rgba(77, 175, 197, 0.28);
+  --hi-purple:       #7C5BB4;   --hi-purple-bg:  rgba(124, 91, 180, 0.24);
+  --hi-navy:         #2B5189;   --hi-navy-bg:    rgba(43, 81, 137, 0.20);
+  --hi-sepia:        #8C6A1D;   --hi-sepia-bg:   rgba(140, 106, 29, 0.22);
 }
 
-/* ── PLATE STYLE (replaces rounded cards) — a flat printed-page panel with
-   hairline rules above + below, transparent body, FIG label in red mono. */
+/* Tag styling for the new "(A)" / "(B)" suffix in the hero versus line.
+   Smaller, same colour as the side label, monospace for a little
+   "specimen tag" feel. */
+.ab-tag {
+  font-family: var(--ff-mono);
+  font-size: 0.55em;
+  letter-spacing: 0.08em;
+  vertical-align: 0.25em;
+  opacity: 0.75;
+  margin-left: 0.15em;
+}
+.a-name .ab-tag { color: var(--a); }
+.b-name .ab-tag { color: var(--b); }
+
+/* PLATE style — flat hairline-ruled panel for the network/connect cards.
+   No background fill so the panel reads as printed plate, not a Material
+   card. */
 .plate {
   background: transparent !important;
   border: none !important;
@@ -89,63 +111,26 @@
 .connect-stat-note {
   font-family: var(--ff-body);
   font-size: 12px;
-  font-style: italic;
   color: var(--ink-mid);
   margin-top: 0.35rem;
   line-height: 1.4;
 }
-.hero-versus,
-.hero-eyebrow,
-.frame-eyebrow,
-.cta-headline {
-  font-family: var(--ff-display) !important;
-  font-weight: 500;
-  letter-spacing: 0.005em;
-}
-.hero-h1, .hero-h1--medium, .hero-h1--short {
-  font-family: var(--ff-display) !important;
-  font-weight: 500;
-}
-.margin-note {
-  position: absolute;
-  left: 0;
-  font-family: var(--ff-hand);
-  font-size: 13px;
-  line-height: 1.35;
-  color: var(--red);
-  width: 90px;
-  transform: rotate(-2deg);
-  opacity: 0.85;
-}
 
-/* Legal-pad ruled lines — a 30px-tall horizontal-rule pattern across the
-   whole page body. Subtle enough not to fight the text, present enough
-   that the page reads as a notebook page. The red margin line on the
-   left is a classic legal-pad detail. */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background-image:
-    linear-gradient(to right, transparent 95px, var(--margin-color) 95px, var(--margin-color) 96px, transparent 96px),
-    repeating-linear-gradient(to bottom, transparent 0, transparent 29px, var(--rule-color) 29px, var(--rule-color) 30px);
-}
-@media (max-width: 720px) {
-  /* hide the margin line on narrow screens */
-  body::before { background-image: repeating-linear-gradient(to bottom, transparent 0, transparent 29px, var(--rule-color) 29px, var(--rule-color) 30px); }
-}
+/* Kill the yellow legal-pad ruled-paper overlay that the previous theme
+   drew via body::before. Empty content = no overlay. */
+body::before { content: none; }
+
+/* Dark mode — ink-on-paper inverted. */
 :root[data-theme="dark"]{
-  /* Dark mode: brown-leather feel rather than pure black */
-  --cream:   #1B1611;   --cream-2: #221C16;   --cream-3: #2A2218;
-  --ink:     #ECE0CB;   --ink-mid: #C2B8A2;   --ink-dim: #8F8773;   --ink-faint: #5E574A;
-  --red:     #D6664A;   --red-soft: #E37C5E;   --red-bg: rgba(214, 102, 74, 0.10);
+  --cream:   #1A1A1A;   --cream-2: #232323;   --cream-3: #2C2C2C;
+  --ink:     #ECECEC;   --ink-mid: #C0C0C0;   --ink-dim: #8B8B8B;   --ink-faint: #5E5E5E;
+  --ink-strong: #FFFFFF;
+  --red:     #6B8FBF;   --red-soft: #8AAAD0;   --red-bg: rgba(107, 143, 191, 0.10);
   --gold:    #D4A857;
-  --a:       #7BAACB;   --a-soft: rgba(123, 170, 203, 0.14);
-  --b:       #DC6849;   --b-soft: rgba(220, 104, 73, 0.14);
-  --line:        rgba(236, 224, 203, 0.07);
-  --line-strong: rgba(236, 224, 203, 0.14);
+  --a:       #6B8FBF;   --a-soft: rgba(107, 143, 191, 0.14);
+  --b:       #A38AD0;   --b-soft: rgba(163, 138, 208, 0.14);
+  --line:        rgba(236, 236, 236, 0.07);
+  --line-strong: rgba(236, 236, 236, 0.14);
 }
 
 /* Tag styling for the new "(A)" / "(B)" suffix in the hero versus line.
