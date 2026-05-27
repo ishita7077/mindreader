@@ -3,6 +3,9 @@ FROM python:3.11-slim
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 ENV PIP_NO_CACHE_DIR=1
+ENV HF_HUB_DISABLE_XET=1
+ENV HF_HOME=/root/.cache/huggingface
+ENV TRANSFORMERS_CACHE=/root/.cache/huggingface/transformers
 
 WORKDIR /app
 
@@ -45,6 +48,8 @@ COPY backend/requirements_frozen.txt /app/requirements_frozen.txt
 
 RUN pip install whisperx && \
     grep -v "^-e " /app/requirements_frozen.txt | pip install --upgrade -r /dev/stdin && \
+    pip install "https://github.com/explosion/spacy-models/releases/download/en_core_web_lg-3.8.0/en_core_web_lg-3.8.0-py3-none-any.whl" && \
+    python -c "import spacy; spacy.load('en_core_web_lg')" && \
     pip install \
         "git+https://github.com/facebookresearch/tribev2.git@72399081ed3f1040c4d996cefb2864a4c46f5b8e#egg=tribev2" && \
     pip install runpod && \

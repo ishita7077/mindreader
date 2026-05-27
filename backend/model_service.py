@@ -21,6 +21,45 @@ logger = logging.getLogger("braindiff.model_service")
 _GIB = 1024 ** 3
 
 
+def _disk_snapshot(stage: str) -> dict[str, Any]:
+    paths = [
+        os.getcwd(),
+        os.environ.get("HF_HOME", "/root/.cache/huggingface"),
+        os.environ.get("TRANSFORMERS_CACHE", "/root/.cache/huggingface/transformers"),
+        tempfile.gettempdir(),
+        "/workspace",
+        "/runpod-volume",
+    ]
+    seen: set[str] = set()
+    disks: list[dict[str, Any]] = []
+    for raw_path in paths:
+        if not raw_path:
+            continue
+        path = os.path.abspath(raw_path)
+        if path in seen:
+            continue
+        seen.add(path)
+        probe = path
+        while not os.path.exists(probe):
+            parent = os.path.dirname(probe)
+            if parent == probe:
+                break
+            probe = parent
+        try:
+            usage = shutil.disk_usage(probe)
+        except Exception as err:  # noqa: BLE001
+            disks.append({"path": path, "probe": probe, "error": f"{type(err).__name__}: {err}"})
+            continue
+        disks.append({
+            "path": path,
+            "probe": probe,
+            "total_gb": round(usage.total / _GIB, 2),
+            "used_gb": round(usage.used / _GIB, 2),
+            "free_gb": round(usage.free / _GIB, 2),
+        })
+    return {"stage": stage, "disks": disks}
+
+
 class ProgressEmitter(Protocol):
     """Anything that can publish a `(status, message)` event during prediction.
 
@@ -166,6 +205,7 @@ class TribeService:
 
     def load(self) -> None:
         logger.info("TribeService.load:start model_revision=%s", self.model_revision)
+        logger.info("disk_snapshot %s", _disk_snapshot("tribe_load_start"))
         self._ensure_uvx_on_path()
         self._ensure_ffmpeg_on_path()
         try:
@@ -203,6 +243,7 @@ class TribeService:
                 whisper_batch,
                 mps_cap,
             )
+            logger.info("disk_snapshot %s", _disk_snapshot(f"tribe_load_attempt_{profile.device}"))
             try:
                 self.model = TribeModel.from_pretrained(
                     self.model_revision,
@@ -218,9 +259,11 @@ class TribeService:
                     profile.backend,
                     strategy,
                 )
+                logger.info("disk_snapshot %s", _disk_snapshot("tribe_load_ok"))
                 return
             except Exception as err:
                 last_err = err
+                logger.warning("disk_snapshot %s", _disk_snapshot(f"tribe_load_failed_{profile.device}"))
                 logger.warning(
                     "TribeService.load:attempt_failed device=%s err=%s",
                     profile.device,
@@ -293,6 +336,7 @@ class TribeService:
     ) -> tuple[np.ndarray, Any, dict[str, Any]]:
         if self.model is None:
             raise RuntimeError("TRIBEv2 model not loaded")
+        logger.info("disk_snapshot %s", _disk_snapshot("text_predict_start"))
         with tempfile.NamedTemporaryFile(mode="w", suffix=".txt", delete=False) as handle:
             handle.write(text)
             temp_path = handle.name
@@ -300,6 +344,7 @@ class TribeService:
             # [RP-17] gTTS speech synthesis starts (inside TRIBE.get_events_dataframe).
             print("[RP-17] gtts_started", flush=True)
             logger.info("[RP-17] gtts_started")
+            logger.info("disk_snapshot %s", _disk_snapshot("before_gtts"))
             if progress is not None:
                 progress.emit("synthesizing_speech", "Synthesising speech for the text via gTTS...")
             t0 = time.perf_counter()
@@ -308,6 +353,7 @@ class TribeService:
             # [RP-18] gTTS finished and TRIBE built the events frame.
             print(f"[RP-18] gtts_ok elapsed_ms={events_ms}", flush=True)
             logger.info("[RP-18] gtts_ok elapsed_ms=%d", events_ms)
+            logger.info("disk_snapshot %s", _disk_snapshot("after_gtts_before_llama"))
             if progress is not None:
                 progress.emit("predicting", "Running TRIBE v2 forward pass (text + audio → cortex)...")
             # [RP-19] Llama text encoder load + TRIBE forward pass begin.  The
@@ -316,12 +362,14 @@ class TribeService:
             # itself died (OOM, missing accelerate, HF auth).
             print("[RP-19] llama_load_and_predict_started", flush=True)
             logger.info("[RP-19] llama_load_and_predict_started")
+            logger.info("disk_snapshot %s", _disk_snapshot("before_llama_predict"))
             t1 = time.perf_counter()
             preds, segments = self.model.predict(events=events)
             predict_ms = int((time.perf_counter() - t1) * 1000)
             # [RP-20] TRIBE forward pass returned predictions.
             print(f"[RP-20] tribe_predict_ok elapsed_ms={predict_ms}", flush=True)
             logger.info("[RP-20] tribe_predict_ok elapsed_ms=%d", predict_ms)
+            logger.info("disk_snapshot %s", _disk_snapshot("after_llama_predict"))
             if hasattr(preds, "detach"):
                 preds = preds.detach().cpu().numpy()
             elif hasattr(preds, "values"):
@@ -347,6 +395,7 @@ class TribeService:
             cause = str(err.__cause__) if err.__cause__ is not None else ""
             cause_low = cause.lower()
             blob = f"{low} {cause_low}"
+            logger.error("disk_snapshot %s", _disk_snapshot("text_predict_exception"))
             # Tag the failure with the most-specific code we can identify so
             # that "last code printed" tells you exactly what to fix.
             if "gated repo" in msg or "meta-llama/Llama-3.2-3B" in msg or "401 Client Error" in msg:

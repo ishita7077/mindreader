@@ -11,16 +11,19 @@ function readIp(req) {
 }
 
 function methodNotAllowed(res, allowed) {
+  noStore(res);
   res.setHeader("Allow", allowed.join(", "));
   res.status(405).json({ code: "METHOD_NOT_ALLOWED", message: "Method not allowed" });
 }
 
 function badRequest(res, message, code = "BAD_REQUEST") {
+  noStore(res);
   res.status(400).json({ code, message });
 }
 
 function serverError(res, err, fallbackCode = "INTERNAL_ERROR") {
   const message = err instanceof Error ? err.message : "Unexpected server error";
+  noStore(res);
   res.status(500).json({ code: fallbackCode, message });
 }
 
@@ -29,10 +32,17 @@ function jsonOrEmpty(body) {
   return body;
 }
 
+function noStore(res) {
+  res.setHeader("Cache-Control", "no-store, max-age=0");
+  res.setHeader("CDN-Cache-Control", "no-store");
+  res.setHeader("Vercel-CDN-Cache-Control", "no-store");
+}
+
 module.exports = {
   readIp,
   methodNotAllowed,
   badRequest,
   serverError,
-  jsonOrEmpty
+  jsonOrEmpty,
+  noStore
 };

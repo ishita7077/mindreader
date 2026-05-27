@@ -1,4 +1,4 @@
-const { methodNotAllowed, badRequest, serverError, readIp, jsonOrEmpty } = require("../lib/http");
+const { methodNotAllowed, badRequest, serverError, readIp, jsonOrEmpty, noStore } = require("../lib/http");
 const { verifyTurnstile, applyRateLimit } = require("../lib/security");
 const { submitJob } = require("../lib/runpod");
 const { saveJobMetadata } = require("../lib/jobs");
@@ -31,11 +31,23 @@ function normalizeInput(body) {
 }
 
 module.exports = async function handler(req, res) {
+  noStore(res);
   if (req.method !== "POST") return methodNotAllowed(res, ["POST"]);
   try {
     const ip = readIp(req);
     const input = normalizeInput(req.body);
     const cfg = runtimeConfig();
+    const started = Date.now();
+    console.info(JSON.stringify({
+      event: "diff_start_received",
+      modality: input.modality,
+      ip_suffix: ip ? String(ip).slice(-6) : "",
+      text_a_len: input.textA.length,
+      text_b_len: input.textB.length,
+      has_media_a: !!input.mediaUrlA,
+      has_media_b: !!input.mediaUrlB,
+      trim_to_shorter: input.trimToShorter
+    }));
     if (cfg.turnstileEnabled && !String(input.turnstileToken || "").trim()) {
       return badRequest(res, "Missing bot protection token", "TURNSTILE_MISSING");
     }
@@ -102,6 +114,12 @@ module.exports = async function handler(req, res) {
     if (!jobId) {
       throw new Error("Runpod response missing job id");
     }
+    console.info(JSON.stringify({
+      event: "diff_start_runpod_submitted",
+      job_id: jobId,
+      modality: input.modality,
+      elapsed_ms: Date.now() - started
+    }));
 
     await saveJobMetadata(jobId, {
       createdAt: new Date().toISOString(),
@@ -126,6 +144,12 @@ module.exports = async function handler(req, res) {
       status: "queued"
     });
   } catch (err) {
+    console.error(JSON.stringify({
+      event: "diff_start_failed",
+      code: "DIFF_START_FAILED",
+      error_type: err instanceof Error ? err.constructor.name : typeof err,
+      message: err instanceof Error ? err.message : String(err)
+    }));
     return serverError(res, err, "DIFF_START_FAILED");
   }
 };

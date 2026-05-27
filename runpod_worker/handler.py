@@ -71,6 +71,24 @@ def _boot_snapshot() -> dict[str, Any]:
     }
 
 
+def _job_id_from_event(event: dict[str, Any]) -> str:
+    payload = (event or {}).get("input") or {}
+    job_id = (event or {}).get("id") or payload.get("job_id") or ""
+    return job_id.strip() if isinstance(job_id, str) else ""
+
+
+def _emit_boot_progress(job_id: str, status: str, message: str) -> None:
+    if not job_id:
+        return
+    try:
+        from runpod_worker.progress import emitter_for
+
+        emitter_for(job_id).emit(status, message)
+    except Exception as exc:  # noqa: BLE001
+        log.warning("boot_progress_emit_failed job_id=%s status=%s err=%s: %s",
+                    job_id, status, type(exc).__name__, exc)
+
+
 def _load_impl_handler() -> Callable[[dict[str, Any]], Any]:
     global _impl_handler
     if _impl_handler is not None:
@@ -93,13 +111,22 @@ def _load_impl_handler() -> Callable[[dict[str, Any]], Any]:
 
 def handler(event: dict[str, Any]) -> Any:
     # [RP-05] First job event reached the bootstrap handler.
-    job_id = (event or {}).get("id", "?")
+    job_id = _job_id_from_event(event)
     print(f"[RP-05] first_job_received: job_id={job_id}", flush=True)
     log.info("[RP-05] first_job_received: job_id=%s", job_id)
+    _emit_boot_progress(job_id, "worker_received", "RunPod worker received the job.")
+    _emit_boot_progress(job_id, "worker_impl_import_started", "Loading BrainDiff worker code...")
     try:
-        return _load_impl_handler()(event)
+        impl = _load_impl_handler()
+        _emit_boot_progress(job_id, "worker_impl_import_ready", "BrainDiff worker code loaded.")
+        return impl(event)
     except Exception as exc:
         log.exception("worker_job_failed_before_or_inside_impl: %s: %s", type(exc).__name__, exc)
+        _emit_boot_progress(
+            job_id,
+            "worker_failed_before_pipeline",
+            f"Worker failed before analysis: {type(exc).__name__}: {exc}",
+        )
         return {
             "error_type": f"{type(exc).__module__}.{type(exc).__name__}",
             "error_message": str(exc),

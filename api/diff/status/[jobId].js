@@ -1,4 +1,4 @@
-const { methodNotAllowed, badRequest, serverError } = require("../../lib/http");
+const { methodNotAllowed, badRequest, serverError, noStore } = require("../../lib/http");
 const { getJobStatus } = require("../../lib/runpod");
 const { redis } = require("../../lib/security");
 const { maybeDeleteBlobsForJob, getJobMetadata } = require("../../lib/jobs");
@@ -168,7 +168,15 @@ function mapRunpodStatus(data, jobId, jobMeta, events) {
   }
   return {
     status,
-    events
+    events,
+    runpod_status: raw,
+    diagnostics: {
+      event_count: events.length,
+      has_job_metadata: !!jobMeta,
+      runpod_output_present: !!data.output,
+      runpod_delay_time: data.delayTime || data.delay_time || null,
+      runpod_execution_time: data.executionTime || data.execution_time || null
+    }
   };
 }
 
@@ -197,6 +205,7 @@ async function readPersistedResult(jobId) {
 }
 
 module.exports = async function handler(req, res) {
+  noStore(res);
   if (req.method !== "GET") return methodNotAllowed(res, ["GET"]);
   const jobId = req.query.jobId;
   if (!jobId || typeof jobId !== "string") {
@@ -227,7 +236,12 @@ module.exports = async function handler(req, res) {
         status: "done",
         job_id: jobId,
         events,
-        result: resultWithJobMetadata(persisted, fastMeta)
+        result: resultWithJobMetadata(persisted, fastMeta),
+        diagnostics: {
+          source: "redis_persisted_result",
+          event_count: events.length,
+          has_job_metadata: !!fastMeta
+        }
       });
     }
     const [data, jobMeta, events] = await Promise.all([
@@ -246,6 +260,13 @@ module.exports = async function handler(req, res) {
     }
     return res.status(200).json(mapped);
   } catch (err) {
+    console.error(JSON.stringify({
+      event: "diff_status_failed",
+      code: "DIFF_STATUS_FAILED",
+      job_id: jobId,
+      error_type: err instanceof Error ? err.constructor.name : typeof err,
+      message: err instanceof Error ? err.message : String(err)
+    }));
     return serverError(res, err, "DIFF_STATUS_FAILED");
   }
 };
