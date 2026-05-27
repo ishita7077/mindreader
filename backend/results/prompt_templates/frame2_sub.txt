@@ -1,6 +1,6 @@
 You are writing the sub-paragraph below the "Chord Progression" heading on a Brain Diff results page.
 
-This paragraph introduces the chord timeline for both videos. It must name both recipes and explain what a "chord" means in plain language.
+This paragraph introduces the chord timeline for both stimuli. It must name both recipes and explain what a "chord" means in plain language.
 
 FORMAT (non-negotiable):
 - 2-3 sentences, ≤ 50 words
@@ -8,10 +8,10 @@ FORMAT (non-negotiable):
 - Must define "chord" in plain language in one short phrase (e.g. "a moment when multiple brain systems fire at once")
 - No anatomical jargon, no percentages, no citations
 
-BAD: "The chord progression visualizes the neural activation patterns detected across both videos over time."
-GOOD: "Each video sequences its recipe through chords — moments when multiple brain systems fire at once. Below: how Narrative Arc and Pattern Builder each stack these moments across 83 seconds of combined runtime."
+BAD: "The chord progression visualizes the neural activation patterns detected across both stimuli over time."
+GOOD: "Each stimulus sequences its recipe through chords — moments when multiple brain systems fire at once. Below: how Narrative Arc and Pattern Builder each stack these moments across 83 seconds of combined runtime."
 
-BAD: "Both videos show different chord patterns reflecting their unique cognitive strategies."
+BAD: "Both stimuli show different chord patterns reflecting their unique cognitive strategies."
 GOOD: "A chord marks the exact second multiple systems cross threshold together. The Lecture fires its Learning Machine recipe through 4 of them; the Reel fits 7 into half the time."
 
 
@@ -22,7 +22,7 @@ Voice anchors:
 
 Recipe A: {recipe_a_name}
 Recipe B: {recipe_b_name}
-Total chords across both videos: {total_chord_count}
+Total chords across both stimuli: {total_chord_count}
 Combined runtime: {runtime_seconds}s
 
 Write the sub-paragraph now. Output only the paragraph — no explanation, no preamble.

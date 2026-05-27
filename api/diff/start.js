@@ -5,6 +5,56 @@ const { saveJobMetadata } = require("../lib/jobs");
 const { runtimeConfig } = require("../lib/config");
 const { buildFastResult } = require("../lib/fast-result");
 
+function sameDisplayName(a, b) {
+  return String(a || "").trim().toLowerCase() === String(b || "").trim().toLowerCase();
+}
+
+function defaultDisplayName(modality, side) {
+  const suffix = side === "a" ? "A" : "B";
+  if (modality === "video") return `Video ${suffix}`;
+  if (modality === "audio") return `Audio ${suffix}`;
+  return `Text ${suffix}`;
+}
+
+function labelFromMediaName(name) {
+  const clean = String(name || "")
+    .replace(/\.[^.]+$/, "")
+    .replace(/[_\-.]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  if (!clean) return "";
+  return clean
+    .split(" ")
+    .filter(Boolean)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ")
+    .slice(0, 60);
+}
+
+function addSideSuffix(label, side) {
+  const suffix = side === "a" ? "A" : "B";
+  return `${String(label || "").replace(/\s+[AB]$/i, "").slice(0, 58)} ${suffix}`.trim();
+}
+
+function finalizeDisplayNames(input) {
+  if (!input) return input;
+  input.displayNameA = (
+    input.displayNameA ||
+    labelFromMediaName(input.mediaNameA) ||
+    defaultDisplayName(input.modality, "a")
+  ).slice(0, 60);
+  input.displayNameB = (
+    input.displayNameB ||
+    labelFromMediaName(input.mediaNameB) ||
+    defaultDisplayName(input.modality, "b")
+  ).slice(0, 60);
+  if (sameDisplayName(input.displayNameA, input.displayNameB)) {
+    input.displayNameA = addSideSuffix(input.displayNameA, "a").slice(0, 60);
+    input.displayNameB = addSideSuffix(input.displayNameB, "b").slice(0, 60);
+  }
+  return input;
+}
+
 function normalizeInput(body) {
   const payload = jsonOrEmpty(body);
   const modality = String(payload.modality || "text").toLowerCase();
@@ -13,7 +63,7 @@ function normalizeInput(body) {
   // user. Capped at 60 chars defensively. Stored in job metadata and forwarded
   // to the worker so the entire UI uses the same labels everywhere.
   const cap = (s, n) => (typeof s === "string" ? s.trim().slice(0, n) : "");
-  return {
+  return finalizeDisplayNames({
     modality,
     textA: typeof payload.text_a === "string" ? payload.text_a.trim() : "",
     textB: typeof payload.text_b === "string" ? payload.text_b.trim() : "",
@@ -27,7 +77,7 @@ function normalizeInput(body) {
     displayNameB: cap(payload.display_name_b, 60),
     trimToShorter: payload.trim_to_shorter === true,
     turnstileToken: payload.turnstileToken || payload.turnstile_token || ""
-  };
+  });
 }
 
 module.exports = async function handler(req, res) {

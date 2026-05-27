@@ -1,13 +1,13 @@
-You are rewriting a chord's meaning for one specific firing in one specific video.
+You are rewriting a chord's meaning for one specific firing in one specific stimulus.
 
-The generic meaning explains the chord type in general. Your job: write a CONTEXTUALISED version that explains why THIS chord fired at THIS timestamp in THIS video. The user only sees your version — it must explain the chord mechanism AND be specific to this moment.
+The generic meaning explains the chord type in general. Your job: write a CONTEXTUALISED version that explains why THIS chord fired at THIS timestamp in THIS stimulus. The user only sees your version — it must explain the chord mechanism AND be specific to this moment.
 
 FORMAT (non-negotiable):
 - 2-3 sentences, ≤ 70 words
 - Must reference the timestamp (M:SS) OR the quote at this moment (or both)
 - Plain English — no r-values, no percentages, no year stamps
 - No winner/loser framing
-- Use the video title, not creator names
+- Use the display name, not creator names
 
 BAD (too generic): "A learning-moment chord fires when attention and memory_encoding cross threshold together, creating high encoding potential."
 GOOD (specific to the firing): "At 1:14, the shift from question to answer crossed both attention and memory thresholds at once — a learning-moment chord. This is the point where the brain moved from passive listening to actively encoding what it just heard."
@@ -24,7 +24,7 @@ Voice anchors for this chord type:
 Chord type: {chord_name}
 Generic meaning (reference only — rewrite it, do not copy): {generic_meaning}
 Timestamp: {timestamp_human}
-Video: {video_title}
+Stimulus: {video_title}
 Quote at this moment: {quote}
 Systems that fired: {triggering_systems}
 Cortical values that triggered this chord: {formula_values}

@@ -1,6 +1,6 @@
 You are adding one grounding sentence to a chord's meaning on a Brain Diff results page.
 
-The chord's general meaning is already displayed above your sentence. Your job: write ONE sentence that anchors THIS specific firing in THIS specific video — using the quote, the timestamp, or both.
+The chord's general meaning is already displayed above your sentence. Your job: write ONE sentence that anchors THIS specific firing in THIS specific stimulus — using the quote, the timestamp, or both.
 
 FORMAT (non-negotiable):
 - Exactly 1 sentence, ≤ 22 words
@@ -10,10 +10,10 @@ FORMAT (non-negotiable):
 - No winner/loser framing
 
 BAD: "This chord fired at an important moment where key content was being presented."
-GOOD: "At 1:14, the question 'why does this keep failing?' pushed both values past threshold — the sharpest encoding window in this video."
+GOOD: "At 1:14, the question 'why does this keep failing?' pushed both values past threshold — the sharpest encoding window in this stimulus."
 
-BAD: "The chord indicates strong emotional and cognitive engagement at this point in the video."
-GOOD: "The phrase 'you've been doing it wrong' at 0:43 hit gut reaction before reasoning — a visceral-hit chord mid-video."
+BAD: "The chord indicates strong emotional and cognitive engagement at this point in the stimulus."
+GOOD: "The phrase 'you've been doing it wrong' at 0:43 hit gut reaction before reasoning — a visceral-hit chord mid-stimulus."
 
 
 Voice anchors:
@@ -24,7 +24,7 @@ Voice anchors:
 Chord: {chord_name}
 General meaning (already shown — do not repeat): {chord_meaning}
 Timestamp: {timestamp_human}
-Video: {video_display_name}
+Stimulus: {video_display_name}
 Quote at this moment: {quote}
 Values that triggered it: {formula_values}
 

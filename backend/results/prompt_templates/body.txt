@@ -4,14 +4,14 @@ TASK: Write 2-3 sentences (≤ 60 words total) that support the headline, explai
 
 FORMAT (non-negotiable):
 - 2-3 sentences, ≤ 60 words total
-- Use video titles (not creator names)
+- Use the provided display names (not creator names)
 - NO anatomical terms. Never use: cortex, cortical, prefrontal, mPFC, dlPFC, vlPFC, insula, amygdala, hippocampus, cingulate, TPJ, FEF, IPS, Broca, Wernicke, fusiform, parietal, frontal, temporal, occipital, hemisphere, medial, lateral, dorsal, ventral, anterior, posterior.
 - Refer to brain systems by their plain-English NOUN from the editorial framing block (e.g. "attentional engagement", "self-relevance", "memory encoding likelihood"). Never by region.
 - No percentages, no citations, no year stamps.
-- No filler like "these videos use different strategies" or "neither is better"
+- No filler like "these inputs use different strategies" or "neither is better"
 - Last sentence should pull the reader further into the page
 
-BAD: "Both videos use different strategies to engage the cortex. Neither approach is inherently better — it depends on your goal."
+BAD: "Both stimuli use different strategies to engage the cortex. Neither approach is inherently better — it depends on your goal."
 GOOD: "The Story front-loads attention spend to capture in the first ten seconds — but memory encoding drops before the payoff lands. The Lecture reverses this: low capture, high retention. Which trade you need depends on what happens after the click."
 
 
@@ -28,8 +28,8 @@ THE ANALYST'S READ:
 - Tradeoff: {analysis_tradeoff}
 
 Supporting data:
-- Video A: {video_a_title} | Recipe: {recipe_a_name} — {recipe_a_short}
-- Video B: {video_b_title} | Recipe: {recipe_b_name} — {recipe_b_short}
+- Stimulus A: {video_a_title} | Recipe: {recipe_a_name} — {recipe_a_short}
+- Stimulus B: {video_b_title} | Recipe: {recipe_b_name} — {recipe_b_short}
 - Top 2 system deltas:
 {top_2_deltas}
 - Lead insight:

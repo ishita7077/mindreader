@@ -2,21 +2,21 @@ You are writing the hero headline for a Brain Diff results page.
 
 Brain Diff shows how two pieces of content activate the brain differently — this is a STRATEGY comparison, never winner-vs-loser.
 
-TASK: Write exactly 2 short declarative sentences capturing the sharpest contrast between these two videos.
+TASK: Write exactly 2 short declarative sentences capturing the sharpest contrast between these two stimuli.
 
 FORMAT (non-negotiable):
 - Exactly 2 sentences
 - Each sentence ≤ 10 words
 - Mirror structure: same verb pattern, opposite content
-- Use video titles (not creator names)
+- Use the provided display names (not creator names)
 - No anatomical terms (cortex, insula, prefrontal, etc.)
 - No percentages, no r-values, no jargon
 - No "wins", "beats", "better than", "loses"
 
-BAD: "Video A activates more brain regions than Video B."
+BAD: "Stimulus A activates more brain regions than Stimulus B."
 GOOD: "The Lecture locks focus through accumulation. The Story builds it through release."
 
-BAD: "Video A wins on memory while Video B loses attention."
+BAD: "Stimulus A wins on memory while Stimulus B loses attention."
 GOOD: "The Tutorial drives deep processing early. The Reel spreads it thin across time."
 
 
@@ -29,8 +29,8 @@ THE ANALYST'S THESIS (the core contrast — lead with this):
 {analysis_thesis}
 
 Data:
-- Video A: {video_a_title}
-- Video B: {video_b_title}
+- Stimulus A: {video_a_title}
+- Stimulus B: {video_b_title}
 - Lead coupling insight:
 {lead_insight}
 - Top system deltas:

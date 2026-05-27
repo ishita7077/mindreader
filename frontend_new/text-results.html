@@ -47,9 +47,9 @@
   --red-bg:   rgba(26, 62, 115, 0.07);
   --gold:     #8C6A1D;
 
-  /* Two-side accents — navy (A) vs academic-purple (B). */
+  /* Two-side accents — A is blue, B is red. */
   --a:      #1A3E73;   --a-soft: rgba(26, 62, 115, 0.13);
-  --b:      #4F2A8C;   --b-soft: rgba(79, 42, 140, 0.13);
+  --b:      #C73D24;   --b-soft: rgba(199, 61, 36, 0.13);
 
   --line:        rgba(26, 26, 26, 0.10);
   --line-strong: rgba(26, 26, 26, 0.20);
@@ -128,7 +128,7 @@ body::before { content: none; }
   --red:     #6B8FBF;   --red-soft: #8AAAD0;   --red-bg: rgba(107, 143, 191, 0.10);
   --gold:    #D4A857;
   --a:       #6B8FBF;   --a-soft: rgba(107, 143, 191, 0.14);
-  --b:       #A38AD0;   --b-soft: rgba(163, 138, 208, 0.14);
+  --b:       #FF735F;   --b-soft: rgba(255, 115, 95, 0.16);
   --line:        rgba(236, 236, 236, 0.07);
   --line-strong: rgba(236, 236, 236, 0.14);
 }
@@ -390,25 +390,36 @@ nav.scrolled{background:rgba(247,242,234,.96);backdrop-filter:blur(16px);border-
 .callout-reveal-btn:hover{color:var(--red);border-color:var(--red);border-style:solid}
 .connect-callout.is-hidden{display:none}
 
-/* ── CONNECT GRID — network SVGs (gap 3.5rem, padding 2.8rem) ─── */
-.connect-grid{display:grid;grid-template-columns:1fr 1fr;gap:3.5rem;align-items:start;margin-top:1rem}
-.connect-card{background:var(--cream);border:1px solid var(--line);padding:2.8rem 2.4rem 2.2rem;text-align:center;border-radius:5px;box-shadow:0 2px 12px rgba(26,20,16,.03)}
+/* ── CONNECT GRID — ranked network figures ─── */
+.connect-grid{display:grid;grid-template-columns:1fr;gap:2.25rem;align-items:start;margin-top:1rem}
+.connect-card{background:var(--cream);border:1px solid var(--line);padding:2.1rem 2.2rem 2rem;text-align:left;border-radius:5px;box-shadow:0 2px 12px rgba(26,20,16,.03)}
 :root[data-theme="dark"] .connect-card{background:var(--cream-2)}
 .connect-card-header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:1rem}
 .connect-card-label{font-family:var(--ff-mono);font-size:9px;letter-spacing:.18em;text-transform:uppercase;font-weight:500}
 .connect-card-label.a{color:var(--a)}.connect-card-label.b{color:var(--b)}
 .connect-card-title{font-family:var(--ff-display);font-weight:500;font-size:.92rem;color:var(--ink)}
-.connect-svg-wrap{position:relative;width:100%;aspect-ratio:1/1;max-width:360px;margin:0 auto}
+.connect-card-body{display:grid;grid-template-columns:minmax(330px,1fr) minmax(240px,.78fr);gap:2rem;align-items:center}
+.connect-svg-wrap{position:relative;width:100%;aspect-ratio:420/360;max-width:560px;margin:0 auto}
 .connect-svg{width:100%;height:auto}
 .connect-edge-tooltip{position:absolute;background:var(--ink);color:var(--cream);padding:.55rem .8rem;border-radius:4px;font-family:var(--ff-mono);font-size:11px;pointer-events:none;opacity:0;transition:opacity .15s;z-index:10;box-shadow:0 4px 14px rgba(26,20,16,.2)}
 .connect-edge-tooltip.visible{opacity:1}
 .connect-edge-tooltip .tt-pair{font-family:var(--ff-display);font-weight:600;font-size:13px;display:block;margin-bottom:2px}
 .connect-edge-tooltip .tt-r{font-weight:500;letter-spacing:.04em}
-.connect-stats{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-top:1.3rem;text-align:left}
-.connect-stat{padding:.65rem .85rem;background:var(--cream-2);border-radius:3px}
-:root[data-theme="dark"] .connect-stat{background:var(--cream-3)}
-.connect-stat-label{font-family:var(--ff-mono);font-size:8.5px;letter-spacing:.1em;color:var(--ink-dim);margin-bottom:.2rem;font-weight:500}
-.connect-stat-val{font-family:var(--ff-display);font-size:.95rem;color:var(--ink)}
+.connect-caption{border-left:1px solid var(--line);padding-left:1.35rem;color:var(--ink-mid)}
+.connect-caption-kicker{font-family:var(--ff-mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-dim);margin-bottom:.45rem}
+.connect-caption-title{font-family:var(--ff-display);font-size:1.18rem;line-height:1.2;color:var(--ink);font-weight:500;margin-bottom:.45rem}
+.connect-caption-title strong{font-weight:600}
+.connect-caption-copy{font-size:.94rem;line-height:1.55;margin-bottom:1rem}
+.connect-caption-list{display:grid;gap:.5rem;margin-top:.8rem}
+.connect-caption-item{display:grid;grid-template-columns:22px 1fr auto;gap:.55rem;align-items:baseline;font-family:var(--ff-body);font-size:.92rem;line-height:1.35}
+.connect-caption-rank{font-family:var(--ff-mono);font-size:10px;color:var(--ink-dim)}
+.connect-caption-pair{color:var(--ink)}
+.connect-caption-r{font-family:var(--ff-mono);font-size:10px;color:var(--ink-dim);white-space:nowrap}
+.connect-caption-weak{margin-top:1rem;padding-top:.8rem;border-top:1px dashed var(--line);font-size:.9rem;color:var(--ink-dim);line-height:1.45}
+@media (max-width:900px){
+  .connect-card-body{grid-template-columns:1fr}
+  .connect-caption{border-left:0;border-top:1px solid var(--line);padding-left:0;padding-top:1.1rem}
+}
 
 /* ── DIMENSION DETAIL ─── */
 .dim-pills{display:flex;gap:.45rem;flex-wrap:wrap;margin-bottom:1.2rem}
@@ -423,7 +434,7 @@ nav.scrolled{background:rgba(247,242,234,.96);backdrop-filter:blur(16px);border-
 .tv-stats{display:flex;gap:1.2rem;font-family:var(--ff-mono);font-size:10px;letter-spacing:.06em;align-items:center}
 .tv-stat-label{color:var(--ink-dim);margin-right:.35rem}
 .tv-stat-val.a{color:var(--a)}.tv-stat-val.b{color:var(--b)}
-.tv-stat-val.delta{color:var(--red);font-weight:500}
+.tv-stat-val.delta{color:var(--ink-strong);font-weight:500}
 .tv-mode-toggle{display:flex;background:var(--cream-2);border:1px solid var(--line);padding:2px;border-radius:3px}
 .tv-mode-btn{font-family:var(--ff-mono);font-size:9px;letter-spacing:.12em;padding:.35rem .7rem;background:transparent;border:none;color:var(--ink-dim);cursor:pointer;text-transform:uppercase;transition:all .2s;border-radius:2px}
 .tv-mode-btn.active{background:var(--red);color:white}
@@ -439,9 +450,9 @@ nav.scrolled{background:rgba(247,242,234,.96);backdrop-filter:blur(16px);border-
 .tv-tt-row{display:flex;align-items:center;gap:.55rem;margin-bottom:.2rem;font-size:10.5px;letter-spacing:.04em}
 .tv-tt-row:last-child{margin-bottom:0;padding-top:.25rem;border-top:1px solid rgba(247,242,234,.12);margin-top:.25rem}
 .tv-tt-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
-.tv-tt-dot.a{background:var(--a)}.tv-tt-dot.b{background:var(--b)}.tv-tt-dot.d{background:var(--red)}
+.tv-tt-dot.a{background:var(--a)}.tv-tt-dot.b{background:var(--b)}.tv-tt-dot.d{background:var(--ink-strong)}
 .tv-tt-val{margin-left:auto;font-weight:500}
-.tv-tt-val.a{color:var(--a)}.tv-tt-val.b{color:var(--b)}.tv-tt-val.d{color:var(--red)}
+.tv-tt-val.a{color:var(--a)}.tv-tt-val.b{color:var(--b)}.tv-tt-val.d{color:var(--ink-strong)}
 
 /* ── EXPORT + CTA + FOOTER ─── */
 .export-row{display:flex;gap:.65rem;margin-top:3rem;padding-top:2rem;border-top:1px solid var(--line);align-items:center;flex-wrap:wrap}
@@ -545,6 +556,29 @@ footer span{color:var(--red)}
 .text-body{padding:24px 24px 28px;font-family:var(--ff-body);font-size:17px;line-height:1.78;color:var(--ink)}
 .txt-seg{border-radius:2px;padding:0 1px;transition:background-color .15s,border-color .15s}
 .txt-seg:hover{filter:brightness(1.1)}
+.phrase-insight-panel{margin-top:1.5rem;border:1px solid var(--line-strong);border-radius:5px;background:var(--cream);overflow:hidden}
+:root[data-theme="dark"] .phrase-insight-panel{background:var(--cream-2)}
+.phrase-insight-head{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;padding:1rem 1.2rem;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.phrase-insight-title{font-family:var(--ff-mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--red);font-weight:600}
+.phrase-insight-sub{font-family:var(--ff-body);font-size:.92rem;color:var(--ink-mid);line-height:1.45;max-width:720px}
+.phrase-insight-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:0;border-top:0}
+.phrase-insight-card{padding:1rem 1.15rem;border-top:1px solid var(--line);position:relative}
+.phrase-insight-card:nth-child(-n+2){border-top:0}
+.phrase-insight-card:nth-child(odd){border-right:1px solid var(--line)}
+.phrase-insight-card.a{box-shadow:inset 3px 0 0 var(--a)}
+.phrase-insight-card.b{box-shadow:inset 3px 0 0 var(--b)}
+.phrase-insight-meta{display:flex;align-items:center;gap:.55rem;margin-bottom:.45rem;flex-wrap:wrap}
+.phrase-side{font-family:var(--ff-mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;font-weight:700}
+.phrase-insight-card.a .phrase-side{color:var(--a)}
+.phrase-insight-card.b .phrase-side{color:var(--b)}
+.phrase-quote{font-family:var(--ff-display);font-size:1.02rem;line-height:1.25;color:var(--ink);font-weight:500}
+.phrase-role{font-family:var(--ff-mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-dim);margin:.55rem 0 .35rem}
+.phrase-read{font-size:.9rem;color:var(--ink-mid);line-height:1.55}
+@media (max-width:780px){
+  .phrase-insight-grid{grid-template-columns:1fr}
+  .phrase-insight-card:nth-child(odd){border-right:0}
+  .phrase-insight-card:nth-child(2){border-top:1px solid var(--line)}
+}
 
 /* Hero brain canvas (real fsaverage5 mesh from lib/brain.js, the same one
    used on the landing page). Replaces the previous flat 2D SVG. */
@@ -580,7 +614,7 @@ footer span{color:var(--red)}
 }
 .brain-ab-cell.a{border-left:3px solid var(--a)}
 .brain-ab-cell.b{border-left:3px solid var(--b)}
-.brain-ab-cell.delta{border-left:3px solid var(--hi-yellow)}
+.brain-ab-cell.delta{border-left:3px solid var(--ink-strong)}
 .brain-ab-tag{
   font-family:var(--ff-mono);font-size:8.5px;letter-spacing:.15em;
   text-transform:uppercase;color:var(--ink-dim);font-weight:600;
@@ -635,6 +669,10 @@ footer span{color:var(--red)}
   font-family:var(--ff-mono);font-size:10.5px;letter-spacing:.04em;
   color:var(--ink-dim);
 }
+.contrast-chip{display:inline-flex;align-items:center;gap:.28rem;color:var(--ink);font-weight:700}
+.contrast-chip::before{content:'';width:9px;height:9px;border-radius:999px;display:inline-block}
+.contrast-chip.a::before{background:var(--a)}
+.contrast-chip.b::before{background:var(--b)}
 
 /* Reversed hero grid: comparison panel LEFT, brain RIGHT. The original
    layout had brain LEFT and the recipe-match card crammed into the right
@@ -806,6 +844,11 @@ const SYSTEM_FULL = {
   gut_reaction:'Gut Reaction', memory_encoding:'Memory Encoding',
   social_thinking:'Social Thinking', language_depth:'Language Depth',
 };
+const NETWORK_SYSTEM_LABEL = {
+  personal_resonance:'Personal Resonance', attention:'Attention', brain_effort:'Effort',
+  gut_reaction:'Gut Reaction', memory_encoding:'Memory Encoding',
+  social_thinking:'Social Thinking', language_depth:'Language Depth',
+};
 const SYSTEM_REGION = {
   personal_resonance:'mPFC — SELF-RELEVANT PROCESSING',
   attention:'DAN — DORSAL ATTENTION NETWORK',
@@ -884,19 +927,170 @@ function contentNoun(){
   const m = currentModality();
   if (m === 'video') return 'video';
   if (m === 'audio') return 'audio clip';
-  return 'text';
+  return 'piece of writing';
 }
 function contentNounPlural(){
   const m = currentModality();
   if (m === 'video') return 'videos';
   if (m === 'audio') return 'audio clips';
-  return 'texts';
+  return 'pieces of writing';
 }
 function contentVerb(){
   const m = currentModality();
   if (m === 'video') return 'watch';
   if (m === 'audio') return 'listen to';
   return 'read';
+}
+
+function reportText(side){
+  const meta = (RESULT && RESULT.meta) || {};
+  const videos = (CONTENT && CONTENT.videos) || {};
+  const video = side === 'a' ? videos.video_a : videos.video_b;
+  return (
+    meta[`text_${side}`] ||
+    meta[`transcript_${side}`] ||
+    (RESULT && RESULT[`transcript_${side}`]) ||
+    transcriptText(video && video.transcript) ||
+    ''
+  );
+}
+
+function sameLabel(a, b){
+  return String(a || '').trim().toLowerCase() === String(b || '').trim().toLowerCase();
+}
+
+function defaultDisplayName(side){
+  const suffix = side === 'a' ? 'A' : 'B';
+  const m = currentModality();
+  if (m === 'video') return `Video ${suffix}`;
+  if (m === 'audio') return `Audio ${suffix}`;
+  return `Text ${suffix}`;
+}
+
+function addSideSuffix(label, side){
+  const suffix = side === 'a' ? 'A' : 'B';
+  return `${String(label || '').replace(/\s+[AB]$/i, '').slice(0, 58)} ${suffix}`.trim();
+}
+
+function displayLabelsForReport(c){
+  const videos = (c && c.videos) || {};
+  const va = videos.video_a || {};
+  const vb = videos.video_b || {};
+  const meta = (RESULT && RESULT.meta) || {};
+  const rawA = (meta.display_name_a || va.display_name || defaultDisplayName('a')).trim();
+  const rawB = (meta.display_name_b || vb.display_name || defaultDisplayName('b')).trim();
+  let a = rawA || defaultDisplayName('a');
+  let b = rawB || defaultDisplayName('b');
+  let repaired = false;
+  if (sameLabel(a, b)) {
+    a = addSideSuffix(a, 'a') || defaultDisplayName('a');
+    b = addSideSuffix(b, 'b') || defaultDisplayName('b');
+    repaired = true;
+  }
+  return { a, b, rawA, rawB, repaired };
+}
+
+function replaceAllLiteral(text, needle, replacement){
+  if (!needle || !text) return text || '';
+  return String(text).split(needle).join(replacement);
+}
+
+function replaceDuplicateTitleMentions(text, labels){
+  let out = String(text || '');
+  const raw = labels.rawA || labels.rawB || '';
+  if (!raw || !sameLabel(labels.rawA, labels.rawB)) return out;
+  let count = 0;
+  return out.replace(new RegExp(`${escapeRegExp(raw)}(?:\\s+[AB])?`, 'g'), () => {
+    count += 1;
+    return count === 1 ? labels.a : labels.b;
+  });
+}
+
+function replaceSideTitleMentions(text, labels, side){
+  let out = String(text || '');
+  const label = side === 'a' ? labels.a : labels.b;
+  const raw = side === 'a' ? labels.rawA : labels.rawB;
+  if (raw) out = out.replace(new RegExp(`${escapeRegExp(raw)}\\s+[AB]\\b`, 'g'), label);
+  out = replaceAllLiteral(out, raw, label);
+  return out;
+}
+
+function modalityCleanCopy(text){
+  let out = String(text || '');
+  const m = currentModality();
+  if (m === 'text' || m === 'audio') {
+    const singular = m === 'audio' ? 'audio clip' : 'piece of writing';
+    const plural = m === 'audio' ? 'audio clips' : 'pieces of writing';
+    out = out
+      .replace(/\btwo videos\b/gi, `two ${plural}`)
+      .replace(/\bthese videos\b/gi, `these ${plural}`)
+      .replace(/\bboth videos\b/gi, `both ${plural}`)
+      .replace(/\beach video\b/gi, `each ${singular}`)
+      .replace(/\bthis video\b/gi, `this ${singular}`)
+      .replace(/\bvideos\b/gi, plural)
+      .replace(/\bvideo\b/gi, singular);
+    if (m === 'text') {
+      out = out.replace(/\bbrain recipes\b/gi, 'predicted brain-response patterns');
+    }
+  }
+  return out;
+}
+
+function cleanBothSidesCopy(text, labels){
+  return modalityCleanCopy(replaceDuplicateTitleMentions(text, labels));
+}
+
+function cleanSideCopy(text, labels, side){
+  return modalityCleanCopy(replaceSideTitleMentions(text, labels, side));
+}
+
+function escapeRegExp(s){
+  return String(s || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function slotSet(slot, value, source){
+  if (!slot || typeof slot !== 'object') return;
+  slot.value = value;
+  if (source) slot.source = source;
+}
+
+function applyReportRepairs(json){
+  if (!json || !json.videos) return json;
+  CONTENT = json;
+  const labels = displayLabelsForReport(json);
+  const va = json.videos.video_a || {};
+  const vb = json.videos.video_b || {};
+  va.original_display_name = va.original_display_name || labels.rawA;
+  vb.original_display_name = vb.original_display_name || labels.rawB;
+  va.display_name = labels.a;
+  vb.display_name = labels.b;
+  json.report_label_repair = labels.repaired ? {
+    schema_version: 'braindiff_label_repair.v1',
+    reason: 'duplicate_display_names',
+    original_a: labels.rawA,
+    original_b: labels.rawB,
+    display_a: labels.a,
+    display_b: labels.b,
+  } : null;
+
+  const slots = json.slots || {};
+  if (slots.headline && typeof slots.headline.value === 'string') slots.headline.value = cleanBothSidesCopy(slots.headline.value, labels);
+  if (slots.body && typeof slots.body.value === 'string') slots.body.value = cleanBothSidesCopy(slots.body.value, labels);
+  if (slots.frame2_sub && typeof slots.frame2_sub.value === 'string') slots.frame2_sub.value = cleanBothSidesCopy(slots.frame2_sub.value, labels);
+
+  const desc = slots.recipe_description || {};
+  if (desc.video_a && typeof desc.video_a.value === 'string') desc.video_a.value = cleanSideCopy(desc.video_a.value, labels, 'a');
+  if (desc.video_b && typeof desc.video_b.value === 'string') desc.video_b.value = cleanSideCopy(desc.video_b.value, labels, 'b');
+  const callouts = slots.coupling_callouts || {};
+  ['strongest','weakest','anti'].forEach(k => {
+    if (callouts.video_a && callouts.video_a[k] && typeof callouts.video_a[k].value === 'string') {
+      callouts.video_a[k].value = cleanSideCopy(callouts.video_a[k].value, labels, 'a');
+    }
+    if (callouts.video_b && callouts.video_b[k] && typeof callouts.video_b[k].value === 'string') {
+      callouts.video_b[k].value = cleanSideCopy(callouts.video_b[k].value, labels, 'b');
+    }
+  });
+  return json;
 }
 
 (async function boot(){
@@ -971,6 +1165,7 @@ function acceptContent(json){
     return errCard('Schema mismatch',
       `Expected <code>results_content.v1</code>, got <code>${escapeHtmlText(json.schema_version || 'unknown')}</code>. The worker and the page are out of sync — redeploy.`);
   }
+  json = applyReportRepairs(json);
   CONTENT = json;
   window.CONTENT = json;  // expose for the ES module that mounts the brain
   // Update document title to the comparison ("A vs B — Brain Diff") so
@@ -1244,7 +1439,7 @@ function renderHero(c, va, vb){
         </div>
         <div class="hero-brain-caption">
           <span class="hero-brain-cap-eyebrow">Cortical contrast</span>
-          <span class="hero-brain-cap-text">Warmer = ${esc(vb.display_name)} stronger · Cooler = ${esc(va.display_name)} stronger</span>
+          <span class="hero-brain-cap-text"><span class="contrast-chip a">Blue A</span> = ${esc(va.display_name)} stronger · <span class="contrast-chip b">Red B</span> = ${esc(vb.display_name)} stronger</span>
         </div>
         <!-- 7-system region picker. Hover a pill to brightly highlight
              that region's A vs B values in the readout above. Clicking
@@ -1452,6 +1647,8 @@ function renderFrame2(c, va, vb){
   const durA = Math.max(1, Math.round(va.duration_seconds || meta.text_a_timesteps || 30));
   const durB = Math.max(1, Math.round(vb.duration_seconds || meta.text_b_timesteps || 30));
   const noun = contentNoun();
+  const nounPlural = contentNounPlural();
+  const readalongHeading = noun === 'video' ? 'Read along — frame by frame.' : `Read along the ${nounPlural}.`;
   const headlineText = (c.slots.headline && c.slots.headline.value) || '';
 
   return `
@@ -1460,7 +1657,7 @@ function renderFrame2(c, va, vb){
       <div class="frame-num reveal">Frame 02 · Read along</div>
       <div class="frame-num-r reveal">${totalChords > 0 ? `${totalChords} chord${totalChords===1?'':'s'} · ` : ''}${dimensions.length || 7} systems · 1Hz</div>
     </div>
-    <h2 class="frame-h2 reveal d1">Read along ${noun==='video' ? '— frame by frame' : ''}.</h2>
+    <h2 class="frame-h2 reveal d1">${esc(readalongHeading)}</h2>
     <p class="frame-sub reveal d2 has-badge" style="position:relative">
       ${badge(c.slots.frame2_sub)}
       ${c.slots.frame2_sub && c.slots.frame2_sub.value
@@ -1498,8 +1695,106 @@ function renderFrame2(c, va, vb){
           <div class="text-body">${annotateText(textB, dimensions, 'b', headlineText)}</div>
         </div>
       </div>
+      ${renderPhraseStrategyPanel(textA, textB, dimensions, va, vb)}
     </div>
   </section>`;
+}
+
+const SYSTEM_COGNITIVE_ROLE = {
+  personal_resonance: 'Self relevance',
+  attention: 'Attention orientation',
+  brain_effort: 'Reasoning load',
+  gut_reaction: 'Visceral reaction',
+  memory_encoding: 'Memory encoding',
+  social_thinking: 'Social interpretation',
+  language_depth: 'Meaning depth',
+};
+const SYSTEM_COGNITIVE_READ = {
+  personal_resonance: 'This wording is where the message is predicted to feel more personally relevant.',
+  attention: 'This wording is where the message is predicted to pull orientation and focus.',
+  brain_effort: 'This wording is where the reader/listener is predicted to do more reasoning work.',
+  gut_reaction: 'This wording is where the response is predicted to become more immediate and felt.',
+  memory_encoding: 'This wording is where the message is predicted to become easier to retain.',
+  social_thinking: 'This wording is where the listener is predicted to model people, intent, or relationship.',
+  language_depth: 'This wording is where the system is predicted to parse meaning more deeply.',
+};
+
+function splitPhrases(text){
+  const out = [];
+  const re = /[^.!?\n;,—:]+[.!?\n;,—:]?/g;
+  let m;
+  while ((m = re.exec(String(text || '')))){
+    const raw = m[0].trim();
+    const words = raw.replace(/[^\w'\s-]/g, ' ').trim().split(/\s+/).filter(Boolean);
+    const meaningful = words.filter(w => {
+      const bare = w.replace(/[^\w'-]/g, '').toLowerCase();
+      return bare.length >= 4 && !ANNOTATION_STOPWORDS.has(bare);
+    });
+    if (meaningful.length < 2 || meaningful.length > 11) continue;
+    out.push({
+      text: raw.replace(/\s+/g, ' ').replace(/[;,—:]+$/g, '').trim(),
+      start: m.index,
+      end: m.index + m[0].length,
+      meaningfulCount: meaningful.length,
+    });
+  }
+  return out;
+}
+
+function derivePhraseInsights(text, dimensions, side){
+  if (!text || !dimensions || !dimensions.length) return [];
+  const seriesKey = side === 'a' ? 'timeseries_a' : 'timeseries_b';
+  const steps = (dimensions[0] && dimensions[0][seriesKey] && dimensions[0][seriesKey].length) || 0;
+  if (!steps) return [];
+  const charsPerStep = Math.max(1, text.length / steps);
+  const candidates = [];
+  for (const phrase of splitPhrases(text)){
+    const midpoint = (phrase.start + phrase.end) / 2;
+    const step = Math.min(steps - 1, Math.max(0, Math.floor(midpoint / charsPerStep)));
+    const ds = dominanceScore(dimensions, seriesKey, step);
+    if (!ds || !SYSTEM_COGNITIVE_ROLE[ds.sys]) continue;
+    const score = ds.gap + Math.min(0.18, phrase.meaningfulCount * 0.015);
+    if (score < 0.10) continue;
+    candidates.push({
+      side,
+      phrase: phrase.text,
+      sys: ds.sys,
+      role: SYSTEM_COGNITIVE_ROLE[ds.sys],
+      read: SYSTEM_COGNITIVE_READ[ds.sys],
+      score,
+    });
+  }
+  return candidates
+    .sort((a,b) => b.score - a.score)
+    .filter((item, idx, arr) => arr.findIndex(x => x.phrase.toLowerCase() === item.phrase.toLowerCase()) === idx)
+    .slice(0, 4);
+}
+
+function renderPhraseStrategyPanel(textA, textB, dimensions, va, vb){
+  const hits = [
+    ...derivePhraseInsights(textA, dimensions, 'a'),
+    ...derivePhraseInsights(textB, dimensions, 'b'),
+  ];
+  if (!hits.length) return '';
+  const labelFor = side => side === 'a' ? (va.display_name || 'A') : (vb.display_name || 'B');
+  return `
+    <div class="phrase-insight-panel">
+      <div class="phrase-insight-head">
+        <div class="phrase-insight-title">Why these words matter</div>
+        <div class="phrase-insight-sub">The colored underlines show predicted system timing. These callouts pull out the strongest phrases and translate them into the cognitive job they are doing.</div>
+      </div>
+      <div class="phrase-insight-grid">
+        ${hits.map(item => `
+          <div class="phrase-insight-card ${item.side}">
+            <div class="phrase-insight-meta">
+              <span class="phrase-side">${item.side.toUpperCase()} · ${esc(labelFor(item.side))}</span>
+            </div>
+            <div class="phrase-quote">“${esc(item.phrase)}”</div>
+            <div class="phrase-role">${esc(item.role)} · ${esc(SYSTEM_FULL[item.sys] || item.sys)}</div>
+            <div class="phrase-read">${esc(item.read)}</div>
+          </div>`).join('')}
+      </div>
+    </div>`;
 }
 
 // Render one audio track: side label, waveform bars, optional chord pins.
@@ -1751,11 +2046,11 @@ function renderFrame3(c, va, vb){
         <div class="connect-explainer">
           <strong>Which systems fired together?</strong> Two systems are <em>coupled</em> when they rise and fall together; <em>anti-coupled</em> when one quiets the other; <em>decoupled</em> when they peak at different times.
         </div>
-        ${renderCallouts(c, va, vb, callouts)}
         <div class="connect-grid">
           ${renderConnectCard('a', va, va.coupling_matrix, va.integration_score, va.hub_node)}
           ${renderConnectCard('b', vb, vb.coupling_matrix, vb.integration_score, vb.hub_node)}
         </div>
+        ${renderCallouts(c, va, vb, callouts)}
       </div>
       <div class="frame3-panel" data-panel="dimension">
         <div class="dim-pills">
@@ -1870,34 +2165,38 @@ function renderCallouts(c, va, vb, callouts){
 }
 
 function renderConnectCard(side, video, matrix, integration, hubNode){
-  // Card title used to be a generic gloss ("Tightly integrated"). The user
-  // asked for the actual coupling pair name instead — that's far more
-  // informative ("Personal ↔ Social" tells you what's coupled; "Tightly
-  // integrated" tells you almost nothing).
-  // Find the strongest |r| pair from the coupling matrix.
-  let bestI = 0, bestJ = 1, bestR = 0;
-  const n = CANONICAL_SYSTEMS.length;
-  for (let i = 0; i < n; i++) {
-    for (let j = i + 1; j < n; j++) {
-      const r = (matrix && matrix[i] && typeof matrix[i][j] === 'number') ? matrix[i][j] : 0;
-      if (Math.abs(r) > Math.abs(bestR)) { bestR = r; bestI = i; bestJ = j; }
-    }
-  }
-  const sysA = CANONICAL_SYSTEMS[bestI], sysB = CANONICAL_SYSTEMS[bestJ];
-  const labelA = SYSTEM_DISPLAY[sysA] || sysA;
-  const labelB = SYSTEM_DISPLAY[sysB] || sysB;
-  const sign = bestR >= 0 ? '+' : '';
-  const rStr = `${sign}${bestR.toFixed(2)}`;
-  const pairTitle = `${labelA} ↔ ${labelB} · r=${rStr}`;
+  const summary = networkSummary(matrix);
+  const best = summary.top[0];
+  const fig = side === 'a' ? '3.1' : '3.2';
   return `
   <div class="connect-card plate">
     <div class="connect-card-header">
-      <span class="connect-card-label ${side}">FIG ${side==='a'?'4.1':'4.2'} · ${esc(video.display_name)} · ${side.toUpperCase()}</span>
-      <span class="connect-card-title">strongest: ${esc(pairTitle)}</span>
+      <span class="connect-card-label ${side}">FIG ${fig} · ${esc(video.display_name)} · ${side.toUpperCase()}</span>
+      <span class="connect-card-title">Network Coordination</span>
     </div>
-    <div class="connect-svg-wrap">
-      <svg class="connect-svg" id="connect-${side}" viewBox="0 0 320 320"></svg>
-      <div class="connect-edge-tooltip" id="connect-tt-${side}"></div>
+    <div class="connect-card-body">
+      <div class="connect-svg-wrap">
+        <svg class="connect-svg" id="connect-${side}" viewBox="0 0 420 360"></svg>
+        <div class="connect-edge-tooltip" id="connect-tt-${side}"></div>
+      </div>
+      <div class="connect-caption">
+        <div class="connect-caption-kicker">Figure ${fig} — Network Coordination</div>
+        ${best ? `
+          <div class="connect-caption-title">Strongest coupling: <strong>${esc(edgeShortLabel(best))}</strong> <span class="connect-caption-r">r = ${esc(formatR(best.r))}</span></div>
+          <div class="connect-caption-copy">${esc(edgeExplanation(best))}</div>
+        ` : `<div class="connect-caption-title">No clear coupling surfaced.</div>`}
+        <div class="connect-caption-list">
+          ${summary.top.map((edge, i) => `
+            <div class="connect-caption-item">
+              <span class="connect-caption-rank">${i + 1}</span>
+              <span class="connect-caption-pair">${esc(edgeFullLabel(edge))}</span>
+              <span class="connect-caption-r">${esc(formatR(edge.r))}</span>
+            </div>`).join('')}
+        </div>
+        ${summary.weakest ? `
+          <div class="connect-caption-weak">Weakest shown: ${esc(edgeFullLabel(summary.weakest))} <span class="connect-caption-r">${esc(formatR(summary.weakest.r))}</span></div>
+        ` : ''}
+      </div>
     </div>
   </div>`;
   // Integration + Hub Node + System Means stats row REMOVED per user
@@ -1907,12 +2206,62 @@ function renderConnectCard(side, video, matrix, integration, hubNode){
   // than they explained.
 }
 
+function networkEdges(matrix){
+  const edges = [];
+  const n = CANONICAL_SYSTEMS.length;
+  for (let i = 0; i < n; i++) {
+    for (let j = i + 1; j < n; j++) {
+      const r = (matrix && matrix[i] && typeof matrix[i][j] === 'number') ? matrix[i][j] : 0;
+      edges.push({ i, j, r, ar: Math.abs(r), a: CANONICAL_SYSTEMS[i], b: CANONICAL_SYSTEMS[j] });
+    }
+  }
+  return edges;
+}
+
+function networkSummary(matrix){
+  const edges = networkEdges(matrix);
+  const positive = edges.filter(e => Number.isFinite(e.r) && e.r > 0.01);
+  const top = [...positive].sort((x,y) => y.r - x.r).slice(0, 3);
+  const weakest = [...positive].sort((x,y) => x.r - y.r)[0] || null;
+  return { top, weakest, edges };
+}
+
+function formatR(r){
+  return `${r >= 0 ? '+' : ''}${Number(r || 0).toFixed(2)}`;
+}
+
+function edgeShortLabel(edge){
+  return `${networkSystemLabel(edge.a, true)} × ${networkSystemLabel(edge.b, true)}`;
+}
+
+function edgeFullLabel(edge){
+  return `${networkSystemLabel(edge.a)} × ${networkSystemLabel(edge.b)}`;
+}
+
+function edgeExplanation(edge){
+  const a = networkSystemLabel(edge.a).toLowerCase();
+  const b = networkSystemLabel(edge.b).toLowerCase();
+  if (edge.r < 0) {
+    return `${a} and ${b} move in opposite directions inside this input.`;
+  }
+  return `When ${a} rises, ${b} tends to rise with it inside this input.`;
+}
+
+function networkSystemLabel(sys, short=false){
+  if (short && sys === 'personal_resonance') return 'Personal';
+  if (short && sys === 'gut_reaction') return 'Gut';
+  if (short && sys === 'memory_encoding') return 'Memory';
+  if (short && sys === 'social_thinking') return 'Social';
+  if (short && sys === 'language_depth') return 'Language';
+  return NETWORK_SYSTEM_LABEL[sys] || SYSTEM_FULL[sys] || SYSTEM_DISPLAY[sys] || sys;
+}
+
 // Map a card class to a Figure number for the FIG x.y label format.
 // Keeps figures sequential within Frame 3 (Network Coordination).
 function figNum(klass){
   return ({
-    'cleo-strong': '3.1', 'beast-strong': '3.2',
-    'cleo-weak':   '3.3', 'beast-weak':   '3.4',
+    'cleo-strong': '3.3', 'beast-strong': '3.4',
+    'cleo-weak':   '3.5', 'beast-weak':   '3.6',
   })[klass] || '3.0';
 }
 
@@ -1946,7 +2295,7 @@ function renderFooter(c){
   // moves to a copy-friendly position in the dev banner instead.
   // "Run your own comparison" lives here per user feedback — kept out of
   // the hero so the hero stays focused on the result the reader landed on.
-  const noun = contentNounPlural();
+  const noun = contentNoun();
   return `
   <footer>
     <div>Brain Diff — predicting the cortex from content. <a href="/methodology" style="color:inherit">Methodology</a> · <a href="/research" style="color:inherit">Research</a></div>
@@ -2266,13 +2615,16 @@ function initConnectNetworks(){
 function drawNetwork(svgId, matrix, primaryColor){
   const svg = document.getElementById(svgId); if (!svg) return;
   svg.innerHTML = '';
-  const cx=160, cy=160, R=110, n=7;
+  const cx=210, cy=180, R=106, n=7;
   const tooltip = document.getElementById(svgId.replace('connect-','connect-tt-'));
 
   const nodes = CANONICAL_SYSTEMS.map((sys,i) => {
     const angle = (i/n)*Math.PI*2 - Math.PI/2;
-    return { sys, angle, x: cx+R*Math.cos(angle), y: cy+R*Math.sin(angle), label: SYSTEM_DISPLAY[sys], color: SYSTEM_COLOR[sys] };
+    return { sys, angle, x: cx+R*Math.cos(angle), y: cy+R*Math.sin(angle), label: networkSystemLabel(sys), color: SYSTEM_COLOR[sys] };
   });
+  const summary = networkSummary(matrix);
+  const topKeys = new Map(summary.top.map((edge, idx) => [`${edge.i}-${edge.j}`, idx]));
+  const weakKey = summary.weakest ? `${summary.weakest.i}-${summary.weakest.j}` : '';
 
   // Background ring
   const ring = document.createElementNS('http://www.w3.org/2000/svg','circle');
@@ -2280,68 +2632,117 @@ function drawNetwork(svgId, matrix, primaryColor){
   ring.setAttribute('fill','none'); ring.setAttribute('stroke','rgba(26,20,16,0.06)'); ring.setAttribute('stroke-width','1');
   svg.appendChild(ring);
 
-  // Edges — every pair, opacity proportional to |r|. Hover for tooltip + node highlight.
-  for (let i=0; i<n; i++){
-    for (let j=i+1; j<n; j++){
-      const r = matrix[i][j]; const ar = Math.abs(r);
-      if (ar < 0.10) continue;
-      const a = nodes[i], b = nodes[j];
-      const mx = (a.x+b.x)/2, my = (a.y+b.y)/2;
-      const ctrlX = cx + (mx-cx)*0.6, ctrlY = cy + (my-cy)*0.6;
-      const path = document.createElementNS('http://www.w3.org/2000/svg','path');
-      path.setAttribute('d', `M ${a.x} ${a.y} Q ${ctrlX} ${ctrlY} ${b.x} ${b.y}`);
-      path.setAttribute('fill','none');
-      const isStrong = ar >= 0.55, isAnti = r < 0;
-      path.setAttribute('stroke', isAnti ? '#2A6B85' : (isStrong ? primaryColor : 'rgba(74,68,64,0.45)'));
-      path.setAttribute('stroke-width', isStrong ? '2.4' : (ar >= 0.30 ? '1.6' : '1.0'));
-      path.setAttribute('stroke-opacity', (0.30 + ar*0.7).toFixed(2));
-      if (isAnti) path.setAttribute('stroke-dasharray','4,3');
-      path.setAttribute('stroke-linecap','round');
-      path.style.cursor = 'pointer';
-      path.style.transition = 'stroke-width .15s, stroke-opacity .15s';
-      // Wider invisible hit area
-      const hit = document.createElementNS('http://www.w3.org/2000/svg','path');
-      hit.setAttribute('d', `M ${a.x} ${a.y} Q ${ctrlX} ${ctrlY} ${b.x} ${b.y}`);
-      hit.setAttribute('fill','none');
-      hit.setAttribute('stroke','transparent');
-      hit.setAttribute('stroke-width','14');
-      hit.style.cursor = 'pointer';
-      hit.addEventListener('mouseenter', (e) => {
-        path.setAttribute('stroke-width', '4');
-        path.setAttribute('stroke-opacity', '1');
-        // Cross-highlight nodes
-        nodes.forEach((n,k) => {
-          const dot = svg.querySelector(`[data-node-idx="${k}"]`);
-          if (dot && (k===i || k===j)) { dot.setAttribute('opacity','1'); dot.setAttribute('r','6.5'); }
-          else if (dot) { dot.setAttribute('opacity','0.35'); }
-        });
-        // Tooltip
-        if (tooltip){
-          tooltip.innerHTML = `<span class="tt-pair">${a.label} ↔ ${b.label}</span><span class="tt-r">r = ${r>=0?'+':''}${r.toFixed(2)}</span>`;
-          tooltip.classList.add('visible');
-          const wrap = svg.parentElement.getBoundingClientRect();
-          const evX = e.clientX - wrap.left, evY = e.clientY - wrap.top;
-          tooltip.style.left = Math.min(wrap.width-160, evX+12) + 'px';
-          tooltip.style.top = Math.max(0, evY-30) + 'px';
-        }
+  function edgePath(edge){
+    const a = nodes[edge.i], b = nodes[edge.j];
+    const mx = (a.x+b.x)/2, my = (a.y+b.y)/2;
+    const ctrlX = cx + (mx-cx)*0.58, ctrlY = cy + (my-cy)*0.58;
+    return { a, b, ctrlX, ctrlY, d: `M ${a.x} ${a.y} Q ${ctrlX} ${ctrlY} ${b.x} ${b.y}` };
+  }
+
+  function edgePoint(edge, t=0.5){
+    const { a, b, ctrlX, ctrlY } = edgePath(edge);
+    const x = (1-t)*(1-t)*a.x + 2*(1-t)*t*ctrlX + t*t*b.x;
+    const y = (1-t)*(1-t)*a.y + 2*(1-t)*t*ctrlY + t*t*b.y;
+    return { x, y };
+  }
+
+  function addPath(edge, style, attachHover=true){
+    const p = edgePath(edge);
+    const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+    path.setAttribute('d', p.d);
+    path.setAttribute('fill','none');
+    path.setAttribute('stroke', style.stroke);
+    path.setAttribute('stroke-width', style.width);
+    path.setAttribute('stroke-opacity', style.opacity);
+    path.setAttribute('stroke-linecap','round');
+    if (style.dash) path.setAttribute('stroke-dasharray', style.dash);
+    path.style.transition = 'stroke-width .15s, stroke-opacity .15s';
+    svg.appendChild(path);
+    if (!attachHover) return path;
+
+    const hit = document.createElementNS('http://www.w3.org/2000/svg','path');
+    hit.setAttribute('d', p.d);
+    hit.setAttribute('fill','none');
+    hit.setAttribute('stroke','transparent');
+    hit.setAttribute('stroke-width','16');
+    hit.style.cursor = 'pointer';
+    hit.addEventListener('mouseenter', (e) => {
+      path.setAttribute('stroke-width', String(Math.max(Number(style.width) + 1.1, 4)));
+      path.setAttribute('stroke-opacity', '1');
+      nodes.forEach((node,k) => {
+        const dot = svg.querySelector(`[data-node-idx="${k}"]`);
+        if (dot && (k===edge.i || k===edge.j)) { dot.setAttribute('opacity','1'); dot.setAttribute('r','6.5'); }
+        else if (dot) { dot.setAttribute('opacity','0.35'); }
       });
-      hit.addEventListener('mousemove', (e) => {
-        if (!tooltip) return;
+      if (tooltip){
+        tooltip.innerHTML = `<span class="tt-pair">${p.a.label} ↔ ${p.b.label}</span><span class="tt-r">r = ${formatR(edge.r)}</span>`;
+        tooltip.classList.add('visible');
         const wrap = svg.parentElement.getBoundingClientRect();
         const evX = e.clientX - wrap.left, evY = e.clientY - wrap.top;
-        tooltip.style.left = Math.min(wrap.width-160, evX+12) + 'px';
+        tooltip.style.left = Math.min(wrap.width-170, evX+12) + 'px';
         tooltip.style.top = Math.max(0, evY-30) + 'px';
-      });
-      hit.addEventListener('mouseleave', () => {
-        path.setAttribute('stroke-width', isStrong ? '2.4' : (ar >= 0.30 ? '1.6' : '1.0'));
-        path.setAttribute('stroke-opacity', (0.30 + ar*0.7).toFixed(2));
-        nodes.forEach((n,k) => { const dot = svg.querySelector(`[data-node-idx="${k}"]`); if (dot){dot.setAttribute('opacity','0.9');dot.setAttribute('r','4.5')} });
-        if (tooltip) tooltip.classList.remove('visible');
-      });
-      svg.appendChild(path);
-      svg.appendChild(hit);
-    }
+      }
+    });
+    hit.addEventListener('mousemove', (e) => {
+      if (!tooltip) return;
+      const wrap = svg.parentElement.getBoundingClientRect();
+      const evX = e.clientX - wrap.left, evY = e.clientY - wrap.top;
+      tooltip.style.left = Math.min(wrap.width-170, evX+12) + 'px';
+      tooltip.style.top = Math.max(0, evY-30) + 'px';
+    });
+    hit.addEventListener('mouseleave', () => {
+      path.setAttribute('stroke-width', style.width);
+      path.setAttribute('stroke-opacity', style.opacity);
+      nodes.forEach((node,k) => { const dot = svg.querySelector(`[data-node-idx="${k}"]`); if (dot){dot.setAttribute('opacity','0.9');dot.setAttribute('r','4.5')} });
+      if (tooltip) tooltip.classList.remove('visible');
+    });
+    svg.appendChild(hit);
+    return path;
   }
+
+  // Ghost all edges first; ranked edges are drawn again on top.
+  summary.edges.forEach(edge => {
+    addPath(edge, { stroke:'rgba(74,68,64,0.20)', width:'0.9', opacity:'0.20' }, false);
+  });
+
+  if (summary.weakest && !topKeys.has(weakKey)) {
+    addPath(summary.weakest, { stroke:'rgba(74,68,64,0.55)', width:'1.5', opacity:'0.35', dash:'3,4' }, true);
+  }
+
+  const rankStyles = [
+    { width:'3.5', opacity:'1' },
+    { width:'2.5', opacity:'0.75' },
+    { width:'2.0', opacity:'0.55' },
+  ];
+  summary.top.forEach((edge, idx) => {
+    addPath(edge, { stroke: primaryColor, width: rankStyles[idx].width, opacity: rankStyles[idx].opacity }, true);
+  });
+
+  summary.top.forEach((edge, idx) => {
+    const pt = edgePoint(edge, 0.5);
+    const dx = idx === 0 ? 0 : (pt.x < cx ? -10 : 10);
+    const dy = idx === 0 ? -10 : (idx === 1 ? 10 : 24);
+    const badge = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    badge.setAttribute('cx', pt.x + dx);
+    badge.setAttribute('cy', pt.y + dy);
+    badge.setAttribute('r', '9');
+    badge.setAttribute('fill', 'var(--cream)');
+    badge.setAttribute('stroke', primaryColor);
+    badge.setAttribute('stroke-width', idx === 0 ? '1.8' : '1.2');
+    badge.setAttribute('opacity', idx === 0 ? '1' : '0.92');
+    svg.appendChild(badge);
+    const txt = document.createElementNS('http://www.w3.org/2000/svg','text');
+    txt.setAttribute('x', pt.x + dx);
+    txt.setAttribute('y', pt.y + dy + 0.8);
+    txt.setAttribute('font-family','Courier Prime, Courier New, monospace');
+    txt.setAttribute('font-size','9');
+    txt.setAttribute('fill', primaryColor);
+    txt.setAttribute('font-weight','700');
+    txt.setAttribute('text-anchor', 'middle');
+    txt.setAttribute('dominant-baseline', 'middle');
+    txt.textContent = `${idx + 1}`;
+    svg.appendChild(txt);
+  });
 
   // Nodes
   nodes.forEach((node,k) => {
@@ -2358,11 +2759,11 @@ function drawNetwork(svgId, matrix, primaryColor){
     inner.setAttribute('cx',node.x); inner.setAttribute('cy',node.y); inner.setAttribute('r','1.8');
     inner.setAttribute('fill','#F7F2EA');
     svg.appendChild(inner);
-    const lOff = 22;
+    const lOff = 32;
     const lx = cx + (R+lOff)*Math.cos(node.angle), ly = cy + (R+lOff)*Math.sin(node.angle);
     const txt = document.createElementNS('http://www.w3.org/2000/svg','text');
     txt.setAttribute('x',lx); txt.setAttribute('y',ly);
-    txt.setAttribute('font-family','JetBrains Mono'); txt.setAttribute('font-size','9');
+    txt.setAttribute('font-family','Courier Prime, Courier New, monospace'); txt.setAttribute('font-size','9');
     txt.setAttribute('fill','rgba(74,68,64,0.75)'); txt.setAttribute('letter-spacing','0.5');
     txt.setAttribute('font-weight','500');
     const cosA = Math.cos(node.angle);
@@ -2370,7 +2771,18 @@ function drawNetwork(svgId, matrix, primaryColor){
     else if (cosA > 0) txt.setAttribute('text-anchor','start');
     else txt.setAttribute('text-anchor','end');
     txt.setAttribute('dominant-baseline','middle');
-    txt.textContent = node.label.toUpperCase();
+    const parts = node.label.toUpperCase().split(' ');
+    if (parts.length > 1) {
+      parts.forEach((part, idx) => {
+        const tspan = document.createElementNS('http://www.w3.org/2000/svg','tspan');
+        tspan.setAttribute('x', lx);
+        tspan.setAttribute('dy', idx === 0 ? '-0.35em' : '1.15em');
+        tspan.textContent = part;
+        txt.appendChild(tspan);
+      });
+    } else {
+      txt.textContent = node.label.toUpperCase();
+    }
     svg.appendChild(txt);
   });
 }

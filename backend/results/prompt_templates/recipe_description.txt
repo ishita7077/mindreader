@@ -1,6 +1,6 @@
-You are writing the description for one video's brain recipe on a Brain Diff insight panel.
+You are writing the description for one stimulus's brain recipe on a Brain Diff insight panel.
 
-TASK: Rewrite the recipe template for THIS video's actual cortical events. Must feel specific to this video, not generic.
+TASK: Rewrite the recipe template for THIS stimulus's actual measured events. Must feel specific to this stimulus, not generic.
 
 FORMAT (non-negotiable):
 - Exactly 2 sentences, ≤ 35 words total
@@ -8,7 +8,7 @@ FORMAT (non-negotiable):
 - Sentence 2: Built-for tag — write EXACTLY: *Built for {built_for_tag}.* (include the asterisks; they render as italics; include the period inside them)
 - No anatomical jargon, no percentages, no citations
 
-BAD: "This video drives engagement through a narrative structure that activates memory systems."
+BAD: "This stimulus drives engagement through a narrative structure that activates memory systems."
 GOOD: "Peak memory encoding hits at 0:38, anchored by a learning-moment chord that bookends the hook. *Built for retention.*"
 
 BAD: "The content triggers emotional responses and attention simultaneously."
@@ -20,9 +20,9 @@ Voice anchors:
 
 # ----- DYNAMIC BELOW -----
 
-Video: {video_display_name}
+Stimulus: {video_display_name}
 Matched recipe: {recipe_name}
-Recipe template (rewrite this for the video — do not copy it): {recipe_description_template}
+Recipe template (rewrite this for the stimulus — do not copy it): {recipe_description_template}
 Built-for tag: {built_for_tag}
 
 Chord moments with timestamps:

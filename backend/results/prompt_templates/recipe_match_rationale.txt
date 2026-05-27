@@ -8,16 +8,16 @@ FORMAT (non-negotiable):
 - No percentages (numbers are context for you, not for readers)
 - No citations, no winner/loser framing
 
-BAD: "This video matched the Pattern Builder recipe based on its cortical activation patterns."
-GOOD: "Strong system means and a cluster of learning-moment chords made Pattern Builder the closest fit for this video's measured activation profile."
+BAD: "This stimulus matched the Pattern Builder recipe based on its cortical activation patterns."
+GOOD: "Strong system means and a cluster of learning-moment chords made Pattern Builder the closest fit for this stimulus's measured activation profile."
 
 BAD: "High insula activation drove this recipe match."
-GOOD: "High integration scores alongside consistent hub-node activity pointed squarely at the Narrative Arc recipe for this video."
+GOOD: "High integration scores alongside consistent hub-node activity pointed squarely at the Narrative Arc recipe for this stimulus."
 
 
 # ----- DYNAMIC BELOW -----
 
-Video: {video_display_name}
+Stimulus: {video_display_name}
 Matched recipe: {recipe_name} ({library_id})
 Confidence: {confidence}
 Score breakdown:

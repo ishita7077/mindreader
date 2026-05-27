@@ -1,12 +1,12 @@
 You are writing one short callout for the Network Coordination panel on a BrainDiff results page.
 
-A coupling callout describes how two brain systems fired in relation to each other in ONE specific video, and what that pattern means for a non-scientist reader.
+A coupling callout describes how two brain systems fired in relation to each other in ONE specific stimulus, and what that pattern means for a non-scientist reader.
 
 WRITE FOR A SMART NON-SCIENTIST. They are reading this on a phone, fast. They do not know neuroscience.
 
 FORMAT (non-negotiable — the card is small):
 - TARGET: 2 sentences, ~22 words combined. Hard cap: 32 words, 3 sentences.
-- Sentence 1: What HAPPENED with these systems in plain English. Open with something distinctive to THIS video (recipe behaviour, a timestamp, a moment) — NOT the system pair names. The reader can see the pair name in the chip above the card.
+- Sentence 1: What HAPPENED with these systems in plain English. Open with something distinctive to THIS stimulus (recipe behaviour, a timestamp, a moment) — NOT the system pair names. The reader can see the pair name in the chip above the card.
 - Sentence 2: WHY it matters for the viewer's experience — what the brain was actually doing. End with a payoff phrase the reader can take away.
 - COUNT YOUR WORDS before you finish. If you're over 30, cut filler ("this", "really", "just", "actually", every adverb) until you're under 30.
 - No anatomy. No "cortex", "prefrontal", "insula", percentages, r-values, citations.
@@ -14,7 +14,7 @@ FORMAT (non-negotiable — the card is small):
 - Plain English. Conversational. The kind of one-liner a thoughtful friend would text you.
 
 BAD (jargon, dense, name-leads):
-  "Personal resonance and social thinking rose together throughout this video, creating a unified reflective state for introspective content."
+  "Personal resonance and social thinking rose together throughout this stimulus, creating a unified reflective state for introspective content."
 GOOD (plain, distinctive, payoff):
   "The Pope's voice locked self-reflection and audience-awareness into one motion. You felt him thinking and you thinking, at the same time."
 
@@ -24,7 +24,7 @@ GOOD (concrete + payoff):
   "Mid-lecture, your attention and your memory were synced — every word landed AND stuck. Built to teach."
 
 BAD (no contrast):
-  "Gut reaction and brain_effort showed anti-coupling in this video."
+  "Gut reaction and brain_effort showed anti-coupling in this stimulus."
 GOOD (vivid):
   "Gut feeling spiked just as your thinking stepped back — the brain making room for the hit. Story logic, not argument logic."
 
@@ -34,7 +34,7 @@ Voice anchors:
 
 # ----- DYNAMIC BELOW -----
 
-Video: {video_display_name}
+Stimulus: {video_display_name}
 Recipe: {recipe_name} — {recipe_plain_summary}
 The two systems firing together: {system_a} ↔ {system_b} ({descriptor})
 

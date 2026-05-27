@@ -759,6 +759,34 @@ function toggleTheme(){
     row.classList.add('has-suggestion');
   }
 
+  function sameDisplayName(x, y){
+    return (x || '').trim().toLowerCase() === (y || '').trim().toLowerCase();
+  }
+
+  function defaultDisplayName(side){
+    const suffix = side === 'a' ? 'A' : 'B';
+    if (mode === 'video') return 'Video ' + suffix;
+    if (mode === 'audio') return 'Audio ' + suffix;
+    return 'Text ' + suffix;
+  }
+
+  function addSideSuffix(label, side){
+    const suffix = side === 'a' ? 'A' : 'B';
+    return ((label || '').replace(/\s+[AB]$/i, '').slice(0, 58) + ' ' + suffix).trim();
+  }
+
+  function repairDuplicateAutoNames(){
+    const currentA = (nameA.value || '').trim();
+    const currentB = (nameB.value || '').trim();
+    if (!currentA && !userEditedA) nameA.value = defaultDisplayName('a');
+    if (!currentB && !userEditedB) nameB.value = defaultDisplayName('b');
+    const finalA = (nameA.value || '').trim();
+    const finalB = (nameB.value || '').trim();
+    if (!finalA || !finalB || !sameDisplayName(finalA, finalB)) return;
+    if (!userEditedA) nameA.value = addSideSuffix(finalA, 'a');
+    if (!userEditedB) nameB.value = addSideSuffix(finalB, 'b');
+  }
+
   function refreshAutoNames(){
     if (mode === 'text'){
       applyAutoName(nameA, nameRowA, suggestNameFromText(a.value), userEditedA);
@@ -769,6 +797,7 @@ function toggleTheme(){
       applyAutoName(nameA, nameRowA, fa ? suggestNameFromFile(fa.name) : '', userEditedA);
       applyAutoName(nameB, nameRowB, fb ? suggestNameFromFile(fb.name) : '', userEditedB);
     }
+    repairDuplicateAutoNames();
   }
   // Wire auto-naming into existing input/file events.
   a.addEventListener('input', refreshAutoNames);
@@ -1038,8 +1067,12 @@ function toggleTheme(){
       // falling back to the auto-suggestion if user cleared them, falling
       // back to "Stimulus A/B" if all else fails. The worker uses these
       // everywhere instead of "Version A" / raw input text.
-      const finalNameA = (nameA.value || '').trim() || 'Stimulus A';
-      const finalNameB = (nameB.value || '').trim() || 'Stimulus B';
+      let finalNameA = (nameA.value || '').trim() || defaultDisplayName('a');
+      let finalNameB = (nameB.value || '').trim() || defaultDisplayName('b');
+      if (sameDisplayName(finalNameA, finalNameB)){
+        finalNameA = addSideSuffix(finalNameA, 'a');
+        finalNameB = addSideSuffix(finalNameB, 'b');
+      }
       if (mode === 'text'){
         const payload = {
           text_a: a.value,
