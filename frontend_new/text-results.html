@@ -736,8 +736,60 @@ body:not(.dev-mode) .src-badge{display:none !important}
   line-height:1.55;
 }
 
-/* Collapsible annotated text — secondary read-along view below the
-   waveform tracks. Closed by default; user opens to inspect words. */
+/* Important moments sit above the full read-along. This makes Frame 02 read
+   as analysis first, evidence drill-down second. */
+.important-moments-panel{
+  margin-top:1.6rem;
+  display:grid;
+  gap:1.15rem;
+}
+.moment-strip{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:.8rem;
+}
+.moment-card{
+  appearance:none;
+  text-align:left;
+  background:var(--cream);
+  border:1px solid var(--line-strong);
+  border-left:3px solid var(--ink-faint);
+  border-radius:5px;
+  padding:1rem 1.05rem;
+  cursor:pointer;
+  color:var(--ink);
+  transition:transform .14s,border-color .14s,background .14s;
+}
+.moment-card:hover,.moment-card.is-active{
+  transform:translateY(-1px);
+  background:var(--cream-2);
+  border-color:var(--line-strong);
+}
+.moment-card.a{border-left-color:var(--a)}
+.moment-card.b{border-left-color:var(--b)}
+.moment-card-kicker{
+  font-family:var(--ff-mono);font-size:9px;letter-spacing:.16em;
+  text-transform:uppercase;font-weight:700;margin-bottom:.55rem;
+}
+.moment-card.a .moment-card-kicker{color:var(--a)}
+.moment-card.b .moment-card-kicker{color:var(--b)}
+.moment-card-title{
+  font-family:var(--ff-display);font-size:1.04rem;line-height:1.18;
+  color:var(--ink);margin-bottom:.45rem;font-weight:500;
+}
+.moment-card-copy{
+  font-family:var(--ff-body);font-size:.9rem;line-height:1.45;
+  color:var(--ink-mid);
+}
+.moment-card-quote{
+  margin-top:.65rem;padding-top:.65rem;border-top:1px solid var(--line);
+  font-family:var(--ff-body);font-size:.87rem;line-height:1.4;color:var(--ink-dim);
+}
+@media (max-width:980px){.moment-strip{grid-template-columns:1fr 1fr}}
+@media (max-width:620px){.moment-strip{grid-template-columns:1fr}}
+
+/* Collapsible annotated text — secondary read-along view. Closed by default;
+   user opens it when they need to inspect the full transcript. */
 .annotated-text-details{
   margin-top:2rem;border-top:1px solid var(--line);padding-top:1.5rem;
 }
@@ -745,8 +797,10 @@ body:not(.dev-mode) .src-badge{display:none !important}
   cursor:pointer;list-style:none;
   font-family:var(--ff-mono);font-size:11px;letter-spacing:.16em;
   text-transform:uppercase;color:var(--red);font-weight:500;
-  padding:.5rem 0;display:flex;align-items:center;gap:.5rem;
+  padding:.5rem 0;display:flex;align-items:center;gap:.5rem;justify-content:space-between;
 }
+.annotated-summary-main{display:inline-flex;align-items:center;gap:.5rem}
+.annotated-summary-meta{font-family:var(--ff-mono);font-size:9.5px;letter-spacing:.08em;color:var(--ink-dim);text-transform:none}
 .annotated-text-details > summary::-webkit-details-marker{display:none}
 .annotated-text-details > summary::before{
   content:'▸';display:inline-block;transition:transform .2s;font-size:13px;
@@ -1266,12 +1320,12 @@ function buildInputsExport(){
     modality: meta.modality || currentModality(),
     input_a: {
       display_name: meta.display_name_a || va.display_name || null,
-      text: meta.text_a || meta.transcript_a || transcriptText(va.transcript) || null,
+      text: textSource(meta.text_a) || textSource(meta.transcript_a) || transcriptText(va.transcript) || null,
       media_name: meta.media_name_a || null,
     },
     input_b: {
       display_name: meta.display_name_b || vb.display_name || null,
-      text: meta.text_b || meta.transcript_b || transcriptText(vb.transcript) || null,
+      text: textSource(meta.text_b) || textSource(meta.transcript_b) || transcriptText(vb.transcript) || null,
       media_name: meta.media_name_b || null,
     },
   };
@@ -1281,6 +1335,11 @@ function transcriptText(transcript){
   return Array.isArray(transcript)
     ? transcript.map(line => line && line.text).filter(Boolean).join('\n')
     : '';
+}
+function textSource(value){
+  if (typeof value === 'string') return value;
+  if (Array.isArray(value)) return transcriptText(value);
+  return '';
 }
 
 function buildReportExport(){
@@ -1634,13 +1693,11 @@ function renderStrategyInsight(c, va, vb, matchA, matchB, descA, descB){
 }
 
 function renderFrame2(c, va, vb){
-  // Frame 02 — REWORKED: waveforms removed (user feedback: "DDS waveforms
-  // are not adding any value"). Read-along promoted from a hidden <details>
-  // to the main body of this frame. The read-along now also highlights
-  // words that SUPPORT the headline's contrast claim (see annotateText).
+  // Frame 02 — analysis first, transcript second. The read-along is useful
+  // evidence, but it is too dense to be the first thing a reader sees.
   const meta = (RESULT && RESULT.meta) || {};
-  const textA = meta.text_a || (RESULT && RESULT.transcript_a) || (va.transcript || '');
-  const textB = meta.text_b || (RESULT && RESULT.transcript_b) || (vb.transcript || '');
+  const textA = textSource(meta.text_a) || textSource(meta.transcript_a) || textSource(RESULT && RESULT.transcript_a) || textSource(va.transcript);
+  const textB = textSource(meta.text_b) || textSource(meta.transcript_b) || textSource(RESULT && RESULT.transcript_b) || textSource(vb.transcript);
   const dimensions = (RESULT && RESULT.dimensions) || [];
   const moments = [...(c.slots.chord_moments||[])].sort((p,q) => p.timestamp_seconds - q.timestamp_seconds);
   const totalChords = moments.length;
@@ -1654,50 +1711,67 @@ function renderFrame2(c, va, vb){
   return `
   <section class="frame" id="frame-2">
     <div class="frame-meta-row">
-      <div class="frame-num reveal">Frame 02 · Read along</div>
+      <div class="frame-num reveal">Frame 02 · Important moments</div>
       <div class="frame-num-r reveal">${totalChords > 0 ? `${totalChords} chord${totalChords===1?'':'s'} · ` : ''}${dimensions.length || 7} systems · 1Hz</div>
     </div>
-    <h2 class="frame-h2 reveal d1">${esc(readalongHeading)}</h2>
+    <h2 class="frame-h2 reveal d1">The words doing the work.</h2>
     <p class="frame-sub reveal d2 has-badge" style="position:relative">
       ${badge(c.slots.frame2_sub)}
       ${c.slots.frame2_sub && c.slots.frame2_sub.value
         ? esc(c.slots.frame2_sub.value)
-        : `Each ${noun}'s words are coloured by the brain system most engaged when that word landed. Coloured stretches are where the contrast in the headline above is being driven.`}
+        : `These are the strongest phrase-level signals and timing moments driving the contrast. The full read-along transcript is still available below as supporting evidence.`}
     </p>
 
     ${totalChords === 0
       ? `<div class="chord-empty-note reveal">No chord crossed threshold this run — typical for shorter ${contentNounPlural()}. The seven systems still fired and shaped the response; see the network and dimension views below.</div>`
       : ''}
 
-    <!-- Read-along promoted to main panel (was a hidden <details>) -->
-    <div class="readalong-panel reveal d2">
-      <div class="dim-legend">
-        ${CANONICAL_SYSTEMS.map(sys => `
-          <span class="dim-badge" style="--dim-color:${SYSTEM_COLOR[sys]}">
-            <span class="dim-dot"></span>${esc(SYSTEM_FULL[sys].toUpperCase())}
-          </span>`).join('')}
-      </div>
-      <div class="text-compare-grid">
-        <div class="text-panel a">
-          <div class="text-panel-head">
-            <span class="text-panel-badge">A</span>
-            <span class="text-panel-label">${esc(va.display_name)}</span>
-            <span class="text-panel-chars">${durA}s · ${textA.length} chars</span>
-          </div>
-          <div class="text-body">${annotateText(textA, dimensions, 'a', headlineText)}</div>
-        </div>
-        <div class="text-panel b">
-          <div class="text-panel-head">
-            <span class="text-panel-badge">B</span>
-            <span class="text-panel-label">${esc(vb.display_name)}</span>
-            <span class="text-panel-chars">${durB}s · ${textB.length} chars</span>
-          </div>
-          <div class="text-body">${annotateText(textB, dimensions, 'b', headlineText)}</div>
-        </div>
-      </div>
-      ${renderPhraseStrategyPanel(textA, textB, dimensions, va, vb)}
+    <div class="reveal d2">
+      ${renderImportantMoments(c, textA, textB, dimensions, va, vb)}
     </div>
+
+    <details class="annotated-text-details reveal d2">
+      <summary>
+        <span class="annotated-summary-main">${esc(readalongHeading)}</span>
+        <span class="annotated-summary-meta">${textA.length} chars A · ${textB.length} chars B</span>
+      </summary>
+      <div class="readalong-panel">
+        <div class="dim-legend">
+          ${CANONICAL_SYSTEMS.map(sys => `
+            <span class="dim-badge" style="--dim-color:${SYSTEM_COLOR[sys]}">
+              <span class="dim-dot"></span>${esc(SYSTEM_FULL[sys].toUpperCase())}
+            </span>`).join('')}
+        </div>
+        <div class="text-compare-grid">
+          <div class="text-panel a">
+            <div class="text-panel-head">
+              <span class="text-panel-badge">A</span>
+              <span class="text-panel-label">${esc(va.display_name)}</span>
+              <span class="text-panel-chars">${durA}s · ${textA.length} chars</span>
+            </div>
+            <div class="text-body">${annotateText(textA, dimensions, 'a', headlineText)}</div>
+          </div>
+          <div class="text-panel b">
+            <div class="text-panel-head">
+              <span class="text-panel-badge">B</span>
+              <span class="text-panel-label">${esc(vb.display_name)}</span>
+              <span class="text-panel-chars">${durB}s · ${textB.length} chars</span>
+            </div>
+            <div class="text-body">${annotateText(textB, dimensions, 'b', headlineText)}</div>
+          </div>
+        </div>
+      </div>
+    </details>
   </section>`;
+}
+
+function renderImportantMoments(c, textA, textB, dimensions, va, vb){
+  const phrasePanel = renderPhraseStrategyPanel(textA, textB, dimensions, va, vb);
+  const chordPanel = renderChordMomentSummary(c, va, vb);
+  if (!phrasePanel && !chordPanel) {
+    return `<div class="chord-empty-note">No phrase or chord moment crossed the display threshold. The detailed system curves below still show the full model output.</div>`;
+  }
+  return `<div class="important-moments-panel">${phrasePanel}${chordPanel}</div>`;
 }
 
 const SYSTEM_COGNITIVE_ROLE = {
@@ -1774,7 +1848,7 @@ function renderPhraseStrategyPanel(textA, textB, dimensions, va, vb){
   const hits = [
     ...derivePhraseInsights(textA, dimensions, 'a'),
     ...derivePhraseInsights(textB, dimensions, 'b'),
-  ];
+  ].sort((a,b) => b.score - a.score).slice(0, 6);
   if (!hits.length) return '';
   const labelFor = side => side === 'a' ? (va.display_name || 'A') : (vb.display_name || 'B');
   return `
@@ -1795,6 +1869,47 @@ function renderPhraseStrategyPanel(textA, textB, dimensions, va, vb){
           </div>`).join('')}
       </div>
     </div>`;
+}
+
+function renderChordMomentSummary(c, va, vb){
+  const moments = [...((c && c.slots && c.slots.chord_moments) || [])]
+    .sort((a,b) => (a.timestamp_seconds || 0) - (b.timestamp_seconds || 0));
+  if (!moments.length) return '';
+  const labels = {
+    video_a: va.display_name || 'A',
+    video_b: vb.display_name || 'B',
+  };
+  const cards = moments.slice(0, 4).map((m, i) => {
+    const side = m.video === 'video_a' ? 'a' : 'b';
+    const lib = (c.slots.chord_meanings || {})[m.chord_id]?.value || {};
+    const title = lib.name || humanizeId(m.chord_id || 'Brain moment');
+    const rawCopy = (m.meaning && (m.meaning.value || m.meaning.text || m.meaning.summary)) || lib.meaning || 'A concentrated system pattern surfaced at this point.';
+    const copy = typeof rawCopy === 'string' ? rawCopy : 'A concentrated system pattern surfaced at this point.';
+    const quote = m.quote ? `<div class="moment-card-quote">“${esc(m.quote)}”</div>` : '';
+    return `
+      <button class="moment-card ${side}${i===0?' is-active':''}" type="button" data-moment-index="${i}">
+        <div class="moment-card-kicker">${esc(fmtTime(m.timestamp_seconds || 0))} · ${side.toUpperCase()} · ${esc(labels[m.video] || labels.video_a)}</div>
+        <div class="moment-card-title">${esc(title)}</div>
+        <div class="moment-card-copy">${esc(String(copy))}</div>
+        ${quote}
+      </button>`;
+  }).join('');
+  return `
+    <div class="phrase-insight-panel">
+      <div class="phrase-insight-head">
+        <div class="phrase-insight-title">Important timing moments</div>
+        <div class="phrase-insight-sub">These are the strongest detected system chords. Use them as the time-based companion to the phrase callouts above.</div>
+      </div>
+      <div class="moment-strip">${cards}</div>
+    </div>`;
+}
+
+function humanizeId(id){
+  return String(id || '')
+    .replace(/[_-]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .replace(/\b\w/g, ch => ch.toUpperCase()) || 'Brain Moment';
 }
 
 // Render one audio track: side label, waveform bars, optional chord pins.
@@ -2341,6 +2456,7 @@ function initInteractions(){
 
   initScrubber();
   initChordPins();
+  initMomentCards();
   initConnectNetworks();
   initDimensionChart();
   initBrainRegionHover();
@@ -2348,6 +2464,16 @@ function initInteractions(){
   // Initial chord render
   const moments = CONTENT.slots.chord_moments || [];
   if (moments.length) renderChordDetail(0);
+}
+
+function initMomentCards(){
+  document.querySelectorAll('.moment-card[data-moment-index]').forEach(card => {
+    card.addEventListener('click', () => {
+      document.querySelectorAll('.moment-card').forEach(x => x.classList.remove('is-active'));
+      card.classList.add('is-active');
+      renderChordDetail(parseInt(card.dataset.momentIndex, 10) || 0);
+    });
+  });
 }
 
 // ─── BRAIN REGION HOVER ───────────────────────────────────────────────
@@ -2545,6 +2671,7 @@ function renderChordDetail(globalIndex){
   const sideClass = m.video === 'video_a' ? 'a' : 'b';
   const sideLabel = (video.display_name||'').toUpperCase();
   const el = document.getElementById('chord-detail');
+  if (!el) return;
   el.classList.add('swapping');
   setTimeout(() => {
     const spectrumSystems = pickSpectrumSystems(m.chord_id, video);
@@ -2583,7 +2710,7 @@ function renderChordDetail(globalIndex){
             <div></div>
             <div class="cdm-spec-axis-marks"><span>−2s</span><span>−1s</span><span>0s</span><span>+1s</span><span>+2s</span></div>
           </div>
-          <div class="cdm-spec-note">▲ chord fires at center · sustained ≥ ${meaning.formula_human.match(/at least (\d) second/)?.[1]||'1'}s</div>
+          <div class="cdm-spec-note">▲ chord fires at center · sustained ≥ ${String(lib.formula_human || '').match(/at least (\d) second/)?.[1]||'1'}s</div>
         </div>
       </div>
     </div>`;
