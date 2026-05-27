@@ -1560,19 +1560,46 @@ function annotateText(text, dimensions, side, headlineText){
 
 // Like dominantSystem() but also returns the runner-up's value so we can
 // gate on "is this REALLY the dominant system, or just barely?"
+//
+// IMPORTANT — `dimensions[i].timeseries_a/b` comes from the worker UN-normalised
+// (raw z-score-ish, values up to ~3.4). The video.timeseries[sys] view IS
+// normalised to [0,1], but THIS function reads dimensions[].timeseries_a/b.
+// So we can't assume baseline 0.5. We compute relative dominance instead:
+//   top   = best raw value at this step / max raw value over the series
+//   gap   = (best − second) / max raw value
+// Both end up in roughly [0, 1] regardless of whether the input was already
+// normalised. That's range-invariant — works correctly for both old worker
+// output (un-normalised) and new (normalised).
 function dominanceScore(dimensions, seriesKey, step){
   let best = -Infinity, second = -Infinity, bestSys = null;
+  // First pass: peak across all systems at this step (for relative scaling).
+  let stepMax = 0;
   for (const d of dimensions){
     const arr = d[seriesKey];
     if (!arr || step >= arr.length) continue;
-    // Distance from baseline 0.5 (after the new [0,1] normalisation).
-    // Big values either above (excited) or below (suppressed) baseline are dominant.
-    const v = Math.abs((arr[step] || 0.5) - 0.5) + 0.5;  // map distance-from-baseline back to [0.5, 1] for thresholding
+    const v = Math.abs(arr[step] || 0);
+    if (v > stepMax) stepMax = v;
+  }
+  if (stepMax <= 0) return null;
+  // Second pass: rank.
+  for (const d of dimensions){
+    const arr = d[seriesKey];
+    if (!arr || step >= arr.length) continue;
+    const v = Math.abs(arr[step] || 0);
     if (v > best) { second = best; best = v; bestSys = d.key || d.system || d.id || d.name; }
     else if (v > second) { second = v; }
   }
   if (!bestSys) return null;
-  return { sys: bestSys, top: best, gap: best - second };
+  // Relative to the step's peak. top is in [0,1] (best is at most stepMax,
+  // which is best, so top=1.0 for the winner; second/stepMax ≤ 1.0).
+  // Use top = best/stepMax_GLOBAL_NORM with a soft floor of 0.5 so the
+  // legacy gate ds.top >= 0.50 still works the same way on normalised input.
+  return {
+    sys:  bestSys,
+    top:  Math.min(1.0, 0.5 + (best - second) / Math.max(stepMax, 1e-6) * 0.5),
+    gap:  (best - second) / Math.max(stepMax, 1e-6),
+    raw_best: best,
+  };
 }
 
 function dominantSystem(dimensions, seriesKey, step){

@@ -33,21 +33,28 @@ class CouplingCalloutValidator(BaseValidator):
 
         text = output.strip()
 
+        # Sentence count: accept 1–3 sentences. Previously demanded EXACTLY 2,
+        # which is hard for an LLM under a 22-word budget — the strongest
+        # cards consistently failed validation (4/6 slots fell back in the
+        # last live run because the LLM produced 1 or 3 sentences). Two
+        # sentences is still the prompt's target, but 1 punchy line or
+        # 3 short ones are also publishable.
         n = self.count_sentences(text)
-        if n != 2:
+        if n < 1 or n > 3:
             errors.append(ValidationError(
                 code="WRONG_SENTENCE_COUNT",
-                detail=f"coupling_callout must be exactly 2 sentences, got {n}",
+                detail=f"coupling_callout must be 1-3 sentences, got {n}",
             ))
 
         wc = self.count_words(text)
-        # Tightened from 38 → 22 to match the new prompt that explicitly caps
-        # the callout at 22 words. Cards are small; long callouts were
-        # crowding the layout per user feedback.
-        if wc > 22:
+        # Word limit loosened 22 → 32. The card layout absorbs ~30 words on
+        # two lines; the previous 22 cap was too tight for 2 sentences and
+        # was the dominant failure mode (Sonnet/Haiku overshooting by 1–4
+        # words consistently).
+        if wc > 32:
             errors.append(ValidationError(
                 code="OVER_WORD_LIMIT",
-                detail=f"coupling_callout has {wc} words, max 22",
+                detail=f"coupling_callout has {wc} words, max 32",
             ))
         # MISSING_SYSTEM_NAME check removed (May 25 2026): the prompt now
         # explicitly forbids opening with the system pair names (they're on

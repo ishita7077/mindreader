@@ -130,14 +130,25 @@ class CouplingCalloutSlot(Slot):
         candidates: list[str] = []
         validation = ValidationResult(passed=False)
         attempts = 0
+        # Track per-attempt errors so the assembler/UI can surface diagnostic
+        # info instead of just "fallback used, no reason given" (which is
+        # what bit us in the Elon-vs-Pope run — 4/6 fallbacks, 0 visibility).
+        attempt_errors: list[dict[str, str]] = []
+        last_error: str | None = None
 
-        for attempt in (1, 2):
+        # 3 attempts (was 2). The coupling callout is the most validator-sensitive
+        # slot we have (tight word count + sentence count). One bad attempt
+        # shouldn't doom the card to fallback; give the LLM a real third try.
+        for attempt in (1, 2, 3):
             attempts = attempt
+            # Temp grows on each retry so we sample around different points
+            # of the distribution. Seed also rotates.
+            temp = {1: 0.4, 2: 0.55, 3: 0.7}[attempt]
             req = GenerationRequest(
                 prompt=prompt,
                 max_new_tokens=self.max_new_tokens,
-                temperature=0.4 if attempt == 1 else 0.5,
-                top_p=0.9,
+                temperature=temp,
+                top_p=0.92,
                 do_sample=False if attempt == 1 else True,
                 seed=seed + (attempt - 1),
                 slot_address=self.slot_address,
@@ -147,10 +158,15 @@ class CouplingCalloutSlot(Slot):
             try:
                 resp = await manager.generate(req)
             except Exception as exc:
+                detail = f"{type(exc).__name__}: {exc}"
                 audit.emit("slot_model_failed", slot=self.slot_address, attempt=attempt,
-                           error_code="MODEL_CALL_FAILED", error_detail=f"{type(exc).__name__}: {exc}")
-                if attempt == 2: break
-                audit.emit("slot_retry_started", slot=self.slot_address, attempt=2)
+                           error_code="MODEL_CALL_FAILED", error_detail=detail)
+                attempt_errors.append({"stage": f"attempt_{attempt}_model",
+                                        "error_code": "MODEL_CALL_FAILED",
+                                        "error_detail": detail})
+                last_error = detail
+                if attempt == 3: break
+                audit.emit("slot_retry_started", slot=self.slot_address, attempt=attempt + 1)
                 continue
             audit.emit("slot_model_returned", slot=self.slot_address, attempt=attempt, latency_ms=resp.latency_ms)
 
@@ -160,15 +176,21 @@ class CouplingCalloutSlot(Slot):
             if validation.passed:
                 audit.emit("slot_validation_passed", slot=self.slot_address, attempt=attempt)
                 break
+            err_code = validation.errors[0].code if validation.errors else "VALIDATION_FAILED"
+            err_detail = "; ".join(e.detail for e in validation.errors)
             audit.emit(
                 "slot_validation_failed",
                 slot=self.slot_address,
                 attempt=attempt,
-                error_code=validation.errors[0].code if validation.errors else "VALIDATION_FAILED",
-                error_detail="; ".join(e.detail for e in validation.errors),
+                error_code=err_code,
+                error_detail=err_detail,
             )
-            if attempt == 1:
-                audit.emit("slot_retry_started", slot=self.slot_address, attempt=2)
+            attempt_errors.append({"stage": f"attempt_{attempt}_validation",
+                                    "error_code": err_code,
+                                    "error_detail": err_detail})
+            last_error = err_detail
+            if attempt < 3:
+                audit.emit("slot_retry_started", slot=self.slot_address, attempt=attempt + 1)
 
         latency_ms = int((time.perf_counter() - start) * 1000)
         succeeded = validation.passed
@@ -187,7 +209,7 @@ class CouplingCalloutSlot(Slot):
                 "seed":           seed,
                 "do_sample":      False,
                 "temperature":    0.4,
-                "top_p":          0.9,
+                "top_p":          0.92,
                 "max_new_tokens": self.max_new_tokens,
             },
             "prompt_rendered": prompt,
@@ -195,6 +217,8 @@ class CouplingCalloutSlot(Slot):
             "selected":        candidates[-1] if (candidates and validation.passed) else None,
             "attempts":        attempts,
             "validation":      validation.as_dict(),
+            "attempt_errors":  attempt_errors,
+            "last_error":      last_error,
             "latency_ms":      latency_ms,
             "pair": {"system_a": pair.system_a, "system_b": pair.system_b, "r": pair.r},
         }

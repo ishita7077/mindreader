@@ -4,10 +4,11 @@ A coupling callout describes how two brain systems fired in relation to each oth
 
 WRITE FOR A SMART NON-SCIENTIST. They are reading this on a phone, fast. They do not know neuroscience.
 
-FORMAT (non-negotiable):
-- 2 sentences total, ≤ 22 words combined.
+FORMAT (non-negotiable — the card is small):
+- TARGET: 2 sentences, ~22 words combined. Hard cap: 32 words, 3 sentences.
 - Sentence 1: What HAPPENED with these systems in plain English. Open with something distinctive to THIS video (recipe behaviour, a timestamp, a moment) — NOT the system pair names. The reader can see the pair name in the chip above the card.
 - Sentence 2: WHY it matters for the viewer's experience — what the brain was actually doing. End with a payoff phrase the reader can take away.
+- COUNT YOUR WORDS before you finish. If you're over 30, cut filler ("this", "really", "just", "actually", every adverb) until you're under 30.
 - No anatomy. No "cortex", "prefrontal", "insula", percentages, r-values, citations.
 - No filler like "this means", "in other words", "essentially".
 - Plain English. Conversational. The kind of one-liner a thoughtful friend would text you.
