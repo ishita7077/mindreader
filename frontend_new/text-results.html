@@ -446,8 +446,9 @@ nav.scrolled{background:rgba(247,242,234,.96);backdrop-filter:blur(16px);border-
 /* ── EXPORT + CTA + FOOTER ─── */
 .export-row{display:flex;gap:.65rem;margin-top:3rem;padding-top:2rem;border-top:1px solid var(--line);align-items:center;flex-wrap:wrap}
 .export-label{font-family:var(--ff-mono);font-size:10px;letter-spacing:.15em;color:var(--ink-dim);text-transform:uppercase;margin-right:.4rem;font-weight:500}
-.export-btn{font-family:var(--ff-mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;padding:.6rem 1.1rem;border:1px solid var(--line-strong);background:var(--cream);color:var(--ink-mid);cursor:pointer;transition:all .2s;border-radius:3px;font-weight:500}
+.export-btn{font-family:var(--ff-mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;padding:.6rem 1.1rem;border:1px solid var(--line-strong);background:var(--cream);color:var(--ink-mid);cursor:pointer;transition:all .2s;border-radius:3px;font-weight:500;text-decoration:none;display:inline-flex;align-items:center}
 .export-btn:hover{border-color:var(--red);color:var(--red)}
+.export-btn[disabled]{opacity:.45;cursor:wait}
 .cta{padding:6rem 3rem;text-align:center;border-top:1px solid var(--line);position:relative;max-width:1400px;margin:0 auto}
 .cta-eyebrow{font-family:var(--ff-mono);font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--red);font-weight:500;margin-bottom:1.6rem}
 .cta-headline{font-family:var(--ff-display);font-weight:500;font-size:clamp(1.5rem,2.7vw,2.2rem);line-height:1.4;color:var(--ink);max-width:680px;margin:0 auto 2.2rem}
@@ -1037,6 +1038,119 @@ function esc(s){if(s==null)return'';return String(s).replace(/&/g,'&amp;').repla
 function rich(s){if(s==null)return'';return esc(s).replace(/\*([^*]+)\*/g,'<em>$1</em>')}
 function badge(slot){if(!slot||!slot.source)return'';return `<span class="src-badge src-${slot.source}">${slot.source}</span>`}
 function fmtTime(s){return `${Math.floor(s/60)}:${Math.floor(s%60).toString().padStart(2,'0')}`}
+
+function safeFilenamePart(value){
+  const clean = String(value || 'braindiff')
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9._-]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+  return clean || 'braindiff';
+}
+
+function exportBaseName(){
+  return safeFilenamePart(
+    (CONTENT && CONTENT.comparison_id) ||
+    JOB_ID ||
+    COMPARISON_ID ||
+    'braindiff-report'
+  );
+}
+
+function buildInputsExport(){
+  const meta = (RESULT && RESULT.meta) || {};
+  const videos = (CONTENT && CONTENT.videos) || {};
+  const va = videos.video_a || {};
+  const vb = videos.video_b || {};
+  return {
+    schema_version: 'braindiff_inputs_export.v1',
+    exported_at: new Date().toISOString(),
+    page_url: window.location.href,
+    job_id: JOB_ID || meta.job_id || null,
+    comparison_id: CONTENT ? CONTENT.comparison_id : COMPARISON_ID,
+    modality: meta.modality || currentModality(),
+    input_a: {
+      display_name: meta.display_name_a || va.display_name || null,
+      text: meta.text_a || meta.transcript_a || transcriptText(va.transcript) || null,
+      media_name: meta.media_name_a || null,
+    },
+    input_b: {
+      display_name: meta.display_name_b || vb.display_name || null,
+      text: meta.text_b || meta.transcript_b || transcriptText(vb.transcript) || null,
+      media_name: meta.media_name_b || null,
+    },
+  };
+}
+
+function transcriptText(transcript){
+  return Array.isArray(transcript)
+    ? transcript.map(line => line && line.text).filter(Boolean).join('\n')
+    : '';
+}
+
+function buildReportExport(){
+  return {
+    schema_version: 'braindiff_report_export.v1',
+    exported_at: new Date().toISOString(),
+    page_url: window.location.href,
+    job_id: JOB_ID || (RESULT && RESULT.meta && RESULT.meta.job_id) || null,
+    comparison_id: CONTENT ? CONTENT.comparison_id : COMPARISON_ID,
+    content: CONTENT,
+    result: RESULT || null,
+  };
+}
+
+async function payloadForExport(kind){
+  if (kind === 'content') return CONTENT;
+  if (kind === 'inputs') {
+    if (!JOB_ID && COMPARISON_ID) {
+      try {
+        const res = await fetch(`/outputs/${encodeURIComponent(COMPARISON_ID)}/inputs.json`, {cache: 'no-cache'});
+        if (res.ok) return await res.json();
+      } catch (_) {}
+    }
+    return buildInputsExport();
+  }
+  if (kind === 'report') return buildReportExport();
+  throw new Error(`Unknown export type: ${kind}`);
+}
+
+function downloadJson(filename, payload){
+  const blob = new Blob([JSON.stringify(payload, null, 2) + '\n'], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function initExportButtons(){
+  document.querySelectorAll('[data-export-kind]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const kind = btn.dataset.exportKind;
+      const original = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = 'Preparing...';
+      try {
+        const payload = await payloadForExport(kind);
+        if (!payload) throw new Error('The report payload is not loaded yet.');
+        downloadJson(`${exportBaseName()}-${kind}.json`, payload);
+        btn.textContent = 'Downloaded';
+        setTimeout(() => { btn.textContent = original; }, 1400);
+      } catch (err) {
+        console.error('[text-results] export failed:', err);
+        btn.textContent = 'Export failed';
+        setTimeout(() => { btn.textContent = original; }, 2200);
+        window.alert(`Could not export ${kind}: ${err.message || err}`);
+      } finally {
+        setTimeout(() => { btn.disabled = false; }, 250);
+      }
+    });
+  });
+}
 
 // Two-tone the headline by wrapping creator names in side-coloured spans.
 // If the LLM used full video titles, REPLACE them with the short "A" / "B"
@@ -1711,8 +1825,9 @@ function renderFrame3(c, va, vb){
       </div>
       <div class="export-row">
         <span class="export-label">Export</span>
-        <a class="export-btn" href="/outputs/${esc(c.comparison_id)}/content.json" download>Full content.json</a>
-        <a class="export-btn" href="/outputs/${esc(c.comparison_id)}/inputs.json" download>Inputs.json</a>
+        <button class="export-btn" type="button" data-export-kind="report">Full report.json</button>
+        <button class="export-btn" type="button" data-export-kind="content">Content.json</button>
+        <button class="export-btn" type="button" data-export-kind="inputs">Inputs.json</button>
         <a class="export-btn" href="/methodology">Methodology</a>
       </div>
     </div>
@@ -1880,6 +1995,7 @@ function initInteractions(){
   initConnectNetworks();
   initDimensionChart();
   initBrainRegionHover();
+  initExportButtons();
   // Initial chord render
   const moments = CONTENT.slots.chord_moments || [];
   if (moments.length) renderChordDetail(0);
