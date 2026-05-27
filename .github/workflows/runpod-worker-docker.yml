@@ -66,10 +66,6 @@ jobs:
             type=raw,value=runpod-latest
             type=sha,prefix=runpod-
 
-      - name: Temporary public image name
-        id: ttl
-        run: echo "image=ttl.sh/braindiff-${GITHUB_SHA::12}:24h" >> "$GITHUB_OUTPUT"
-
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
@@ -79,7 +75,97 @@ jobs:
           push: true
           provenance: false
           sbom: false
-          tags: |
-            ${{ steps.meta.outputs.tags }}
-            ${{ steps.ttl.outputs.image }}
+          tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+        # ttl.sh push removed (2026-05-27): the prod RunPod endpoint used to
+        # read from ttl.sh/braindiff-<sha>:24h, which self-deletes after 24h.
+        # When prod outlived that window, the kitchen had no recipe and every
+        # job hung at "Loading…". Prod now reads from registry.runpod.net
+        # (RunPod's own permanent registry, auto-populated by its GitHub
+        # Integration). The next step keeps prod's template in sync with
+        # the latest image without any per-commit manual update.
+
+      # ── Auto-sync the prod RunPod template to whatever the test template
+      # has just been updated to by RunPod's GitHub Integration. Without
+      # this, prod would keep pointing at an older image forever (which is
+      # exactly the failure mode that broke production on 2026-05-27).
+      #
+      # Requires GitHub Actions secret RUNPOD_API_KEY (RunPod account API
+      # key with Read/Write on api.runpod.io/graphql). If the secret is
+      # missing, this step is a no-op and the build still succeeds — prod
+      # will stay on the old image and need a manual repoint.
+      - name: Sync prod RunPod template to latest image
+        if: success() && env.RUNPOD_API_KEY != ''
+        env:
+          RUNPOD_API_KEY: ${{ secrets.RUNPOD_API_KEY }}
+          # IDs are stable per-endpoint and not secret. Hard-coded for
+          # clarity. Update here if either endpoint is recreated.
+          PROD_TEMPLATE_ID: ss0081newr
+          TEST_TEMPLATE_ID: pym3c39fe0
+          COMMIT_SHA_PREFIX: ${{ github.sha }}
+        run: |
+          set -e
+          # 1. Wait (≤10 min) for RunPod's auto-build to update the test
+          #    template to the current commit's SHA.
+          SHA9="${COMMIT_SHA_PREFIX:0:9}"
+          echo "Waiting for RunPod auto-build to publish :$SHA9..."
+          DEADLINE=$(( $(date +%s) + 600 ))
+          while [ $(date +%s) -lt $DEADLINE ]; do
+            CURRENT_IMG=$(curl -sf -X POST \
+              "https://api.runpod.io/graphql?api_key=${RUNPOD_API_KEY}" \
+              -H 'Content-Type: application/json' \
+              -d "{\"query\":\"{ podTemplate(id: \\\"${TEST_TEMPLATE_ID}\\\") { imageName } }\"}" \
+              | python3 -c "import json,sys; print(json.load(sys.stdin)['data']['podTemplate']['imageName'])")
+            echo "Test template image: $CURRENT_IMG"
+            if echo "$CURRENT_IMG" | grep -q ":${SHA9}"; then
+              echo "Match — RunPod auto-build done."
+              break
+            fi
+            sleep 30
+          done
+          if ! echo "$CURRENT_IMG" | grep -q ":${SHA9}"; then
+            echo "Timeout waiting for RunPod auto-build — prod template not updated."
+            exit 0  # don't fail the whole workflow
+          fi
+          # 2. Copy that image into the prod template. Preserve env vars +
+          #    disk size by reading the existing prod template first.
+          python3 <<EOF
+          import json, os, urllib.request
+          key = os.environ['RUNPOD_API_KEY']
+          prod_id = os.environ['PROD_TEMPLATE_ID']
+          new_img = "$CURRENT_IMG"
+          # Fetch existing prod template (need env vars + disk size to preserve).
+          q = {"query": f'{{ podTemplate(id: \"{prod_id}\") {{ id name imageName containerDiskInGb volumeInGb dockerArgs ports startScript volumeMountPath isServerless env {{ key value }} }} }}'}
+          req = urllib.request.Request(
+              f'https://api.runpod.io/graphql?api_key={key}',
+              data=json.dumps(q).encode(), headers={'Content-Type': 'application/json'})
+          t = json.loads(urllib.request.urlopen(req).read())['data']['podTemplate']
+          env_lines = []
+          for e in (t.get('env') or []):
+              k = e['key']; v = (e['value'] or '').replace('\\\\','\\\\\\\\').replace('"','\\\\"')
+              env_lines.append(f'{{ key: "{k}", value: "{v}" }}')
+          env_str = '[' + ', '.join(env_lines) + ']'
+          mut = f'''mutation {{
+            saveTemplate(input: {{
+              id: "{t['id']}",
+              name: "{t['name']}",
+              imageName: "{new_img}",
+              containerDiskInGb: {t['containerDiskInGb']},
+              volumeInGb: {t.get('volumeInGb') or 0},
+              isServerless: {str(t.get('isServerless', True)).lower()},
+              dockerArgs: "",
+              ports: "",
+              readme: "",
+              startScript: "",
+              volumeMountPath: "{t.get('volumeMountPath') or '/workspace'}",
+              env: {env_str}
+            }}) {{ id imageName }}
+          }}'''
+          req = urllib.request.Request(
+              f'https://api.runpod.io/graphql?api_key={key}',
+              data=json.dumps({"query": mut}).encode(), headers={'Content-Type': 'application/json'})
+          resp = json.loads(urllib.request.urlopen(req).read())
+          print('saveTemplate response:', json.dumps(resp, indent=2))
+          assert resp.get('data', {}).get('saveTemplate', {}).get('imageName') == new_img, "prod imageName mismatch after save"
+          print(f'PROD template now on {new_img}')
+          EOF
