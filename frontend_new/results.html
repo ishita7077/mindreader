@@ -467,6 +467,18 @@ async function bootFromStatic(){
   return acceptContent(json);
 }
 
+function jobStatusErrorCard(data, fallbackTitle){
+  const error = (data && data.error) || {};
+  const plain = error.plain || {};
+  const code = error.code || data.code || 'unknown';
+  const reason = plain.reason || error.message || data.message || 'The job status check failed.';
+  const action = plain.action || 'Try starting a fresh run.';
+  return errCard(
+    fallbackTitle || 'Job unavailable',
+    `<code>${escapeHtmlText(code)}</code><br>${escapeHtmlText(reason)}<br>${escapeHtmlText(action)}`
+  );
+}
+
 async function bootFromJob(){
   document.getElementById('loading-path').textContent = `${JOB_STATUS_URL} (polling)`;
   // Poll the worker's status until completed. Existing /run page uses the same endpoint;
@@ -477,7 +489,12 @@ async function bootFromJob(){
     let resp;
     try { resp = await fetch(JOB_STATUS_URL, {cache:'no-cache'}); }
     catch (e) { return errCard('Network error polling job', `<code>${escapeHtmlText(e.message)}</code>`); }
-    if (!resp.ok) return errCard('Job status check failed', `HTTP ${resp.status} from <code>${JOB_STATUS_URL}</code>`);
+    if (!resp.ok) {
+      let data = null;
+      try { data = await resp.json(); } catch(_){}
+      if (data && data.status === 'error') return jobStatusErrorCard(data, 'Job unavailable');
+      return errCard('Job status check failed', `HTTP ${resp.status} from <code>${JOB_STATUS_URL}</code>`);
+    }
     const data = await resp.json();
     if (data.status === 'error') {
       return errCard('Worker error', `<code>${escapeHtmlText((data.error && data.error.code) || 'unknown')}</code>: ${escapeHtmlText((data.error && data.error.message) || '')}`);

@@ -98,7 +98,11 @@ async function getJobStatus(jobId) {
       body_preview: bodyPreview,
       parse_error: parseError || null
     });
-    throw new Error(`Runpod status failed: ${res.status} ${JSON.stringify(data)}`);
+    const err = new Error(`Runpod status failed: ${res.status} ${JSON.stringify(data)}`);
+    err.httpStatus = res.status;
+    err.data = data;
+    err.bodyPreview = bodyPreview;
+    throw err;
   }
   if (parseError) {
     logRunpodError("runpod_status_non_json", {

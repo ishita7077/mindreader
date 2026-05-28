@@ -1345,7 +1345,7 @@ function toggleTheme(){
     LLAMA_LOAD_FAILED:   'The Llama text encoder failed to load. Check free RAM/VRAM and BRAIN_DIFF_TEXT_BACKEND settings.',
     ATLAS_MAPPING_ERROR: 'An HCP atlas ROI could not be matched. Verify atlas files under `atlases/`.',
     DIFF_JOB_FAILED:     'The pipeline raised an exception. Try longer, clearly-English inputs (15+ words per side, at least one full sentence).',
-    NOT_FOUND:           'This job id is unknown. It may have expired on the server (restart drops in-memory jobs).',
+    NOT_FOUND:           'This run is no longer available from RunPod, and BrainDiff could not find a saved result for it.',
   };
   function showError(err){
     const msg = (err && err.message) || 'Something went wrong.';
@@ -1371,8 +1371,24 @@ function toggleTheme(){
   async function pollOnce(){
     try {
       const res = await fetch('/api/diff/status/' + encodeURIComponent(JOB_ID), { cache: 'no-store' });
-      if (res.status === 404){ showError({ code: 'NOT_FOUND', message: 'This job id is unknown. It may have expired on the server.' }); return; }
-      if (!res.ok){ schedule(); return; }
+      if (!res.ok){
+        let detail = null;
+        try { detail = await res.json(); } catch(_){}
+        if (detail && detail.status === 'error'){
+          DS.appendLog(Date.now(), 'error · ' + ((detail.error && detail.error.code) || detail.code || 'status_failed'));
+          stopDsTick();
+          showError(detail.error || { code: detail.code || 'DIFF_STATUS_FAILED', message: detail.message || 'Status check failed.' });
+          return;
+        }
+        if (res.status === 404){
+          DS.appendLog(Date.now(), 'error · NOT_FOUND');
+          stopDsTick();
+          showError({ code: 'NOT_FOUND', message: 'This run is no longer available.' });
+          return;
+        }
+        schedule(5000);
+        return;
+      }
       const job = await res.json();
       ingestBackendTiming(job.events);
       // Feed events into the Deep Scope panel so its step rows + log update.

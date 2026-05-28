@@ -244,11 +244,37 @@ module.exports = async function handler(req, res) {
         }
       });
     }
-    const [data, jobMeta, events] = await Promise.all([
-      getJobStatus(jobId),
+    const [jobMeta, events] = await Promise.all([
       getJobMetadata(jobId).catch(() => null),
       readProgressEvents(jobId)
     ]);
+    let data;
+    try {
+      data = await getJobStatus(jobId);
+    } catch (err) {
+      if (err && err.httpStatus === 404) {
+        return res.status(404).json({
+          status: "error",
+          job_id: jobId,
+          events,
+          error: {
+            code: "NOT_FOUND",
+            message: "RunPod no longer has this job and BrainDiff has no persisted result for it.",
+            plain: {
+              reason: "This run is no longer available.",
+              action: "Start a new run. If this just finished, the worker did not persist the final result for this job."
+            },
+            runpod_status: "NOT_FOUND"
+          },
+          diagnostics: {
+            source: "runpod_404_no_persisted_result",
+            event_count: events.length,
+            has_job_metadata: !!jobMeta
+          }
+        });
+      }
+      throw err;
+    }
     const mapped = mapRunpodStatus(data, jobId, jobMeta, events);
     if (mapped.status === "done") {
       // Best-effort cleanup — never block the result on Blob/Redis hiccups.
