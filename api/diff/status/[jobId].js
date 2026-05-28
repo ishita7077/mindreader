@@ -68,8 +68,8 @@ function explainFailure(code, message, rawStatus) {
     reason = "The job took too long and was stopped.";
     action = "Try shorter files/text, then check whether the RunPod worker has enough GPU time for media jobs.";
   } else if (text.includes("media_duration_mismatch") || (text.includes("durations differ") && text.includes("within 5s"))) {
-    reason = "The two files are too different in length.";
-    action = "Upload files within 5 seconds of each other, or choose the trim option so BrainDiff compares the first part of both files.";
+    reason = "The worker rejected a media length mismatch from an older run path.";
+    action = "Retry from the current launch page. BrainDiff now compares full media by default, with optional trimming if you choose it.";
   } else if ((text.includes("cuda") && text.includes("memory")) || text.includes("out of memory") || text.includes("oom")) {
     reason = "The worker ran out of GPU memory.";
     action = "Use shorter media or a worker with more available GPU memory, then retry.";
@@ -87,7 +87,7 @@ function explainFailure(code, message, rawStatus) {
     action = "Check the Vercel Blob token, file URL expiry, and whether both uploads are reachable from RunPod.";
   } else if (text.includes("duration") || text.includes("input_rejected")) {
     reason = "The two inputs were rejected before analysis.";
-    action = "Use two files/texts that are similar enough in length and format to compare fairly.";
+    action = "Check the exact worker error. The app no longer blocks long or uneven inputs before analysis.";
   } else if (text.includes("atlas")) {
     reason = "The worker is missing required brain atlas files.";
     action = "Verify the atlas files exist in the worker image under the configured atlas directory.";

@@ -64,8 +64,8 @@ def explain_failure(
         reason = "The job took too long and was stopped."
         action = "Try shorter files/text, then check whether the RunPod worker has enough GPU time for media jobs."
     elif "media_duration_mismatch" in text or ("durations differ" in text and "within 5s" in text):
-        reason = "The two files are too different in length."
-        action = "Upload files within 5 seconds of each other, or choose the trim option so BrainDiff compares the first part of both files."
+        reason = "The worker rejected a media length mismatch from an older run path."
+        action = "Retry from the current launch page. BrainDiff now compares full media by default, with optional trimming if you choose it."
     elif "cuda" in text and "memory" in text or "out of memory" in text or "oom" in text:
         reason = "The worker ran out of GPU memory."
         action = "Use a smaller worker/GPU load, shorter media, or lower the model memory settings before retrying."
@@ -80,7 +80,7 @@ def explain_failure(
         action = "Try a clearer or shorter audio track, and check WhisperX device/compute settings on the worker."
     elif "duration" in text or "too different" in text or "input_rejected" in text:
         reason = "The two inputs were rejected before analysis."
-        action = "Use two files/texts that are similar enough in length and format to compare fairly."
+        action = "Check the exact worker error. The app no longer blocks long or uneven inputs before analysis."
     elif "blob" in text or "media_url" in text or "download" in text or "fetch" in text:
         reason = "The worker could not download one of the uploaded files."
         action = "Check the Vercel Blob token, file URL expiry, and whether both uploads are reachable from RunPod."

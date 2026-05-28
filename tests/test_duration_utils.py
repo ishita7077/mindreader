@@ -41,7 +41,7 @@ def test_media_similarity_rejects_over_5_seconds():
     assert "5" in str(exc.value) or "similar" in str(exc.value).lower()
 
 
-def test_constants_match_product_rules():
+def test_legacy_media_helper_defaults_are_stable():
     assert MAX_MEDIA_SECONDS == 30
     assert MEDIA_SIMILARITY_SECONDS == 5
     assert TEXT_SIMILARITY_CHARS == 20

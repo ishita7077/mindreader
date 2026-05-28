@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Env names required by Vercel serverless routes (see api/lib/config.js).
- * Worker-only vars (TRIBEV2_*, BRAIN_DIFF_*, RUNPOD_MEDIA_MAX_MB) belong on Runpod, not Vercel.
+ * Worker-only vars (TRIBEV2_*, BRAIN_DIFF_*) belong on Runpod, not Vercel.
  */
 const required = [
   "RUNPOD_API_KEY",

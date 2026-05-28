@@ -2,8 +2,8 @@ from pydantic import BaseModel, Field, model_validator
 
 
 class DiffRequest(BaseModel):
-    text_a: str | None = Field(default=None, min_length=1, max_length=5000)
-    text_b: str | None = Field(default=None, min_length=1, max_length=5000)
+    text_a: str | None = Field(default=None, min_length=1)
+    text_b: str | None = Field(default=None, min_length=1)
     audio_path_a: str | None = None
     audio_path_b: str | None = None
     video_path_a: str | None = None
@@ -43,11 +43,10 @@ class JobStartResponse(BaseModel):
 
 
 class ReportPair(BaseModel):
-    text_a: str = Field(..., min_length=1, max_length=5000)
-    text_b: str = Field(..., min_length=1, max_length=5000)
+    text_a: str = Field(..., min_length=1)
+    text_b: str = Field(..., min_length=1)
     label: str = Field(..., min_length=1, max_length=200)
 
 
 class ReportRequest(BaseModel):
     pairs: list[ReportPair] = Field(..., min_length=1, max_length=20)
-

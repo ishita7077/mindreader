@@ -150,10 +150,8 @@ from backend.atlas_peaks import describe_peak_abs_delta
 from backend.brain_regions import build_vertex_masks
 from backend.differ import compute_diff
 from backend.duration_utils import (
-    DurationMismatch,
     DurationProbeError,
-    check_media_similarity,
-    ensure_within_max,
+    MEDIA_SIMILARITY_SECONDS,
     probe_duration_seconds,
     trim_to_duration,
 )
@@ -172,7 +170,6 @@ from runpod_worker.progress import emitter_for
 
 MODEL_REVISION = os.getenv("TRIBEV2_REVISION", "facebook/tribev2")
 ATLAS_DIR = os.getenv("BRAIN_DIFF_ATLAS_DIR", "atlases")
-MAX_DOWNLOAD_MB = int(os.getenv("RUNPOD_MEDIA_MAX_MB", "200"))
 
 tribe_service = TribeService(model_revision=MODEL_REVISION)
 masks: dict[str, dict[str, Any]] = {}
@@ -295,7 +292,6 @@ def _warm_llm_background() -> None:
 def _download_to_temp(url: str, blob_token: str = "") -> str:
     suffix = os.path.splitext(url.split("?", 1)[0])[1] or ".bin"
     handle = tempfile.NamedTemporaryFile(delete=False, suffix=suffix)
-    downloaded = 0
     try:
         headers = {"authorization": f"Bearer {blob_token}"} if blob_token else None
         with httpx.stream("GET", url, headers=headers, timeout=60.0) as response:
@@ -303,9 +299,6 @@ def _download_to_temp(url: str, blob_token: str = "") -> str:
             for chunk in response.iter_bytes():
                 if not chunk:
                     continue
-                downloaded += len(chunk)
-                if downloaded > MAX_DOWNLOAD_MB * 1024 * 1024:
-                    raise ValueError(f"MEDIA_TOO_LARGE: exceeded {MAX_DOWNLOAD_MB}MB download cap")
                 handle.write(chunk)
         handle.close()
         return handle.name
@@ -708,7 +701,7 @@ def _run_media_locked(
     progress = emitter_for(job_id)
 
     # Track every temp file we create so cleanup works regardless of which
-    # step fails. ensure_within_max may produce a `.trim` sibling.
+    # step fails. Optional trimming may produce a `.trim` sibling.
     temp_files: set[str] = set()
 
     def _track(p: str) -> str:
@@ -744,24 +737,14 @@ def _run_media_locked(
                 else "Decoding audio features..."
             ),
         )
-        # Enforce the same 30-second / similar-duration constraints the local
-        # FastAPI path enforces (backend/api.py). Without these the worker
-        # would silently chew on arbitrarily long uploads.
         try:
-            path_a, dur_a, trimmed_a = ensure_within_max(path_a)
-            _track(path_a)
-            path_b, dur_b, trimmed_b = ensure_within_max(path_b)
-            _track(path_b)
+            dur_a = probe_duration_seconds(path_a)
+            dur_b = probe_duration_seconds(path_b)
         except DurationProbeError as err:
             raise RuntimeError(f"MEDIA_DURATION_PROBE_FAILED: {err}") from err
         media_durations = {"a": float(dur_a), "b": float(dur_b)}
-        if trimmed_a or trimmed_b:
-            warnings.append("One or both stimuli were truncated to 30 seconds.")
-        try:
-            check_media_similarity(dur_a, dur_b)
-        except DurationMismatch as err:
-            if not trim_to_shorter:
-                raise RuntimeError(f"MEDIA_DURATION_MISMATCH: {err}") from err
+        duration_delta = abs(dur_a - dur_b)
+        if trim_to_shorter and duration_delta > 0.05:
             target = min(dur_a, dur_b)
             if dur_a > target:
                 progress.emit("trimming_a", f"Trimming Version A to {target:.1f}s to match Version B...")
@@ -774,6 +757,10 @@ def _run_media_locked(
             media_durations = {"a": float(dur_a), "b": float(dur_b)}
             warnings.append(
                 f"Duration mismatch fixed by comparing the first {target:.1f}s of both stimuli."
+            )
+        elif duration_delta > MEDIA_SIMILARITY_SECONDS:
+            warnings.append(
+                f"Stimuli durations differ by {duration_delta:.1f}s; compared both full {modality} files without trimming."
             )
 
         # Pre-compute the modality-specific features the result page needs.

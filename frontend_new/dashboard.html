@@ -547,9 +547,9 @@ details.subrow .inner{padding:0 10px 10px 10px}
     var code = r.error_code || 'UNKNOWN_ERROR';
     var msg = r.error_message || '';
     var text = (code + ' ' + msg).toLowerCase();
-    var out = { code: code, reason: 'The BrainDiff pipeline raised an unexpected error.', action: 'Check the worker logs for the stack trace, then retry with shorter supported inputs.', raw_message: msg };
+    var out = { code: code, reason: 'The BrainDiff pipeline raised an unexpected error.', action: 'Check the worker logs for the stack trace, then retry with a clearly supported input format.', raw_message: msg };
     if (text.indexOf('timeout') >= 0){ out.reason = 'The job took too long and was stopped.'; out.action = 'Try shorter files/text, then check worker timeout settings.'; }
-    else if (text.indexOf('media_duration_mismatch') >= 0 || (text.indexOf('durations differ') >= 0 && text.indexOf('within 5s') >= 0)){ out.reason = 'The two files are too different in length.'; out.action = 'Upload files within 5 seconds of each other, or choose the trim option so BrainDiff compares the first part of both files.'; }
+    else if (text.indexOf('media_duration_mismatch') >= 0 || (text.indexOf('durations differ') >= 0 && text.indexOf('within 5s') >= 0)){ out.reason = 'The worker rejected a media length mismatch from an older run path.'; out.action = 'Retry from the current launch page. BrainDiff now compares full media by default, with optional trimming if you choose it.'; }
     else if (text.indexOf('memory') >= 0 || text.indexOf('oom') >= 0){ out.reason = 'The worker ran out of GPU memory.'; out.action = 'Use shorter media or a worker with more available GPU memory.'; }
     else if (text.indexOf('download') >= 0 || text.indexOf('blob') >= 0 || text.indexOf('media_url') >= 0){ out.reason = 'The worker could not download one of the uploaded files.'; out.action = 'Check upload URLs and the Vercel Blob token.'; }
     else if (text.indexOf('whisperx') >= 0 || text.indexOf('transcrib') >= 0){ out.reason = 'Audio transcription/alignment failed.'; out.action = 'Try clearer/shorter audio and check WhisperX settings.'; }

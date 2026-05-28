@@ -368,7 +368,7 @@ textarea::placeholder{color:var(--ink-mute);opacity:0.7}
     </div>
     <div class="tip">
       <span class="tip-num">02</span>
-      <span class="tip-text"><strong>10 – 1,000 characters per side.</strong> Richer samples produce cleaner readings.</span>
+      <span class="tip-text"><strong>No fixed character cap.</strong> Richer samples produce cleaner readings; longer runs take more time.</span>
     </div>
     <div class="tip">
       <span class="tip-num">03</span>
@@ -390,7 +390,7 @@ textarea::placeholder{color:var(--ink-mute);opacity:0.7}
             <span class="input-tag a">A</span>
             <span class="input-label">Stimulus A</span>
           </div>
-          <span class="input-hint" id="countA">0 / 1000</span>
+          <span class="input-hint" id="countA">0 chars</span>
         </div>
         <div class="name-row" id="nameRowA">
           <label class="name-row-label" for="nameA">Call this</label>
@@ -399,12 +399,12 @@ textarea::placeholder{color:var(--ink-mute);opacity:0.7}
             aria-label="Display name for Stimulus A" />
           <span class="name-row-hint" id="nameHintA">edit if needed</span>
         </div>
-        <textarea id="textA" name="text_a" maxlength="1000" spellcheck="true"
+        <textarea id="textA" name="text_a" spellcheck="true"
           placeholder="Paste the first sample — the baseline, the control, the calmer take."></textarea>
         <input id="fileA" name="file_a" type="file" hidden />
         <div class="dropzone" id="dropA" tabindex="0" role="button" aria-label="Upload stimulus A file">
           <div><strong>Drop Stimulus A here</strong> or click to browse</div>
-          <div class="dropzone-meta">Max 100MB · Max 30s · A and B must be within 5s of each other</div>
+          <div class="dropzone-meta">Full-length upload · Longer media takes longer · Trim is optional if lengths differ</div>
         </div>
       </div>
       <div class="input-card">
@@ -413,7 +413,7 @@ textarea::placeholder{color:var(--ink-mute);opacity:0.7}
             <span class="input-tag b">B</span>
             <span class="input-label">Stimulus B</span>
           </div>
-          <span class="input-hint" id="countB">0 / 1000</span>
+          <span class="input-hint" id="countB">0 chars</span>
         </div>
         <div class="name-row" id="nameRowB">
           <label class="name-row-label" for="nameB">Call this</label>
@@ -422,12 +422,12 @@ textarea::placeholder{color:var(--ink-mute);opacity:0.7}
             aria-label="Display name for Stimulus B" />
           <span class="name-row-hint" id="nameHintB">edit if needed</span>
         </div>
-        <textarea id="textB" name="text_b" maxlength="1000" spellcheck="true"
+        <textarea id="textB" name="text_b" spellcheck="true"
           placeholder="Paste the second sample — the variant, the experimental condition, the sharper take."></textarea>
         <input id="fileB" name="file_b" type="file" hidden />
         <div class="dropzone" id="dropB" tabindex="0" role="button" aria-label="Upload stimulus B file">
           <div><strong>Drop Stimulus B here</strong> or click to browse</div>
-          <div class="dropzone-meta">Max 100MB · Max 30s · A and B must be within 5s of each other</div>
+          <div class="dropzone-meta">Full-length upload · Longer media takes longer · Trim is optional if lengths differ</div>
         </div>
       </div>
     </div>
@@ -465,8 +465,6 @@ function toggleTheme(){
 }
 
 (function(){
-  const MAX = 1000;
-  const MIN = 10;
   const a = document.getElementById('textA');
   const b = document.getElementById('textB');
   const ca = document.getElementById('countA');
@@ -482,9 +480,7 @@ function toggleTheme(){
   const dropB = document.getElementById('dropB');
   const fileA = document.getElementById('fileA');
   const fileB = document.getElementById('fileB');
-  const MAX_UPLOAD_BYTES = 100 * 1024 * 1024;
-  const MAX_MEDIA_SECONDS = 30;
-  const MEDIA_DURATION_TOLERANCE = 5;
+  const MEDIA_DURATION_NOTICE_SECONDS = 5;
   let mode = 'text';
   let turnstileWidgetId = null;
   let turnstileToken = '';
@@ -553,8 +549,8 @@ function toggleTheme(){
 
   function updateCount(ta, out){
     const n = ta.value.length;
-    out.textContent = n + ' / ' + MAX;
-    out.classList.toggle('warn', n >= MAX - 50);
+    out.textContent = n.toLocaleString() + ' chars';
+    out.classList.remove('warn');
   }
 
   // Canonical soft-warning rules — mirror of KNOWN_FAILURE_MODES.md §1.
@@ -584,18 +580,9 @@ function toggleTheme(){
     { code: 'EMPTY',         sev: 'hard',
       check: function(A, B){ return A.trim().length === 0 || B.trim().length === 0; },
       copy:  'Both versions need some text.' },
-    { code: 'OVER_LIMIT',    sev: 'hard',
-      check: function(A, B){ return A.length > MAX || B.length > MAX; },
-      copy:  'Max 1,000 characters per stimulus.' },
-    { code: 'TOO_SHORT',     sev: 'hard',
-      check: function(A, B){
-        return A.trim().length < MIN || B.trim().length < MIN;
-      },
-      copy:  'Each stimulus needs at least 10 characters.' },
     { code: 'LIGHT_TEXT',    sev: 'soft',
       check: function(A, B){
         const wA = words(A).length, wB = words(B).length;
-        if (A.trim().length < MIN || B.trim().length < MIN) return false;
         return wA < 8 || wB < 8;
       },
       copy:  'Short samples amplify randomness — aim for 15+ words per side for cleaner readings.' },
@@ -657,7 +644,7 @@ function toggleTheme(){
     }
     const la = a.value.trim().length;
     const lb = b.value.trim().length;
-    if (la < MIN || la > MAX || lb < MIN || lb > MAX) return false;
+    if (la === 0 || lb === 0) return false;
     return !evaluate().some(function(h){ return h.sev === 'hard'; });
   }
 
@@ -875,39 +862,30 @@ function toggleTheme(){
       );
       return durations;
     }
-    const effectiveA = Math.min(durations.a, MAX_MEDIA_SECONDS);
-    const effectiveB = Math.min(durations.b, MAX_MEDIA_SECONDS);
-    const delta = Math.abs(effectiveA - effectiveB);
-    if (delta <= MEDIA_DURATION_TOLERANCE) {
-      if (durations.a > MAX_MEDIA_SECONDS || durations.b > MAX_MEDIA_SECONDS) {
-        showToast(
-          'BrainDiff will compare at most the first <strong>' + MAX_MEDIA_SECONDS + 's</strong> of each file.',
-          {kind:'info', durationMs:7000, key:'media-duration-cap'}
-        );
-      }
+    const delta = Math.abs(durations.a - durations.b);
+    if (delta <= MEDIA_DURATION_NOTICE_SECONDS) {
       return durations;
     }
 
-    const shortLen = Math.min(effectiveA, effectiveB);
+    const shortLen = Math.min(durations.a, durations.b);
     const longSide = durations.a > durations.b ? 'A' : 'B';
     const message =
-      'These files are too different in length.\n\n' +
+      'These files have different lengths.\n\n' +
       'A is ' + fmtMediaSeconds(durations.a) + ' and B is ' + fmtMediaSeconds(durations.b) + '.\n' +
-      'BrainDiff compares at most the first ' + MAX_MEDIA_SECONDS + ' seconds of each file.\n' +
-      'BrainDiff needs them within ' + MEDIA_DURATION_TOLERANCE + ' seconds.\n\n' +
-      'Do you want BrainDiff to compare only the first ' + fmtMediaSeconds(shortLen) +
-      ' of both files by trimming the longer file (' + longSide + ')?';
-    if (!window.confirm(message)) {
+      'Press OK to compare only the first ' + fmtMediaSeconds(shortLen) +
+      ' of both files by trimming the longer file (' + longSide + ').\n' +
+      'Press Cancel to compare both full files.';
+    if (window.confirm(message)) {
+      durations.trimToShorter = true;
       showToast(
-        'Upload files within ' + MEDIA_DURATION_TOLERANCE + ' seconds of each other, or choose the trim option when prompted.',
-        {kind:'err', durationMs:9000, key:'media-duration-mismatch'}
+        'BrainDiff will compare the first <strong>' + fmtMediaSeconds(shortLen) + '</strong> of both files.',
+        {kind:'info', durationMs:7000, key:'media-duration-trim'}
       );
-      throw new Error('MEDIA_DURATION_MISMATCH_CANCELLED');
+      return durations;
     }
-    durations.trimToShorter = true;
     showToast(
-      'BrainDiff will compare the first <strong>' + fmtMediaSeconds(shortLen) + '</strong> of both files.',
-      {kind:'info', durationMs:7000, key:'media-duration-trim'}
+      'BrainDiff will compare both full files. Longer or uneven files may take more time.',
+      {kind:'warn', durationMs:7000, key:'media-duration-full'}
     );
     return durations;
   }
@@ -918,16 +896,6 @@ function toggleTheme(){
   }
   function assignFile(input, file, side){
     if (!file) return;
-    if (file.size > MAX_UPLOAD_BYTES){
-      showToast(
-        'File ' + side + ' exceeds 100MB. Please choose a smaller file.',
-        {kind:'err', durationMs:7000, key:'upload-size-' + side}
-      );
-      input.value = '';
-      refresh();
-      return;
-    }
-    clearToast('upload-size-' + side);
     const dt = new DataTransfer();
     dt.items.add(file);
     input.files = dt.files;
@@ -1126,11 +1094,6 @@ function toggleTheme(){
         turnstileToken = '';
       }
     } catch (e){
-      if (String(e && e.message || e) === 'MEDIA_DURATION_MISMATCH_CANCELLED'){
-        btn.innerHTML = originalLabel;
-        btn.disabled = false;
-        return;
-      }
       showError('Network error reaching the BrainDiff API.', String(e && e.message || e));
       btn.innerHTML = originalLabel;
       btn.disabled = false;
@@ -1175,8 +1138,6 @@ function toggleTheme(){
       const accept = acceptForMode();
       fileA.setAttribute('accept', accept);
       fileB.setAttribute('accept', accept);
-      clearToast('upload-size-a');
-      clearToast('upload-size-b');
       clearToast('upload-missing');
       refresh();
     });

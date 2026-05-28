@@ -205,15 +205,13 @@ def test_api_accepts_unicode_emoji_and_url_inputs(monkeypatch):
     assert len(payload["dimensions"]) == len(dummy_masks())
 
 
-def test_text_length_bounds(monkeypatch):
+def test_long_text_inputs_are_allowed(monkeypatch):
     apply_api_test_stubs(
         monkeypatch, api, tribe_service=DummyTribeService(), masks=dummy_masks()
     )
     client = TestClient(api.app)
-    valid = client.post("/api/diff", json={"text_a": "a" * 5000, "text_b": "b" * 5000})
-    assert valid.status_code == 200
-    invalid = client.post("/api/diff", json={"text_a": "a" * 5001, "text_b": "b" * 5000})
-    assert invalid.status_code == 422
+    response = client.post("/api/diff", json={"text_a": "a" * 12000, "text_b": "b" * 12000})
+    assert response.status_code == 200
 
 
 def test_report_endpoint_returns_summary(monkeypatch):
@@ -255,4 +253,3 @@ def test_report_endpoint_rejects_empty_text(monkeypatch):
     client = TestClient(api.app)
     response = client.post("/api/report", json={"pairs": [{"label": "bad", "text_a": "", "text_b": "B"}]})
     assert response.status_code in (400, 422)
-

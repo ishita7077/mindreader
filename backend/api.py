@@ -20,9 +20,8 @@ from backend.differ import compute_diff
 from backend.duration_utils import (
     DurationMismatch,
     DurationProbeError,
-    check_media_similarity,
-    check_text_similarity,
-    ensure_within_max,
+    MEDIA_SIMILARITY_SECONDS,
+    probe_duration_seconds,
 )
 from backend.heatmap import compute_vertex_delta, generate_heatmap_artifact
 from backend.logging_utils import build_error_payload, configure_logging, write_structured_error
@@ -73,7 +72,6 @@ VIDEO_EXTRACTOR_WARMUP: dict[str, str] = {
 UPLOAD_ROOT = os.path.join("cache", "uploads")
 AUDIO_EXTS = {".wav", ".mp3", ".flac", ".ogg"}
 VIDEO_EXTS = {".mp4", ".avi", ".mkv", ".mov", ".webm"}
-MAX_UPLOAD_BYTES = 100 * 1024 * 1024
 
 
 def _compute_report_summary(results: list[dict[str, Any]], processing_time_ms: int) -> dict[str, Any]:
@@ -385,21 +383,24 @@ def _run_diff_job(job_id: str, request_id: str, payload: DiffRequest) -> None:
     media_features_payload: dict[str, Any] | None = None
     try:
         if modality == "text":
-            check_text_similarity(payload.text_a or "", payload.text_b or "")
             job_store.update_status(job_id, "synthesizing_speech", "Synthesising speech for the text via gTTS...")
         elif modality == "audio":
             job_store.update_status(job_id, "decoding_audio", "Decoding audio features...")
             logger.info("diff_job:probe_media request_id=%s job_id=%s side=a modality=audio path=%s", request_id, job_id, payload.audio_path_a)
-            path_a, dur_a, trimmed_a = ensure_within_max(payload.audio_path_a or "")
-            logger.info("diff_job:probe_media_ok request_id=%s job_id=%s side=a duration_s=%.2f trimmed=%s", request_id, job_id, dur_a, trimmed_a)
+            path_a = payload.audio_path_a or ""
+            dur_a = probe_duration_seconds(path_a)
+            logger.info("diff_job:probe_media_ok request_id=%s job_id=%s side=a duration_s=%.2f", request_id, job_id, dur_a)
             logger.info("diff_job:probe_media request_id=%s job_id=%s side=b modality=audio path=%s", request_id, job_id, payload.audio_path_b)
-            path_b, dur_b, trimmed_b = ensure_within_max(payload.audio_path_b or "")
-            logger.info("diff_job:probe_media_ok request_id=%s job_id=%s side=b duration_s=%.2f trimmed=%s", request_id, job_id, dur_b, trimmed_b)
-            check_media_similarity(dur_a, dur_b)
+            path_b = payload.audio_path_b or ""
+            dur_b = probe_duration_seconds(path_b)
+            logger.info("diff_job:probe_media_ok request_id=%s job_id=%s side=b duration_s=%.2f", request_id, job_id, dur_b)
             media_durations = {"a": float(dur_a), "b": float(dur_b)}
             payload = DiffRequest(audio_path_a=path_a, audio_path_b=path_b)
-            if trimmed_a or trimmed_b:
-                warnings.append("One or both stimuli were truncated to 30 seconds.")
+            duration_delta = abs(dur_a - dur_b)
+            if duration_delta > MEDIA_SIMILARITY_SECONDS:
+                warnings.append(
+                    f"Stimuli durations differ by {duration_delta:.1f}s; compared both full audio files without trimming."
+                )
             # Real audio amplitude envelope (200 RMS bins per side).
             try:
                 from backend.media_features import audio_envelope
@@ -412,16 +413,20 @@ def _run_diff_job(job_id: str, request_id: str, payload: DiffRequest) -> None:
         else:
             job_store.update_status(job_id, "decoding_video", "Decoding video + extracting frames...")
             logger.info("diff_job:probe_media request_id=%s job_id=%s side=a modality=video path=%s", request_id, job_id, payload.video_path_a)
-            path_a, dur_a, trimmed_a = ensure_within_max(payload.video_path_a or "")
-            logger.info("diff_job:probe_media_ok request_id=%s job_id=%s side=a duration_s=%.2f trimmed=%s", request_id, job_id, dur_a, trimmed_a)
+            path_a = payload.video_path_a or ""
+            dur_a = probe_duration_seconds(path_a)
+            logger.info("diff_job:probe_media_ok request_id=%s job_id=%s side=a duration_s=%.2f", request_id, job_id, dur_a)
             logger.info("diff_job:probe_media request_id=%s job_id=%s side=b modality=video path=%s", request_id, job_id, payload.video_path_b)
-            path_b, dur_b, trimmed_b = ensure_within_max(payload.video_path_b or "")
-            logger.info("diff_job:probe_media_ok request_id=%s job_id=%s side=b duration_s=%.2f trimmed=%s", request_id, job_id, dur_b, trimmed_b)
-            check_media_similarity(dur_a, dur_b)
+            path_b = payload.video_path_b or ""
+            dur_b = probe_duration_seconds(path_b)
+            logger.info("diff_job:probe_media_ok request_id=%s job_id=%s side=b duration_s=%.2f", request_id, job_id, dur_b)
             media_durations = {"a": float(dur_a), "b": float(dur_b)}
             payload = DiffRequest(video_path_a=path_a, video_path_b=path_b)
-            if trimmed_a or trimmed_b:
-                warnings.append("One or both stimuli were truncated to 30 seconds.")
+            duration_delta = abs(dur_a - dur_b)
+            if duration_delta > MEDIA_SIMILARITY_SECONDS:
+                warnings.append(
+                    f"Stimuli durations differ by {duration_delta:.1f}s; compared both full video files without trimming."
+                )
             # Real video keyframes (scene-detected, embedded as base64).
             try:
                 from backend.media_features import video_keyframes
@@ -763,17 +768,8 @@ async def _persist_upload(file: UploadFile, dest_dir: str, slot: str) -> str:
     os.makedirs(dest_dir, exist_ok=True)
     ext = os.path.splitext(file.filename or "")[1].lower()
     dest = os.path.join(dest_dir, f"{slot}{ext}")
-    total_bytes = 0
     with open(dest, "wb") as handle:
         while chunk := await file.read(1024 * 1024):
-            total_bytes += len(chunk)
-            if total_bytes > MAX_UPLOAD_BYTES:
-                handle.close()
-                os.remove(dest)
-                raise HTTPException(
-                    status_code=413,
-                    detail=f"{file.filename} exceeds 100 MB size cap.",
-                )
             handle.write(chunk)
     return dest
 
@@ -902,18 +898,12 @@ async def url_start_diff(body: dict = Body(...)) -> JSONResponse:
         async with httpx.AsyncClient(timeout=180.0, follow_redirects=True) as client:
             for slot, url in (("a", url_a), ("b", url_b)):
                 logger.info("url-start: downloading %s → slot %s", url, slot)
-                total = 0
                 async with client.stream("GET", url) as resp:
                     resp.raise_for_status()
                     ext = _ext_from_url_and_ct(url, resp.headers.get("content-type", ""))
                     dest = os.path.join(upload_dir, f"{slot}{ext}")
                     with open(dest, "wb") as fh:
                         async for chunk in resp.aiter_bytes(256 * 1024):
-                            total += len(chunk)
-                            if total > MAX_UPLOAD_BYTES:
-                                raise HTTPException(
-                                    status_code=413, detail=f"URL {slot} exceeds 100 MB cap."
-                                )
                             fh.write(chunk)
                 kind = _classify_ext("file" + ext)
                 if kind != modality:

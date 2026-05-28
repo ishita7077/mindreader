@@ -4,6 +4,8 @@ import json
 import os
 import subprocess
 
+# Legacy helper default for explicit trim calls. The production path no longer
+# uses this as a hard media cap.
 MAX_MEDIA_SECONDS: int = 30
 MEDIA_SIMILARITY_SECONDS: int = 5
 TEXT_SIMILARITY_CHARS: int = 20

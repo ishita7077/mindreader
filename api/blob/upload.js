@@ -39,7 +39,6 @@ module.exports = async function handler(req, res) {
           "video/x-m4v", "video/x-matroska", "video/x-msvideo",
           "application/octet-stream"  // fallback for undetected MIME types
         ],
-        maximumSizeInBytes: 200 * 1024 * 1024,
         addRandomSuffix: true,
         pathname: sanitizePathname(pathname)
       }),
