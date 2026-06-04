@@ -1,0 +1,5441 @@
+{
+  "id": "maya",
+  "title": "Maya call script",
+  "transcriptText": "Hey, this is Maya from Northstar Revenue. I know this is out of the blue, so I\u2019ll be quick. I\u2019m calling because your team posted three AE roles last week, and I also noticed you\u2019re hiring for sales enablement. Usually when those two things happen together, someone is trying to ramp reps faster without making managers listen to every call manually. Is that close?\n\nThat makes sense. The reason I thought this might be relevant is that we help revenue teams turn sales calls into coaching moments automatically. Not just summaries, but where the buyer got confused, where trust improved, where the rep over-explained, and where the next step became easier or harder.\n\nCan I ask how call coaching works today? Is it mostly manager shadowing, scorecards, Gong snippets, or just pipeline outcomes showing up later?\n\nGot it. So you have recordings, but the review process depends heavily on each manager. That is exactly the gap we usually see. The problem is not lack of data. It is that nobody has time to turn all those calls into consistent coaching.\n\nWhere we fit is simple. We analyze recent calls and give managers a weekly coaching map: which reps are struggling with discovery, which calls created too much effort for the buyer, which objections were handled well, and which three-minute moments are worth reviewing with the team.\n\nThis would not replace your call recording system. It sits on top of it. Think of it as the layer that turns raw conversation data into manager-ready coaching.\n\nThe useful next step is not a big demo. I\u2019d suggest a twenty-five minute working session. Bring one anonymized discovery call, and we\u2019ll show you what the coaching output would look like. If it feels generic, we stop there. If it finds real coaching moments, then we can talk about a small pilot.\n\nI have Wednesday at 2:00 Eastern or Thursday at 11:00. Wednesday works? Perfect. I\u2019ll send a tight invite with one example call, what the model sees, and what a two-week pilot would require.",
+  "transcriptWords": [
+    {
+      "word": "Hey,",
+      "start": 0.131,
+      "end": 0.431,
+      "segmentId": "0"
+    },
+    {
+      "word": "this",
+      "start": 0.852,
+      "end": 1.032,
+      "segmentId": "0"
+    },
+    {
+      "word": "is",
+      "start": 1.112,
+      "end": 1.192,
+      "segmentId": "0"
+    },
+    {
+      "word": "Maya",
+      "start": 1.292,
+      "end": 1.673,
+      "segmentId": "0"
+    },
+    {
+      "word": "from",
+      "start": 1.733,
+      "end": 1.913,
+      "segmentId": "0"
+    },
+    {
+      "word": "Northstar",
+      "start": 1.973,
+      "end": 2.553,
+      "segmentId": "0"
+    },
+    {
+      "word": "Revenue.",
+      "start": 2.613,
+      "end": 3.094,
+      "segmentId": "0"
+    },
+    {
+      "word": "I",
+      "start": 3.674,
+      "end": 3.734,
+      "segmentId": "1"
+    },
+    {
+      "word": "know",
+      "start": 3.794,
+      "end": 3.975,
+      "segmentId": "1"
+    },
+    {
+      "word": "this",
+      "start": 4.035,
+      "end": 4.215,
+      "segmentId": "1"
+    },
+    {
+      "word": "is",
+      "start": 4.295,
+      "end": 4.375,
+      "segmentId": "1"
+    },
+    {
+      "word": "out",
+      "start": 4.455,
+      "end": 4.575,
+      "segmentId": "1"
+    },
+    {
+      "word": "of",
+      "start": 4.615,
+      "end": 4.695,
+      "segmentId": "1"
+    },
+    {
+      "word": "the",
+      "start": 4.735,
+      "end": 4.815,
+      "segmentId": "1"
+    },
+    {
+      "word": "blue.",
+      "start": 4.875,
+      "end": 5.216,
+      "segmentId": "1"
+    },
+    {
+      "word": "So",
+      "start": 5.756,
+      "end": 5.896,
+      "segmentId": "2"
+    },
+    {
+      "word": "I'll",
+      "start": 5.956,
+      "end": 6.097,
+      "segmentId": "2"
+    },
+    {
+      "word": "be",
+      "start": 6.117,
+      "end": 6.237,
+      "segmentId": "2"
+    },
+    {
+      "word": "quick.",
+      "start": 6.297,
+      "end": 6.617,
+      "segmentId": "2"
+    },
+    {
+      "word": "I'm",
+      "start": 7.037,
+      "end": 7.158,
+      "segmentId": "3"
+    },
+    {
+      "word": "calling",
+      "start": 7.218,
+      "end": 7.618,
+      "segmentId": "3"
+    },
+    {
+      "word": "because",
+      "start": 7.678,
+      "end": 7.978,
+      "segmentId": "3"
+    },
+    {
+      "word": "your",
+      "start": 8.018,
+      "end": 8.178,
+      "segmentId": "3"
+    },
+    {
+      "word": "team",
+      "start": 8.239,
+      "end": 8.499,
+      "segmentId": "3"
+    },
+    {
+      "word": "posted",
+      "start": 8.579,
+      "end": 9.019,
+      "segmentId": "3"
+    },
+    {
+      "word": "3A",
+      "start": 9.099,
+      "end": 9.56,
+      "segmentId": "3"
+    },
+    {
+      "word": "roles",
+      "start": 9.62,
+      "end": 9.92,
+      "segmentId": "3"
+    },
+    {
+      "word": "last",
+      "start": 10.0,
+      "end": 10.28,
+      "segmentId": "3"
+    },
+    {
+      "word": "week.",
+      "start": 10.36,
+      "end": 10.621,
+      "segmentId": "3"
+    },
+    {
+      "word": "And",
+      "start": 11.181,
+      "end": 11.281,
+      "segmentId": "4"
+    },
+    {
+      "word": "I",
+      "start": 11.361,
+      "end": 11.441,
+      "segmentId": "4"
+    },
+    {
+      "word": "also",
+      "start": 11.522,
+      "end": 11.802,
+      "segmentId": "4"
+    },
+    {
+      "word": "noticed",
+      "start": 11.902,
+      "end": 12.302,
+      "segmentId": "4"
+    },
+    {
+      "word": "you're",
+      "start": 12.342,
+      "end": 12.502,
+      "segmentId": "4"
+    },
+    {
+      "word": "hiring",
+      "start": 12.542,
+      "end": 12.963,
+      "segmentId": "4"
+    },
+    {
+      "word": "for",
+      "start": 13.043,
+      "end": 13.183,
+      "segmentId": "4"
+    },
+    {
+      "word": "sales",
+      "start": 13.243,
+      "end": 13.563,
+      "segmentId": "4"
+    },
+    {
+      "word": "enablement.",
+      "start": 13.643,
+      "end": 14.324,
+      "segmentId": "4"
+    },
+    {
+      "word": "Usually",
+      "start": 14.965,
+      "end": 15.365,
+      "segmentId": "5"
+    },
+    {
+      "word": "when",
+      "start": 15.445,
+      "end": 15.585,
+      "segmentId": "5"
+    },
+    {
+      "word": "those",
+      "start": 15.645,
+      "end": 15.846,
+      "segmentId": "5"
+    },
+    {
+      "word": "two",
+      "start": 15.926,
+      "end": 16.066,
+      "segmentId": "5"
+    },
+    {
+      "word": "things",
+      "start": 16.146,
+      "end": 16.386,
+      "segmentId": "5"
+    },
+    {
+      "word": "happen",
+      "start": 16.466,
+      "end": 16.826,
+      "segmentId": "5"
+    },
+    {
+      "word": "together.",
+      "start": 16.846,
+      "end": 17.327,
+      "segmentId": "5"
+    },
+    {
+      "word": "Someone",
+      "start": 17.967,
+      "end": 18.368,
+      "segmentId": "6"
+    },
+    {
+      "word": "is",
+      "start": 18.408,
+      "end": 18.488,
+      "segmentId": "6"
+    },
+    {
+      "word": "trying",
+      "start": 18.548,
+      "end": 18.848,
+      "segmentId": "6"
+    },
+    {
+      "word": "to",
+      "start": 18.888,
+      "end": 18.968,
+      "segmentId": "6"
+    },
+    {
+      "word": "ramp",
+      "start": 19.028,
+      "end": 19.269,
+      "segmentId": "6"
+    },
+    {
+      "word": "reps",
+      "start": 19.349,
+      "end": 19.649,
+      "segmentId": "6"
+    },
+    {
+      "word": "faster",
+      "start": 19.749,
+      "end": 20.23,
+      "segmentId": "6"
+    },
+    {
+      "word": "without",
+      "start": 20.31,
+      "end": 20.63,
+      "segmentId": "6"
+    },
+    {
+      "word": "making",
+      "start": 20.69,
+      "end": 21.01,
+      "segmentId": "6"
+    },
+    {
+      "word": "managers",
+      "start": 21.07,
+      "end": 21.611,
+      "segmentId": "6"
+    },
+    {
+      "word": "listen",
+      "start": 21.711,
+      "end": 22.031,
+      "segmentId": "6"
+    },
+    {
+      "word": "to",
+      "start": 22.051,
+      "end": 22.151,
+      "segmentId": "6"
+    },
+    {
+      "word": "every",
+      "start": 22.251,
+      "end": 22.452,
+      "segmentId": "6"
+    },
+    {
+      "word": "call",
+      "start": 22.512,
+      "end": 22.752,
+      "segmentId": "6"
+    },
+    {
+      "word": "manually.",
+      "start": 22.812,
+      "end": 23.432,
+      "segmentId": "6"
+    },
+    {
+      "word": "Is",
+      "start": 24.33,
+      "end": 24.43,
+      "segmentId": "7"
+    },
+    {
+      "word": "that",
+      "start": 24.47,
+      "end": 24.67,
+      "segmentId": "7"
+    },
+    {
+      "word": "close?",
+      "start": 24.73,
+      "end": 25.131,
+      "segmentId": "7"
+    },
+    {
+      "word": "That",
+      "start": 25.691,
+      "end": 25.871,
+      "segmentId": "8"
+    },
+    {
+      "word": "makes",
+      "start": 25.931,
+      "end": 26.171,
+      "segmentId": "8"
+    },
+    {
+      "word": "sense.",
+      "start": 26.271,
+      "end": 26.652,
+      "segmentId": "8"
+    },
+    {
+      "word": "The",
+      "start": 27.152,
+      "end": 27.272,
+      "segmentId": "9"
+    },
+    {
+      "word": "reason",
+      "start": 27.352,
+      "end": 27.692,
+      "segmentId": "9"
+    },
+    {
+      "word": "I",
+      "start": 27.772,
+      "end": 27.832,
+      "segmentId": "9"
+    },
+    {
+      "word": "thought",
+      "start": 27.912,
+      "end": 28.133,
+      "segmentId": "9"
+    },
+    {
+      "word": "this",
+      "start": 28.193,
+      "end": 28.373,
+      "segmentId": "9"
+    },
+    {
+      "word": "might",
+      "start": 28.473,
+      "end": 28.673,
+      "segmentId": "9"
+    },
+    {
+      "word": "be",
+      "start": 28.713,
+      "end": 28.813,
+      "segmentId": "9"
+    },
+    {
+      "word": "relevant",
+      "start": 28.893,
+      "end": 29.393,
+      "segmentId": "9"
+    },
+    {
+      "word": "is",
+      "start": 29.493,
+      "end": 29.573,
+      "segmentId": "9"
+    },
+    {
+      "word": "that",
+      "start": 29.613,
+      "end": 29.754,
+      "segmentId": "9"
+    },
+    {
+      "word": "we",
+      "start": 29.794,
+      "end": 29.934,
+      "segmentId": "9"
+    },
+    {
+      "word": "help",
+      "start": 29.994,
+      "end": 30.234,
+      "segmentId": "9"
+    },
+    {
+      "word": "revenue",
+      "start": 30.314,
+      "end": 30.734,
+      "segmentId": "9"
+    },
+    {
+      "word": "teams",
+      "start": 30.794,
+      "end": 31.114,
+      "segmentId": "9"
+    },
+    {
+      "word": "turn",
+      "start": 31.194,
+      "end": 31.435,
+      "segmentId": "9"
+    },
+    {
+      "word": "sales",
+      "start": 31.495,
+      "end": 31.815,
+      "segmentId": "9"
+    },
+    {
+      "word": "calls",
+      "start": 31.875,
+      "end": 32.155,
+      "segmentId": "9"
+    },
+    {
+      "word": "into",
+      "start": 32.255,
+      "end": 32.515,
+      "segmentId": "9"
+    },
+    {
+      "word": "coaching",
+      "start": 33.356,
+      "end": 33.796,
+      "segmentId": "9"
+    },
+    {
+      "word": "moments",
+      "start": 33.856,
+      "end": 34.276,
+      "segmentId": "9"
+    },
+    {
+      "word": "automatically,",
+      "start": 34.397,
+      "end": 35.177,
+      "segmentId": "9"
+    },
+    {
+      "word": "not",
+      "start": 35.637,
+      "end": 35.817,
+      "segmentId": "9"
+    },
+    {
+      "word": "just",
+      "start": 35.877,
+      "end": 36.118,
+      "segmentId": "9"
+    },
+    {
+      "word": "summaries,",
+      "start": 36.178,
+      "end": 36.738,
+      "segmentId": "9"
+    },
+    {
+      "word": "but",
+      "start": 37.218,
+      "end": 37.358,
+      "segmentId": "9"
+    },
+    {
+      "word": "where",
+      "start": 37.398,
+      "end": 37.619,
+      "segmentId": "9"
+    },
+    {
+      "word": "the",
+      "start": 37.679,
+      "end": 37.779,
+      "segmentId": "9"
+    },
+    {
+      "word": "buyer",
+      "start": 37.819,
+      "end": 38.159,
+      "segmentId": "9"
+    },
+    {
+      "word": "got",
+      "start": 38.199,
+      "end": 38.399,
+      "segmentId": "9"
+    },
+    {
+      "word": "confused,",
+      "start": 38.439,
+      "end": 39.2,
+      "segmentId": "9"
+    },
+    {
+      "word": "where",
+      "start": 39.74,
+      "end": 39.98,
+      "segmentId": "9"
+    },
+    {
+      "word": "trust",
+      "start": 40.04,
+      "end": 40.4,
+      "segmentId": "9"
+    },
+    {
+      "word": "improved,",
+      "start": 40.48,
+      "end": 41.081,
+      "segmentId": "9"
+    },
+    {
+      "word": "where",
+      "start": 41.441,
+      "end": 41.641,
+      "segmentId": "9"
+    },
+    {
+      "word": "the",
+      "start": 41.681,
+      "end": 41.781,
+      "segmentId": "9"
+    },
+    {
+      "word": "representative",
+      "start": 41.841,
+      "end": 42.662,
+      "segmentId": "9"
+    },
+    {
+      "word": "over-explained,",
+      "start": 42.742,
+      "end": 43.703,
+      "segmentId": "9"
+    },
+    {
+      "word": "and",
+      "start": 44.223,
+      "end": 44.323,
+      "segmentId": "9"
+    },
+    {
+      "word": "where",
+      "start": 44.383,
+      "end": 44.603,
+      "segmentId": "9"
+    },
+    {
+      "word": "the",
+      "start": 44.663,
+      "end": 44.743,
+      "segmentId": "9"
+    },
+    {
+      "word": "next",
+      "start": 44.803,
+      "end": 45.043,
+      "segmentId": "9"
+    },
+    {
+      "word": "step",
+      "start": 45.123,
+      "end": 45.424,
+      "segmentId": "9"
+    },
+    {
+      "word": "became",
+      "start": 45.504,
+      "end": 45.884,
+      "segmentId": "9"
+    },
+    {
+      "word": "easier",
+      "start": 46.004,
+      "end": 46.344,
+      "segmentId": "9"
+    },
+    {
+      "word": "or",
+      "start": 46.444,
+      "end": 46.524,
+      "segmentId": "9"
+    },
+    {
+      "word": "harder.",
+      "start": 46.584,
+      "end": 47.005,
+      "segmentId": "9"
+    },
+    {
+      "word": "Can",
+      "start": 47.665,
+      "end": 47.805,
+      "segmentId": "10"
+    },
+    {
+      "word": "I",
+      "start": 47.885,
+      "end": 47.945,
+      "segmentId": "10"
+    },
+    {
+      "word": "ask",
+      "start": 48.085,
+      "end": 48.245,
+      "segmentId": "10"
+    },
+    {
+      "word": "how",
+      "start": 48.305,
+      "end": 48.445,
+      "segmentId": "10"
+    },
+    {
+      "word": "call",
+      "start": 48.485,
+      "end": 48.725,
+      "segmentId": "10"
+    },
+    {
+      "word": "coaching",
+      "start": 48.765,
+      "end": 49.205,
+      "segmentId": "10"
+    },
+    {
+      "word": "works",
+      "start": 49.245,
+      "end": 49.525,
+      "segmentId": "10"
+    },
+    {
+      "word": "today?",
+      "start": 49.606,
+      "end": 49.966,
+      "segmentId": "10"
+    },
+    {
+      "word": "Is",
+      "start": 50.586,
+      "end": 50.666,
+      "segmentId": "11"
+    },
+    {
+      "word": "it",
+      "start": 50.726,
+      "end": 50.806,
+      "segmentId": "11"
+    },
+    {
+      "word": "mostly",
+      "start": 50.886,
+      "end": 51.326,
+      "segmentId": "11"
+    },
+    {
+      "word": "manager",
+      "start": 51.406,
+      "end": 51.926,
+      "segmentId": "11"
+    },
+    {
+      "word": "shadowing?",
+      "start": 51.966,
+      "end": 52.546,
+      "segmentId": "11"
+    },
+    {
+      "word": "Scorecards,",
+      "start": 53.126,
+      "end": 53.947,
+      "segmentId": "12"
+    },
+    {
+      "word": "Gong",
+      "start": 54.387,
+      "end": 54.767,
+      "segmentId": "12"
+    },
+    {
+      "word": "snippets,",
+      "start": 54.787,
+      "end": 55.367,
+      "segmentId": "12"
+    },
+    {
+      "word": "or",
+      "start": 55.887,
+      "end": 55.987,
+      "segmentId": "12"
+    },
+    {
+      "word": "just",
+      "start": 56.027,
+      "end": 56.267,
+      "segmentId": "12"
+    },
+    {
+      "word": "pipeline",
+      "start": 56.347,
+      "end": 56.847,
+      "segmentId": "12"
+    },
+    {
+      "word": "outcomes",
+      "start": 56.927,
+      "end": 57.367,
+      "segmentId": "12"
+    },
+    {
+      "word": "showing",
+      "start": 57.427,
+      "end": 57.728,
+      "segmentId": "12"
+    },
+    {
+      "word": "up",
+      "start": 57.828,
+      "end": 57.908,
+      "segmentId": "12"
+    },
+    {
+      "word": "later.",
+      "start": 57.988,
+      "end": 58.828,
+      "segmentId": "12"
+    },
+    {
+      "word": "Got",
+      "start": 58.988,
+      "end": 59.228,
+      "segmentId": "13"
+    },
+    {
+      "word": "it,",
+      "start": 59.308,
+      "end": 59.388,
+      "segmentId": "13"
+    },
+    {
+      "word": "so",
+      "start": 59.728,
+      "end": 59.868,
+      "segmentId": "13"
+    },
+    {
+      "word": "you",
+      "start": 59.908,
+      "end": 60.028,
+      "segmentId": "13"
+    },
+    {
+      "word": "have",
+      "start": 60.088,
+      "end": 60.228,
+      "segmentId": "13"
+    },
+    {
+      "word": "recordings.",
+      "start": 60.288,
+      "end": 60.968,
+      "segmentId": "13"
+    },
+    {
+      "word": "But",
+      "start": 61.468,
+      "end": 61.569,
+      "segmentId": "14"
+    },
+    {
+      "word": "the",
+      "start": 61.609,
+      "end": 61.709,
+      "segmentId": "14"
+    },
+    {
+      "word": "review",
+      "start": 61.749,
+      "end": 62.129,
+      "segmentId": "14"
+    },
+    {
+      "word": "process",
+      "start": 62.189,
+      "end": 62.729,
+      "segmentId": "14"
+    },
+    {
+      "word": "depends",
+      "start": 62.809,
+      "end": 63.209,
+      "segmentId": "14"
+    },
+    {
+      "word": "heavily",
+      "start": 63.309,
+      "end": 63.709,
+      "segmentId": "14"
+    },
+    {
+      "word": "on",
+      "start": 63.829,
+      "end": 63.889,
+      "segmentId": "14"
+    },
+    {
+      "word": "each",
+      "start": 63.969,
+      "end": 64.129,
+      "segmentId": "14"
+    },
+    {
+      "word": "manager.",
+      "start": 64.209,
+      "end": 64.749,
+      "segmentId": "14"
+    },
+    {
+      "word": "That",
+      "start": 65.369,
+      "end": 65.55,
+      "segmentId": "15"
+    },
+    {
+      "word": "is",
+      "start": 65.61,
+      "end": 65.69,
+      "segmentId": "15"
+    },
+    {
+      "word": "exactly",
+      "start": 65.79,
+      "end": 66.31,
+      "segmentId": "15"
+    },
+    {
+      "word": "the",
+      "start": 66.37,
+      "end": 66.45,
+      "segmentId": "15"
+    },
+    {
+      "word": "gap",
+      "start": 66.51,
+      "end": 66.81,
+      "segmentId": "15"
+    },
+    {
+      "word": "we",
+      "start": 66.91,
+      "end": 67.03,
+      "segmentId": "15"
+    },
+    {
+      "word": "usually",
+      "start": 67.19,
+      "end": 67.61,
+      "segmentId": "15"
+    },
+    {
+      "word": "see.",
+      "start": 67.71,
+      "end": 68.01,
+      "segmentId": "15"
+    },
+    {
+      "word": "The",
+      "start": 68.55,
+      "end": 68.65,
+      "segmentId": "16"
+    },
+    {
+      "word": "problem",
+      "start": 68.71,
+      "end": 69.15,
+      "segmentId": "16"
+    },
+    {
+      "word": "is",
+      "start": 69.21,
+      "end": 69.29,
+      "segmentId": "16"
+    },
+    {
+      "word": "not",
+      "start": 69.39,
+      "end": 69.571,
+      "segmentId": "16"
+    },
+    {
+      "word": "lack",
+      "start": 69.651,
+      "end": 69.871,
+      "segmentId": "16"
+    },
+    {
+      "word": "of",
+      "start": 69.911,
+      "end": 69.991,
+      "segmentId": "16"
+    },
+    {
+      "word": "data.",
+      "start": 70.031,
+      "end": 70.411,
+      "segmentId": "16"
+    },
+    {
+      "word": "It",
+      "start": 70.931,
+      "end": 70.991,
+      "segmentId": "17"
+    },
+    {
+      "word": "is",
+      "start": 71.051,
+      "end": 71.131,
+      "segmentId": "17"
+    },
+    {
+      "word": "that",
+      "start": 71.191,
+      "end": 71.351,
+      "segmentId": "17"
+    },
+    {
+      "word": "nobody",
+      "start": 71.471,
+      "end": 71.871,
+      "segmentId": "17"
+    },
+    {
+      "word": "has",
+      "start": 71.951,
+      "end": 72.111,
+      "segmentId": "17"
+    },
+    {
+      "word": "time",
+      "start": 72.191,
+      "end": 72.471,
+      "segmentId": "17"
+    },
+    {
+      "word": "to",
+      "start": 72.531,
+      "end": 72.611,
+      "segmentId": "17"
+    },
+    {
+      "word": "turn",
+      "start": 72.671,
+      "end": 72.891,
+      "segmentId": "17"
+    },
+    {
+      "word": "all",
+      "start": 72.951,
+      "end": 73.091,
+      "segmentId": "17"
+    },
+    {
+      "word": "those",
+      "start": 73.131,
+      "end": 73.331,
+      "segmentId": "17"
+    },
+    {
+      "word": "calls",
+      "start": 73.391,
+      "end": 73.732,
+      "segmentId": "17"
+    },
+    {
+      "word": "into",
+      "start": 73.792,
+      "end": 73.972,
+      "segmentId": "17"
+    },
+    {
+      "word": "consistent",
+      "start": 74.032,
+      "end": 74.672,
+      "segmentId": "17"
+    },
+    {
+      "word": "coaching.",
+      "start": 74.712,
+      "end": 75.212,
+      "segmentId": "17"
+    },
+    {
+      "word": "Where",
+      "start": 76.318,
+      "end": 76.498,
+      "segmentId": "18"
+    },
+    {
+      "word": "we",
+      "start": 76.538,
+      "end": 76.678,
+      "segmentId": "18"
+    },
+    {
+      "word": "fit",
+      "start": 76.758,
+      "end": 76.958,
+      "segmentId": "18"
+    },
+    {
+      "word": "is",
+      "start": 77.038,
+      "end": 77.098,
+      "segmentId": "18"
+    },
+    {
+      "word": "simple.",
+      "start": 77.178,
+      "end": 77.599,
+      "segmentId": "18"
+    },
+    {
+      "word": "We",
+      "start": 78.139,
+      "end": 78.279,
+      "segmentId": "19"
+    },
+    {
+      "word": "analyze",
+      "start": 78.399,
+      "end": 78.899,
+      "segmentId": "19"
+    },
+    {
+      "word": "recent",
+      "start": 78.999,
+      "end": 79.379,
+      "segmentId": "19"
+    },
+    {
+      "word": "calls",
+      "start": 79.439,
+      "end": 79.859,
+      "segmentId": "19"
+    },
+    {
+      "word": "and",
+      "start": 79.959,
+      "end": 80.039,
+      "segmentId": "19"
+    },
+    {
+      "word": "give",
+      "start": 80.079,
+      "end": 80.239,
+      "segmentId": "19"
+    },
+    {
+      "word": "managers",
+      "start": 80.3,
+      "end": 80.84,
+      "segmentId": "19"
+    },
+    {
+      "word": "a",
+      "start": 80.92,
+      "end": 80.96,
+      "segmentId": "19"
+    },
+    {
+      "word": "weekly",
+      "start": 81.02,
+      "end": 81.4,
+      "segmentId": "19"
+    },
+    {
+      "word": "coaching",
+      "start": 81.44,
+      "end": 81.86,
+      "segmentId": "19"
+    },
+    {
+      "word": "map.",
+      "start": 81.92,
+      "end": 82.18,
+      "segmentId": "19"
+    },
+    {
+      "word": "Which",
+      "start": 82.72,
+      "end": 82.94,
+      "segmentId": "20"
+    },
+    {
+      "word": "reps",
+      "start": 83.061,
+      "end": 83.361,
+      "segmentId": "20"
+    },
+    {
+      "word": "are",
+      "start": 83.421,
+      "end": 83.521,
+      "segmentId": "20"
+    },
+    {
+      "word": "struggling",
+      "start": 83.561,
+      "end": 84.021,
+      "segmentId": "20"
+    },
+    {
+      "word": "with",
+      "start": 84.061,
+      "end": 84.201,
+      "segmentId": "20"
+    },
+    {
+      "word": "discovery?",
+      "start": 84.261,
+      "end": 84.921,
+      "segmentId": "20"
+    },
+    {
+      "word": "Which",
+      "start": 85.501,
+      "end": 85.722,
+      "segmentId": "21"
+    },
+    {
+      "word": "calls",
+      "start": 85.802,
+      "end": 86.122,
+      "segmentId": "21"
+    },
+    {
+      "word": "created",
+      "start": 86.202,
+      "end": 86.662,
+      "segmentId": "21"
+    },
+    {
+      "word": "too",
+      "start": 86.742,
+      "end": 86.922,
+      "segmentId": "21"
+    },
+    {
+      "word": "much",
+      "start": 86.962,
+      "end": 87.162,
+      "segmentId": "21"
+    },
+    {
+      "word": "effort",
+      "start": 87.302,
+      "end": 87.582,
+      "segmentId": "21"
+    },
+    {
+      "word": "for",
+      "start": 87.642,
+      "end": 87.782,
+      "segmentId": "21"
+    },
+    {
+      "word": "the",
+      "start": 87.802,
+      "end": 87.882,
+      "segmentId": "21"
+    },
+    {
+      "word": "buyer?",
+      "start": 87.942,
+      "end": 88.322,
+      "segmentId": "21"
+    },
+    {
+      "word": "Which",
+      "start": 88.923,
+      "end": 89.143,
+      "segmentId": "22"
+    },
+    {
+      "word": "objections",
+      "start": 89.243,
+      "end": 89.863,
+      "segmentId": "22"
+    },
+    {
+      "word": "were",
+      "start": 89.923,
+      "end": 90.083,
+      "segmentId": "22"
+    },
+    {
+      "word": "handled",
+      "start": 90.103,
+      "end": 90.503,
+      "segmentId": "22"
+    },
+    {
+      "word": "well?",
+      "start": 90.583,
+      "end": 90.883,
+      "segmentId": "22"
+    },
+    {
+      "word": "And",
+      "start": 91.444,
+      "end": 91.544,
+      "segmentId": "23"
+    },
+    {
+      "word": "which",
+      "start": 91.604,
+      "end": 91.804,
+      "segmentId": "23"
+    },
+    {
+      "word": "three-minute",
+      "start": 91.904,
+      "end": 92.444,
+      "segmentId": "23"
+    },
+    {
+      "word": "moments",
+      "start": 92.524,
+      "end": 92.944,
+      "segmentId": "23"
+    },
+    {
+      "word": "are",
+      "start": 93.024,
+      "end": 93.104,
+      "segmentId": "23"
+    },
+    {
+      "word": "worth",
+      "start": 93.144,
+      "end": 93.364,
+      "segmentId": "23"
+    },
+    {
+      "word": "reviewing",
+      "start": 93.464,
+      "end": 93.945,
+      "segmentId": "23"
+    },
+    {
+      "word": "with",
+      "start": 93.985,
+      "end": 94.105,
+      "segmentId": "23"
+    },
+    {
+      "word": "the",
+      "start": 94.145,
+      "end": 94.245,
+      "segmentId": "23"
+    },
+    {
+      "word": "team?",
+      "start": 94.305,
+      "end": 94.645,
+      "segmentId": "23"
+    },
+    {
+      "word": "This",
+      "start": 95.305,
+      "end": 95.485,
+      "segmentId": "24"
+    },
+    {
+      "word": "would",
+      "start": 95.545,
+      "end": 95.705,
+      "segmentId": "24"
+    },
+    {
+      "word": "not",
+      "start": 95.765,
+      "end": 95.925,
+      "segmentId": "24"
+    },
+    {
+      "word": "replace",
+      "start": 95.985,
+      "end": 96.405,
+      "segmentId": "24"
+    },
+    {
+      "word": "your",
+      "start": 96.465,
+      "end": 96.586,
+      "segmentId": "24"
+    },
+    {
+      "word": "call",
+      "start": 96.626,
+      "end": 96.866,
+      "segmentId": "24"
+    },
+    {
+      "word": "recording",
+      "start": 96.906,
+      "end": 97.406,
+      "segmentId": "24"
+    },
+    {
+      "word": "system.",
+      "start": 97.466,
+      "end": 97.946,
+      "segmentId": "24"
+    },
+    {
+      "word": "It",
+      "start": 98.546,
+      "end": 98.626,
+      "segmentId": "25"
+    },
+    {
+      "word": "sits",
+      "start": 98.706,
+      "end": 98.966,
+      "segmentId": "25"
+    },
+    {
+      "word": "on",
+      "start": 99.106,
+      "end": 99.186,
+      "segmentId": "25"
+    },
+    {
+      "word": "top",
+      "start": 99.247,
+      "end": 99.487,
+      "segmentId": "25"
+    },
+    {
+      "word": "of",
+      "start": 99.547,
+      "end": 99.627,
+      "segmentId": "25"
+    },
+    {
+      "word": "it.",
+      "start": 99.727,
+      "end": 99.827,
+      "segmentId": "25"
+    },
+    {
+      "word": "Think",
+      "start": 100.307,
+      "end": 100.527,
+      "segmentId": "26"
+    },
+    {
+      "word": "of",
+      "start": 100.587,
+      "end": 100.667,
+      "segmentId": "26"
+    },
+    {
+      "word": "it",
+      "start": 100.727,
+      "end": 100.807,
+      "segmentId": "26"
+    },
+    {
+      "word": "as",
+      "start": 100.867,
+      "end": 100.947,
+      "segmentId": "26"
+    },
+    {
+      "word": "the",
+      "start": 101.007,
+      "end": 101.107,
+      "segmentId": "26"
+    },
+    {
+      "word": "layer",
+      "start": 101.187,
+      "end": 101.487,
+      "segmentId": "26"
+    },
+    {
+      "word": "that",
+      "start": 101.567,
+      "end": 101.707,
+      "segmentId": "26"
+    },
+    {
+      "word": "turns",
+      "start": 101.747,
+      "end": 102.048,
+      "segmentId": "26"
+    },
+    {
+      "word": "raw",
+      "start": 102.168,
+      "end": 102.368,
+      "segmentId": "26"
+    },
+    {
+      "word": "conversation",
+      "start": 102.428,
+      "end": 103.248,
+      "segmentId": "26"
+    },
+    {
+      "word": "data",
+      "start": 103.288,
+      "end": 103.588,
+      "segmentId": "26"
+    },
+    {
+      "word": "into",
+      "start": 103.708,
+      "end": 103.888,
+      "segmentId": "26"
+    },
+    {
+      "word": "manager-ready",
+      "start": 103.948,
+      "end": 104.749,
+      "segmentId": "26"
+    },
+    {
+      "word": "coaching.",
+      "start": 104.789,
+      "end": 105.309,
+      "segmentId": "26"
+    },
+    {
+      "word": "The",
+      "start": 106.333,
+      "end": 106.453,
+      "segmentId": "27"
+    },
+    {
+      "word": "useful",
+      "start": 106.633,
+      "end": 106.994,
+      "segmentId": "27"
+    },
+    {
+      "word": "next",
+      "start": 107.074,
+      "end": 107.334,
+      "segmentId": "27"
+    },
+    {
+      "word": "step",
+      "start": 107.414,
+      "end": 107.734,
+      "segmentId": "27"
+    },
+    {
+      "word": "is",
+      "start": 107.814,
+      "end": 107.894,
+      "segmentId": "27"
+    },
+    {
+      "word": "not",
+      "start": 107.974,
+      "end": 108.154,
+      "segmentId": "27"
+    },
+    {
+      "word": "a",
+      "start": 108.194,
+      "end": 108.234,
+      "segmentId": "27"
+    },
+    {
+      "word": "big",
+      "start": 108.274,
+      "end": 108.455,
+      "segmentId": "27"
+    },
+    {
+      "word": "demo.",
+      "start": 108.515,
+      "end": 108.955,
+      "segmentId": "27"
+    },
+    {
+      "word": "I'd",
+      "start": 109.495,
+      "end": 109.615,
+      "segmentId": "28"
+    },
+    {
+      "word": "suggest",
+      "start": 109.675,
+      "end": 110.196,
+      "segmentId": "28"
+    },
+    {
+      "word": "a",
+      "start": 110.256,
+      "end": 110.296,
+      "segmentId": "28"
+    },
+    {
+      "word": "25-minute",
+      "start": 110.536,
+      "end": 111.297,
+      "segmentId": "28"
+    },
+    {
+      "word": "working",
+      "start": 111.357,
+      "end": 111.737,
+      "segmentId": "28"
+    },
+    {
+      "word": "session.",
+      "start": 111.797,
+      "end": 112.237,
+      "segmentId": "28"
+    },
+    {
+      "word": "Bring",
+      "start": 112.778,
+      "end": 113.038,
+      "segmentId": "29"
+    },
+    {
+      "word": "one",
+      "start": 113.218,
+      "end": 113.318,
+      "segmentId": "29"
+    },
+    {
+      "word": "anonymized",
+      "start": 113.398,
+      "end": 114.139,
+      "segmentId": "29"
+    },
+    {
+      "word": "discovery",
+      "start": 114.199,
+      "end": 114.799,
+      "segmentId": "29"
+    },
+    {
+      "word": "call.",
+      "start": 114.859,
+      "end": 115.18,
+      "segmentId": "29"
+    },
+    {
+      "word": "And",
+      "start": 115.72,
+      "end": 115.82,
+      "segmentId": "30"
+    },
+    {
+      "word": "we'll",
+      "start": 115.88,
+      "end": 116.12,
+      "segmentId": "30"
+    },
+    {
+      "word": "show",
+      "start": 116.16,
+      "end": 116.38,
+      "segmentId": "30"
+    },
+    {
+      "word": "you",
+      "start": 116.42,
+      "end": 116.521,
+      "segmentId": "30"
+    },
+    {
+      "word": "what",
+      "start": 116.561,
+      "end": 116.681,
+      "segmentId": "30"
+    },
+    {
+      "word": "the",
+      "start": 116.721,
+      "end": 116.821,
+      "segmentId": "30"
+    },
+    {
+      "word": "coaching",
+      "start": 116.861,
+      "end": 117.281,
+      "segmentId": "30"
+    },
+    {
+      "word": "output",
+      "start": 117.361,
+      "end": 117.681,
+      "segmentId": "30"
+    },
+    {
+      "word": "would",
+      "start": 117.721,
+      "end": 117.862,
+      "segmentId": "30"
+    },
+    {
+      "word": "look",
+      "start": 117.922,
+      "end": 118.102,
+      "segmentId": "30"
+    },
+    {
+      "word": "like.",
+      "start": 118.182,
+      "end": 118.402,
+      "segmentId": "30"
+    },
+    {
+      "word": "If",
+      "start": 118.962,
+      "end": 119.042,
+      "segmentId": "31"
+    },
+    {
+      "word": "it",
+      "start": 119.122,
+      "end": 119.182,
+      "segmentId": "31"
+    },
+    {
+      "word": "feels",
+      "start": 119.283,
+      "end": 119.563,
+      "segmentId": "31"
+    },
+    {
+      "word": "generic,",
+      "start": 119.643,
+      "end": 120.203,
+      "segmentId": "31"
+    },
+    {
+      "word": "we",
+      "start": 120.624,
+      "end": 120.784,
+      "segmentId": "31"
+    },
+    {
+      "word": "stop",
+      "start": 120.844,
+      "end": 121.164,
+      "segmentId": "31"
+    },
+    {
+      "word": "there.",
+      "start": 121.244,
+      "end": 121.504,
+      "segmentId": "31"
+    },
+    {
+      "word": "If",
+      "start": 121.965,
+      "end": 122.045,
+      "segmentId": "32"
+    },
+    {
+      "word": "it",
+      "start": 122.125,
+      "end": 122.185,
+      "segmentId": "32"
+    },
+    {
+      "word": "finds",
+      "start": 122.285,
+      "end": 122.625,
+      "segmentId": "32"
+    },
+    {
+      "word": "real",
+      "start": 122.745,
+      "end": 122.965,
+      "segmentId": "32"
+    },
+    {
+      "word": "coaching",
+      "start": 123.025,
+      "end": 123.446,
+      "segmentId": "32"
+    },
+    {
+      "word": "moments.",
+      "start": 123.506,
+      "end": 123.986,
+      "segmentId": "32"
+    },
+    {
+      "word": "Then",
+      "start": 124.647,
+      "end": 124.827,
+      "segmentId": "33"
+    },
+    {
+      "word": "we",
+      "start": 124.887,
+      "end": 124.987,
+      "segmentId": "33"
+    },
+    {
+      "word": "can",
+      "start": 125.027,
+      "end": 125.187,
+      "segmentId": "33"
+    },
+    {
+      "word": "talk",
+      "start": 125.227,
+      "end": 125.467,
+      "segmentId": "33"
+    },
+    {
+      "word": "about",
+      "start": 125.527,
+      "end": 125.767,
+      "segmentId": "33"
+    },
+    {
+      "word": "a",
+      "start": 125.807,
+      "end": 125.847,
+      "segmentId": "33"
+    },
+    {
+      "word": "small",
+      "start": 125.907,
+      "end": 126.248,
+      "segmentId": "33"
+    },
+    {
+      "word": "pilot.",
+      "start": 126.288,
+      "end": 126.768,
+      "segmentId": "33"
+    },
+    {
+      "word": "I",
+      "start": 127.389,
+      "end": 127.469,
+      "segmentId": "34"
+    },
+    {
+      "word": "have",
+      "start": 127.509,
+      "end": 127.649,
+      "segmentId": "34"
+    },
+    {
+      "word": "Wednesday",
+      "start": 127.729,
+      "end": 128.249,
+      "segmentId": "34"
+    },
+    {
+      "word": "at",
+      "start": 128.329,
+      "end": 128.389,
+      "segmentId": "34"
+    },
+    {
+      "word": "2",
+      "start": 128.449,
+      "end": 128.629,
+      "segmentId": "34"
+    },
+    {
+      "word": "o'clock",
+      "start": 128.689,
+      "end": 129.05,
+      "segmentId": "34"
+    },
+    {
+      "word": "Eastern",
+      "start": 129.15,
+      "end": 129.57,
+      "segmentId": "34"
+    },
+    {
+      "word": "or",
+      "start": 129.63,
+      "end": 129.71,
+      "segmentId": "34"
+    },
+    {
+      "word": "Thursday",
+      "start": 129.79,
+      "end": 130.311,
+      "segmentId": "34"
+    },
+    {
+      "word": "at",
+      "start": 130.391,
+      "end": 130.451,
+      "segmentId": "34"
+    },
+    {
+      "word": "11",
+      "start": 130.651,
+      "end": 130.851,
+      "segmentId": "34"
+    },
+    {
+      "word": "o'clock.",
+      "start": 130.911,
+      "end": 131.371,
+      "segmentId": "34"
+    },
+    {
+      "word": "Wednesday",
+      "start": 132.252,
+      "end": 132.733,
+      "segmentId": "35"
+    },
+    {
+      "word": "works?",
+      "start": 132.793,
+      "end": 133.193,
+      "segmentId": "35"
+    },
+    {
+      "word": "Perfect.",
+      "start": 133.754,
+      "end": 134.314,
+      "segmentId": "36"
+    },
+    {
+      "word": "I'll",
+      "start": 134.695,
+      "end": 134.855,
+      "segmentId": "37"
+    },
+    {
+      "word": "send",
+      "start": 134.915,
+      "end": 135.135,
+      "segmentId": "37"
+    },
+    {
+      "word": "a",
+      "start": 135.195,
+      "end": 135.235,
+      "segmentId": "37"
+    },
+    {
+      "word": "tight",
+      "start": 135.275,
+      "end": 135.555,
+      "segmentId": "37"
+    },
+    {
+      "word": "invite",
+      "start": 135.635,
+      "end": 135.996,
+      "segmentId": "37"
+    },
+    {
+      "word": "with",
+      "start": 136.036,
+      "end": 136.176,
+      "segmentId": "37"
+    },
+    {
+      "word": "one",
+      "start": 136.356,
+      "end": 136.456,
+      "segmentId": "37"
+    },
+    {
+      "word": "example",
+      "start": 136.516,
+      "end": 137.037,
+      "segmentId": "37"
+    },
+    {
+      "word": "call,",
+      "start": 137.097,
+      "end": 137.457,
+      "segmentId": "37"
+    },
+    {
+      "word": "what",
+      "start": 137.998,
+      "end": 138.138,
+      "segmentId": "37"
+    },
+    {
+      "word": "the",
+      "start": 138.178,
+      "end": 138.278,
+      "segmentId": "37"
+    },
+    {
+      "word": "model",
+      "start": 138.318,
+      "end": 138.698,
+      "segmentId": "37"
+    },
+    {
+      "word": "sees,",
+      "start": 138.758,
+      "end": 139.139,
+      "segmentId": "37"
+    },
+    {
+      "word": "and",
+      "start": 139.679,
+      "end": 139.779,
+      "segmentId": "37"
+    },
+    {
+      "word": "what",
+      "start": 139.839,
+      "end": 140.0,
+      "segmentId": "37"
+    },
+    {
+      "word": "a",
+      "start": 140.04,
+      "end": 140.08,
+      "segmentId": "37"
+    },
+    {
+      "word": "two-week",
+      "start": 140.14,
+      "end": 140.6,
+      "segmentId": "37"
+    },
+    {
+      "word": "pilot",
+      "start": 140.66,
+      "end": 141.041,
+      "segmentId": "37"
+    },
+    {
+      "word": "would",
+      "start": 141.081,
+      "end": 141.241,
+      "segmentId": "37"
+    },
+    {
+      "word": "require.",
+      "start": 141.301,
+      "end": 141.861,
+      "segmentId": "37"
+    }
+  ],
+  "transcriptSegments": [
+    {
+      "id": "0",
+      "start": 0.131,
+      "end": 3.094,
+      "text": "Hey, this is Maya from Northstar Revenue."
+    },
+    {
+      "id": "1",
+      "start": 3.674,
+      "end": 5.216,
+      "text": "I know this is out of the blue."
+    },
+    {
+      "id": "2",
+      "start": 5.756,
+      "end": 6.617,
+      "text": "So I'll be quick."
+    },
+    {
+      "id": "3",
+      "start": 7.037,
+      "end": 10.621,
+      "text": "I'm calling because your team posted 3A roles last week."
+    },
+    {
+      "id": "4",
+      "start": 11.181,
+      "end": 14.324,
+      "text": "And I also noticed you're hiring for sales enablement."
+    },
+    {
+      "id": "5",
+      "start": 14.965,
+      "end": 17.327,
+      "text": "Usually when those two things happen together."
+    },
+    {
+      "id": "6",
+      "start": 17.967,
+      "end": 23.432,
+      "text": "Someone is trying to ramp reps faster without making managers listen to every call manually."
+    },
+    {
+      "id": "7",
+      "start": 24.33,
+      "end": 25.131,
+      "text": "Is that close?"
+    },
+    {
+      "id": "8",
+      "start": 25.691,
+      "end": 26.652,
+      "text": "That makes sense."
+    },
+    {
+      "id": "9",
+      "start": 27.152,
+      "end": 47.005,
+      "text": "The reason I thought this might be relevant is that we help revenue teams turn sales calls into coaching moments automatically, not just summaries, but where the buyer got confused, where trust improved, where the representative over-explained, and where the next step became easier or harder."
+    },
+    {
+      "id": "10",
+      "start": 47.665,
+      "end": 49.966,
+      "text": "Can I ask how call coaching works today?"
+    },
+    {
+      "id": "11",
+      "start": 50.586,
+      "end": 52.546,
+      "text": "Is it mostly manager shadowing?"
+    },
+    {
+      "id": "12",
+      "start": 53.126,
+      "end": 58.828,
+      "text": "Scorecards, Gong snippets, or just pipeline outcomes showing up later."
+    },
+    {
+      "id": "13",
+      "start": 58.988,
+      "end": 60.968,
+      "text": "Got it, so you have recordings."
+    },
+    {
+      "id": "14",
+      "start": 61.468,
+      "end": 64.749,
+      "text": "But the review process depends heavily on each manager."
+    },
+    {
+      "id": "15",
+      "start": 65.369,
+      "end": 68.01,
+      "text": "That is exactly the gap we usually see."
+    },
+    {
+      "id": "16",
+      "start": 68.55,
+      "end": 70.411,
+      "text": "The problem is not lack of data."
+    },
+    {
+      "id": "17",
+      "start": 70.931,
+      "end": 75.212,
+      "text": "It is that nobody has time to turn all those calls into consistent coaching."
+    },
+    {
+      "id": "18",
+      "start": 76.318,
+      "end": 77.599,
+      "text": "Where we fit is simple."
+    },
+    {
+      "id": "19",
+      "start": 78.139,
+      "end": 82.18,
+      "text": "We analyze recent calls and give managers a weekly coaching map."
+    },
+    {
+      "id": "20",
+      "start": 82.72,
+      "end": 84.921,
+      "text": "Which reps are struggling with discovery?"
+    },
+    {
+      "id": "21",
+      "start": 85.501,
+      "end": 88.322,
+      "text": "Which calls created too much effort for the buyer?"
+    },
+    {
+      "id": "22",
+      "start": 88.923,
+      "end": 90.883,
+      "text": "Which objections were handled well?"
+    },
+    {
+      "id": "23",
+      "start": 91.444,
+      "end": 94.645,
+      "text": "And which three-minute moments are worth reviewing with the team?"
+    },
+    {
+      "id": "24",
+      "start": 95.305,
+      "end": 97.946,
+      "text": "This would not replace your call recording system."
+    },
+    {
+      "id": "25",
+      "start": 98.546,
+      "end": 99.827,
+      "text": "It sits on top of it."
+    },
+    {
+      "id": "26",
+      "start": 100.307,
+      "end": 105.309,
+      "text": "Think of it as the layer that turns raw conversation data into manager-ready coaching."
+    },
+    {
+      "id": "27",
+      "start": 106.333,
+      "end": 108.955,
+      "text": "The useful next step is not a big demo."
+    },
+    {
+      "id": "28",
+      "start": 109.495,
+      "end": 112.237,
+      "text": "I'd suggest a 25-minute working session."
+    },
+    {
+      "id": "29",
+      "start": 112.778,
+      "end": 115.18,
+      "text": "Bring one anonymized discovery call."
+    },
+    {
+      "id": "30",
+      "start": 115.72,
+      "end": 118.402,
+      "text": "And we'll show you what the coaching output would look like."
+    },
+    {
+      "id": "31",
+      "start": 118.962,
+      "end": 121.504,
+      "text": "If it feels generic, we stop there."
+    },
+    {
+      "id": "32",
+      "start": 121.965,
+      "end": 123.986,
+      "text": "If it finds real coaching moments."
+    },
+    {
+      "id": "33",
+      "start": 124.647,
+      "end": 126.768,
+      "text": "Then we can talk about a small pilot."
+    },
+    {
+      "id": "34",
+      "start": 127.389,
+      "end": 131.371,
+      "text": "I have Wednesday at 2 o'clock Eastern or Thursday at 11 o'clock."
+    },
+    {
+      "id": "35",
+      "start": 132.252,
+      "end": 133.193,
+      "text": "Wednesday works?"
+    },
+    {
+      "id": "36",
+      "start": 133.754,
+      "end": 134.314,
+      "text": "Perfect."
+    },
+    {
+      "id": "37",
+      "start": 134.695,
+      "end": 141.861,
+      "text": "I'll send a tight invite with one example call, what the model sees, and what a two-week pilot would require."
+    }
+  ],
+  "dimensions": [
+    {
+      "t": 0.0,
+      "values": {
+        "personal_resonance": -0.8918792009353638,
+        "attention": 2.3387129306793213,
+        "brain_effort": 1.7691340446472168,
+        "gut_reaction": 1.2573518753051758,
+        "memory_encoding": -0.5020880699157715,
+        "social_thinking": -1.6049425601959229,
+        "language_depth": -2.538564443588257
+      }
+    },
+    {
+      "t": 1.0,
+      "values": {
+        "personal_resonance": -0.3809688091278076,
+        "attention": 1.513940453529358,
+        "brain_effort": 1.0466707944869995,
+        "gut_reaction": 1.021072268486023,
+        "memory_encoding": 0.24992263317108154,
+        "social_thinking": -0.47496673464775085,
+        "language_depth": -1.0296201705932617
+      }
+    },
+    {
+      "t": 2.0,
+      "values": {
+        "personal_resonance": -0.5087568163871765,
+        "attention": 1.194128155708313,
+        "brain_effort": 0.4117315411567688,
+        "gut_reaction": 0.22803489863872528,
+        "memory_encoding": 0.11080051958560944,
+        "social_thinking": -0.06518740952014923,
+        "language_depth": -0.24320924282073975
+      }
+    },
+    {
+      "t": 3.0,
+      "values": {
+        "personal_resonance": -0.6355199217796326,
+        "attention": 0.8027425408363342,
+        "brain_effort": -0.23956036567687988,
+        "gut_reaction": -0.44948887825012207,
+        "memory_encoding": 0.06967183202505112,
+        "social_thinking": 0.3606262505054474,
+        "language_depth": 0.6245617270469666
+      }
+    },
+    {
+      "t": 4.0,
+      "values": {
+        "personal_resonance": -0.23458419740200043,
+        "attention": 0.705838680267334,
+        "brain_effort": -0.33023741841316223,
+        "gut_reaction": -0.31944647431373596,
+        "memory_encoding": 0.3913763165473938,
+        "social_thinking": 0.9429404735565186,
+        "language_depth": 1.572450876235962
+      }
+    },
+    {
+      "t": 5.0,
+      "values": {
+        "personal_resonance": -0.43021172285079956,
+        "attention": 0.6111356616020203,
+        "brain_effort": -0.7749496102333069,
+        "gut_reaction": -0.6637653112411499,
+        "memory_encoding": -0.26812249422073364,
+        "social_thinking": 0.8778049349784851,
+        "language_depth": 0.8322679996490479
+      }
+    },
+    {
+      "t": 6.0,
+      "values": {
+        "personal_resonance": -0.24251718819141388,
+        "attention": -0.02959194965660572,
+        "brain_effort": -1.064394235610962,
+        "gut_reaction": -1.0642344951629639,
+        "memory_encoding": -0.11300653219223022,
+        "social_thinking": 1.4263120889663696,
+        "language_depth": 1.435683012008667
+      }
+    },
+    {
+      "t": 7.0,
+      "values": {
+        "personal_resonance": 0.09824816137552261,
+        "attention": -0.31469854712486267,
+        "brain_effort": -0.8350321650505066,
+        "gut_reaction": -1.0109636783599854,
+        "memory_encoding": 0.6563846468925476,
+        "social_thinking": 1.6570897102355957,
+        "language_depth": 2.179885149002075
+      }
+    },
+    {
+      "t": 8.0,
+      "values": {
+        "personal_resonance": 0.35953760147094727,
+        "attention": -0.48480379581451416,
+        "brain_effort": -0.29869475960731506,
+        "gut_reaction": -0.8454836010932922,
+        "memory_encoding": 1.3081550598144531,
+        "social_thinking": 1.6335742473602295,
+        "language_depth": 2.4661855697631836
+      }
+    },
+    {
+      "t": 9.0,
+      "values": {
+        "personal_resonance": 0.5986377596855164,
+        "attention": -0.2961331605911255,
+        "brain_effort": 0.3153676390647888,
+        "gut_reaction": -0.5691142082214355,
+        "memory_encoding": 1.6454322338104248,
+        "social_thinking": 1.8872761726379395,
+        "language_depth": 2.695829391479492
+      }
+    },
+    {
+      "t": 10.0,
+      "values": {
+        "personal_resonance": 1.0210516452789307,
+        "attention": -0.061209723353385925,
+        "brain_effort": 0.7051765322685242,
+        "gut_reaction": -0.4887526035308838,
+        "memory_encoding": 1.5275508165359497,
+        "social_thinking": 2.7432918548583984,
+        "language_depth": 2.6628243923187256
+      }
+    },
+    {
+      "t": 11.0,
+      "values": {
+        "personal_resonance": 1.6897058486938477,
+        "attention": 0.38631510734558105,
+        "brain_effort": 1.1247092485427856,
+        "gut_reaction": -0.3353084325790405,
+        "memory_encoding": 2.010328769683838,
+        "social_thinking": 3.380295753479004,
+        "language_depth": 3.1776156425476074
+      }
+    },
+    {
+      "t": 12.0,
+      "values": {
+        "personal_resonance": 1.6729183197021484,
+        "attention": 0.7000530958175659,
+        "brain_effort": 1.446628451347351,
+        "gut_reaction": -0.40604066848754883,
+        "memory_encoding": 2.1837353706359863,
+        "social_thinking": 3.0388758182525635,
+        "language_depth": 3.0460872650146484
+      }
+    },
+    {
+      "t": 13.0,
+      "values": {
+        "personal_resonance": 1.892026662826538,
+        "attention": 0.38940367102622986,
+        "brain_effort": 1.4543548822402954,
+        "gut_reaction": -0.4839838147163391,
+        "memory_encoding": 2.137500524520874,
+        "social_thinking": 2.7914040088653564,
+        "language_depth": 2.9417693614959717
+      }
+    },
+    {
+      "t": 14.0,
+      "values": {
+        "personal_resonance": 1.9321244955062866,
+        "attention": 0.1057596206665039,
+        "brain_effort": 1.1822054386138916,
+        "gut_reaction": -0.6829989552497864,
+        "memory_encoding": 2.0814456939697266,
+        "social_thinking": 2.8611390590667725,
+        "language_depth": 3.292407989501953
+      }
+    },
+    {
+      "t": 15.0,
+      "values": {
+        "personal_resonance": 1.4823246002197266,
+        "attention": 0.18334512412548065,
+        "brain_effort": 1.1021291017532349,
+        "gut_reaction": -0.8356560468673706,
+        "memory_encoding": 2.1814663410186768,
+        "social_thinking": 2.6118736267089844,
+        "language_depth": 3.597365140914917
+      }
+    },
+    {
+      "t": 16.0,
+      "values": {
+        "personal_resonance": 1.510744571685791,
+        "attention": 0.22376739978790283,
+        "brain_effort": 1.3626271486282349,
+        "gut_reaction": -0.5418974757194519,
+        "memory_encoding": 2.5593886375427246,
+        "social_thinking": 2.399212598800659,
+        "language_depth": 4.015354156494141
+      }
+    },
+    {
+      "t": 17.0,
+      "values": {
+        "personal_resonance": 1.692278504371643,
+        "attention": 0.158110111951828,
+        "brain_effort": 1.35789954662323,
+        "gut_reaction": -0.532665491104126,
+        "memory_encoding": 3.012875556945801,
+        "social_thinking": 2.337245225906372,
+        "language_depth": 4.503448963165283
+      }
+    },
+    {
+      "t": 18.0,
+      "values": {
+        "personal_resonance": 1.5538488626480103,
+        "attention": -0.13928595185279846,
+        "brain_effort": 1.4614990949630737,
+        "gut_reaction": -0.6297141909599304,
+        "memory_encoding": 3.350278854370117,
+        "social_thinking": 1.9899979829788208,
+        "language_depth": 4.885252475738525
+      }
+    },
+    {
+      "t": 19.0,
+      "values": {
+        "personal_resonance": 1.2282137870788574,
+        "attention": -0.527276337146759,
+        "brain_effort": 1.2031514644622803,
+        "gut_reaction": -0.9407162070274353,
+        "memory_encoding": 3.4037015438079834,
+        "social_thinking": 1.602304220199585,
+        "language_depth": 4.994500637054443
+      }
+    },
+    {
+      "t": 20.0,
+      "values": {
+        "personal_resonance": 1.5214468240737915,
+        "attention": -0.5111407041549683,
+        "brain_effort": 1.248835563659668,
+        "gut_reaction": -0.7901439666748047,
+        "memory_encoding": 3.630408525466919,
+        "social_thinking": 1.9488941431045532,
+        "language_depth": 5.35795259475708
+      }
+    },
+    {
+      "t": 21.0,
+      "values": {
+        "personal_resonance": 2.2230608463287354,
+        "attention": -0.5566091537475586,
+        "brain_effort": 1.6989413499832153,
+        "gut_reaction": -0.2834743559360504,
+        "memory_encoding": 4.625787258148193,
+        "social_thinking": 2.5251834392547607,
+        "language_depth": 6.4705705642700195
+      }
+    },
+    {
+      "t": 22.0,
+      "values": {
+        "personal_resonance": 2.147886276245117,
+        "attention": -0.25358298420906067,
+        "brain_effort": 1.5527640581130981,
+        "gut_reaction": -0.17863450944423676,
+        "memory_encoding": 4.095471382141113,
+        "social_thinking": 2.58095383644104,
+        "language_depth": 5.909366607666016
+      }
+    },
+    {
+      "t": 23.0,
+      "values": {
+        "personal_resonance": 2.4692630767822266,
+        "attention": 0.2275979369878769,
+        "brain_effort": 1.5229789018630981,
+        "gut_reaction": 0.28841468691825867,
+        "memory_encoding": 3.8467817306518555,
+        "social_thinking": 3.0220136642456055,
+        "language_depth": 5.6645355224609375
+      }
+    },
+    {
+      "t": 24.0,
+      "values": {
+        "personal_resonance": 2.4891090393066406,
+        "attention": 0.8671038746833801,
+        "brain_effort": 1.6685479879379272,
+        "gut_reaction": 0.8891512155532837,
+        "memory_encoding": 3.6355340480804443,
+        "social_thinking": 2.96622371673584,
+        "language_depth": 5.494399070739746
+      }
+    },
+    {
+      "t": 25.0,
+      "values": {
+        "personal_resonance": 2.473752021789551,
+        "attention": 1.800761342048645,
+        "brain_effort": 1.575636386871338,
+        "gut_reaction": 1.6541752815246582,
+        "memory_encoding": 2.822462320327759,
+        "social_thinking": 2.9630587100982666,
+        "language_depth": 4.512402057647705
+      }
+    },
+    {
+      "t": 26.0,
+      "values": {
+        "personal_resonance": 2.289489984512329,
+        "attention": 2.43233060836792,
+        "brain_effort": 1.41552734375,
+        "gut_reaction": 1.6867412328720093,
+        "memory_encoding": 2.1645610332489014,
+        "social_thinking": 2.894355535507202,
+        "language_depth": 3.83227801322937
+      }
+    },
+    {
+      "t": 27.0,
+      "values": {
+        "personal_resonance": 2.24796462059021,
+        "attention": 2.973419427871704,
+        "brain_effort": 1.7215737104415894,
+        "gut_reaction": 1.5564093589782715,
+        "memory_encoding": 2.099813461303711,
+        "social_thinking": 2.7758948802948,
+        "language_depth": 3.481671094894409
+      }
+    },
+    {
+      "t": 28.0,
+      "values": {
+        "personal_resonance": 2.126600503921509,
+        "attention": 3.1800537109375,
+        "brain_effort": 2.0730340480804443,
+        "gut_reaction": 1.3422183990478516,
+        "memory_encoding": 2.2889697551727295,
+        "social_thinking": 2.370944023132324,
+        "language_depth": 2.8380696773529053
+      }
+    },
+    {
+      "t": 29.0,
+      "values": {
+        "personal_resonance": 1.9128830432891846,
+        "attention": 2.929426431655884,
+        "brain_effort": 2.145437240600586,
+        "gut_reaction": 0.946397602558136,
+        "memory_encoding": 2.4569952487945557,
+        "social_thinking": 2.169576644897461,
+        "language_depth": 2.8412704467773438
+      }
+    },
+    {
+      "t": 30.0,
+      "values": {
+        "personal_resonance": 1.8422938585281372,
+        "attention": 2.022099733352661,
+        "brain_effort": 2.094787359237671,
+        "gut_reaction": 0.777299165725708,
+        "memory_encoding": 2.797833204269409,
+        "social_thinking": 1.9699851274490356,
+        "language_depth": 2.624687671661377
+      }
+    },
+    {
+      "t": 31.0,
+      "values": {
+        "personal_resonance": 1.4872082471847534,
+        "attention": 1.407930850982666,
+        "brain_effort": 1.5101934671401978,
+        "gut_reaction": 0.314566969871521,
+        "memory_encoding": 2.538306474685669,
+        "social_thinking": 1.7206279039382935,
+        "language_depth": 2.4584922790527344
+      }
+    },
+    {
+      "t": 32.0,
+      "values": {
+        "personal_resonance": 1.372475266456604,
+        "attention": 1.000298023223877,
+        "brain_effort": 1.6580473184585571,
+        "gut_reaction": 0.27368447184562683,
+        "memory_encoding": 2.941842555999756,
+        "social_thinking": 1.6615102291107178,
+        "language_depth": 3.1059043407440186
+      }
+    },
+    {
+      "t": 33.0,
+      "values": {
+        "personal_resonance": 1.5369384288787842,
+        "attention": 1.4095618724822998,
+        "brain_effort": 1.740090012550354,
+        "gut_reaction": 0.6922923922538757,
+        "memory_encoding": 2.9811971187591553,
+        "social_thinking": 2.4212310314178467,
+        "language_depth": 3.8295345306396484
+      }
+    },
+    {
+      "t": 34.0,
+      "values": {
+        "personal_resonance": 1.5550596714019775,
+        "attention": 2.0046730041503906,
+        "brain_effort": 1.806386947631836,
+        "gut_reaction": 0.7292418479919434,
+        "memory_encoding": 2.65297532081604,
+        "social_thinking": 2.9355804920196533,
+        "language_depth": 3.8562822341918945
+      }
+    },
+    {
+      "t": 35.0,
+      "values": {
+        "personal_resonance": 1.7159291505813599,
+        "attention": 2.1638152599334717,
+        "brain_effort": 2.034546375274658,
+        "gut_reaction": 0.9731920957565308,
+        "memory_encoding": 2.443267583847046,
+        "social_thinking": 2.6814723014831543,
+        "language_depth": 3.5370841026306152
+      }
+    },
+    {
+      "t": 36.0,
+      "values": {
+        "personal_resonance": 1.6938562393188477,
+        "attention": 2.410757064819336,
+        "brain_effort": 2.0197854042053223,
+        "gut_reaction": 0.8617120981216431,
+        "memory_encoding": 2.0684258937835693,
+        "social_thinking": 2.8018836975097656,
+        "language_depth": 2.9454345703125
+      }
+    },
+    {
+      "t": 37.0,
+      "values": {
+        "personal_resonance": 1.7773596048355103,
+        "attention": 2.9453186988830566,
+        "brain_effort": 2.279757022857666,
+        "gut_reaction": 0.8905654549598694,
+        "memory_encoding": 2.3519551753997803,
+        "social_thinking": 2.922111749649048,
+        "language_depth": 3.2460639476776123
+      }
+    },
+    {
+      "t": 38.0,
+      "values": {
+        "personal_resonance": 1.9201456308364868,
+        "attention": 2.5992865562438965,
+        "brain_effort": 2.1633594036102295,
+        "gut_reaction": 0.9015641212463379,
+        "memory_encoding": 2.5640718936920166,
+        "social_thinking": 2.6781749725341797,
+        "language_depth": 3.0902700424194336
+      }
+    },
+    {
+      "t": 39.0,
+      "values": {
+        "personal_resonance": 1.563564658164978,
+        "attention": 2.3852953910827637,
+        "brain_effort": 1.9204869270324707,
+        "gut_reaction": 0.6784374117851257,
+        "memory_encoding": 2.4362034797668457,
+        "social_thinking": 2.2956175804138184,
+        "language_depth": 2.849609851837158
+      }
+    },
+    {
+      "t": 40.0,
+      "values": {
+        "personal_resonance": 1.554578185081482,
+        "attention": 2.028420925140381,
+        "brain_effort": 1.627784013748169,
+        "gut_reaction": 0.7793921828269958,
+        "memory_encoding": 2.349580764770508,
+        "social_thinking": 2.4620137214660645,
+        "language_depth": 3.057644844055176
+      }
+    },
+    {
+      "t": 41.0,
+      "values": {
+        "personal_resonance": 1.1049833297729492,
+        "attention": 2.031189441680908,
+        "brain_effort": 1.474510669708252,
+        "gut_reaction": 0.6514602303504944,
+        "memory_encoding": 2.097421884536743,
+        "social_thinking": 1.7877453565597534,
+        "language_depth": 2.487562417984009
+      }
+    },
+    {
+      "t": 42.0,
+      "values": {
+        "personal_resonance": 1.2187833786010742,
+        "attention": 1.8838075399398804,
+        "brain_effort": 1.5477770566940308,
+        "gut_reaction": 0.8798574805259705,
+        "memory_encoding": 2.1660430431365967,
+        "social_thinking": 1.6760830879211426,
+        "language_depth": 2.5748376846313477
+      }
+    },
+    {
+      "t": 43.0,
+      "values": {
+        "personal_resonance": 1.1757476329803467,
+        "attention": 2.108248472213745,
+        "brain_effort": 1.5132838487625122,
+        "gut_reaction": 0.8735257387161255,
+        "memory_encoding": 1.7022359371185303,
+        "social_thinking": 1.9388172626495361,
+        "language_depth": 2.147798776626587
+      }
+    },
+    {
+      "t": 44.0,
+      "values": {
+        "personal_resonance": 1.0018792152404785,
+        "attention": 2.108264207839966,
+        "brain_effort": 1.5995169878005981,
+        "gut_reaction": 1.0058695077896118,
+        "memory_encoding": 1.6303666830062866,
+        "social_thinking": 2.0700631141662598,
+        "language_depth": 2.3631439208984375
+      }
+    },
+    {
+      "t": 45.0,
+      "values": {
+        "personal_resonance": 1.4790740013122559,
+        "attention": 2.4785633087158203,
+        "brain_effort": 2.3089451789855957,
+        "gut_reaction": 1.696153998374939,
+        "memory_encoding": 2.147226333618164,
+        "social_thinking": 2.5553886890411377,
+        "language_depth": 2.672712802886963
+      }
+    },
+    {
+      "t": 46.0,
+      "values": {
+        "personal_resonance": 1.3838895559310913,
+        "attention": 1.6757094860076904,
+        "brain_effort": 1.665115237236023,
+        "gut_reaction": 1.28123140335083,
+        "memory_encoding": 1.4315381050109863,
+        "social_thinking": 2.84771728515625,
+        "language_depth": 2.0973141193389893
+      }
+    },
+    {
+      "t": 47.0,
+      "values": {
+        "personal_resonance": 1.8118683099746704,
+        "attention": 1.6501286029815674,
+        "brain_effort": 1.8698290586471558,
+        "gut_reaction": 1.3883295059204102,
+        "memory_encoding": 1.8134205341339111,
+        "social_thinking": 3.4053003787994385,
+        "language_depth": 2.5932178497314453
+      }
+    },
+    {
+      "t": 48.0,
+      "values": {
+        "personal_resonance": 2.272383689880371,
+        "attention": 2.0363616943359375,
+        "brain_effort": 2.390810966491699,
+        "gut_reaction": 1.8609821796417236,
+        "memory_encoding": 2.3416526317596436,
+        "social_thinking": 3.6804490089416504,
+        "language_depth": 3.1830172538757324
+      }
+    },
+    {
+      "t": 49.0,
+      "values": {
+        "personal_resonance": 2.5175366401672363,
+        "attention": 1.8177928924560547,
+        "brain_effort": 2.529250383377075,
+        "gut_reaction": 1.7338119745254517,
+        "memory_encoding": 2.5361037254333496,
+        "social_thinking": 3.673508644104004,
+        "language_depth": 3.080267906188965
+      }
+    },
+    {
+      "t": 50.0,
+      "values": {
+        "personal_resonance": 2.3563437461853027,
+        "attention": 1.4252046346664429,
+        "brain_effort": 2.272547960281372,
+        "gut_reaction": 1.6159155368804932,
+        "memory_encoding": 2.57905912399292,
+        "social_thinking": 3.683026075363159,
+        "language_depth": 3.0963516235351562
+      }
+    },
+    {
+      "t": 51.0,
+      "values": {
+        "personal_resonance": 2.277729034423828,
+        "attention": 1.5592350959777832,
+        "brain_effort": 2.355192184448242,
+        "gut_reaction": 1.3082855939865112,
+        "memory_encoding": 2.4085071086883545,
+        "social_thinking": 3.6406800746917725,
+        "language_depth": 2.861734390258789
+      }
+    },
+    {
+      "t": 52.0,
+      "values": {
+        "personal_resonance": 2.2489418983459473,
+        "attention": 1.6456431150436401,
+        "brain_effort": 2.4129815101623535,
+        "gut_reaction": 1.5844802856445312,
+        "memory_encoding": 2.3218648433685303,
+        "social_thinking": 3.730618476867676,
+        "language_depth": 2.6978952884674072
+      }
+    },
+    {
+      "t": 53.0,
+      "values": {
+        "personal_resonance": 2.1072795391082764,
+        "attention": 1.6832274198532104,
+        "brain_effort": 2.420593738555908,
+        "gut_reaction": 1.6324907541275024,
+        "memory_encoding": 2.4952361583709717,
+        "social_thinking": 3.646918296813965,
+        "language_depth": 2.9849743843078613
+      }
+    },
+    {
+      "t": 54.0,
+      "values": {
+        "personal_resonance": 2.0330560207366943,
+        "attention": 1.5120545625686646,
+        "brain_effort": 2.2427985668182373,
+        "gut_reaction": 1.6609153747558594,
+        "memory_encoding": 2.2201273441314697,
+        "social_thinking": 3.4755845069885254,
+        "language_depth": 2.63525652885437
+      }
+    },
+    {
+      "t": 55.0,
+      "values": {
+        "personal_resonance": 1.953047513961792,
+        "attention": 1.2484771013259888,
+        "brain_effort": 2.3001468181610107,
+        "gut_reaction": 1.5885993242263794,
+        "memory_encoding": 2.0272464752197266,
+        "social_thinking": 3.273378372192383,
+        "language_depth": 2.528890609741211
+      }
+    },
+    {
+      "t": 56.0,
+      "values": {
+        "personal_resonance": 1.7876642942428589,
+        "attention": 1.1802077293395996,
+        "brain_effort": 2.120457649230957,
+        "gut_reaction": 1.6612279415130615,
+        "memory_encoding": 1.729146957397461,
+        "social_thinking": 3.12223482131958,
+        "language_depth": 2.403388500213623
+      }
+    },
+    {
+      "t": 57.0,
+      "values": {
+        "personal_resonance": 1.8675910234451294,
+        "attention": 1.6528137922286987,
+        "brain_effort": 2.1101086139678955,
+        "gut_reaction": 2.004699945449829,
+        "memory_encoding": 1.4598939418792725,
+        "social_thinking": 3.337437629699707,
+        "language_depth": 2.1330924034118652
+      }
+    },
+    {
+      "t": 58.0,
+      "values": {
+        "personal_resonance": 2.0207231044769287,
+        "attention": 1.6384273767471313,
+        "brain_effort": 2.1982150077819824,
+        "gut_reaction": 2.2685136795043945,
+        "memory_encoding": 1.2611836194992065,
+        "social_thinking": 3.2927632331848145,
+        "language_depth": 1.7518229484558105
+      }
+    },
+    {
+      "t": 59.0,
+      "values": {
+        "personal_resonance": 1.5066349506378174,
+        "attention": 1.8020155429840088,
+        "brain_effort": 2.1494510173797607,
+        "gut_reaction": 2.2129855155944824,
+        "memory_encoding": 0.7843325138092041,
+        "social_thinking": 2.3993330001831055,
+        "language_depth": 0.8123390674591064
+      }
+    },
+    {
+      "t": 60.0,
+      "values": {
+        "personal_resonance": 1.3743757009506226,
+        "attention": 1.667933464050293,
+        "brain_effort": 1.6327987909317017,
+        "gut_reaction": 1.5240167379379272,
+        "memory_encoding": 0.32350894808769226,
+        "social_thinking": 1.7892640829086304,
+        "language_depth": 0.3181285262107849
+      }
+    },
+    {
+      "t": 61.0,
+      "values": {
+        "personal_resonance": 1.6789987087249756,
+        "attention": 1.410078763961792,
+        "brain_effort": 1.6145747900009155,
+        "gut_reaction": 1.5936647653579712,
+        "memory_encoding": 0.6551576852798462,
+        "social_thinking": 2.61560320854187,
+        "language_depth": 1.1840946674346924
+      }
+    },
+    {
+      "t": 62.0,
+      "values": {
+        "personal_resonance": 1.4306741952896118,
+        "attention": 1.2764571905136108,
+        "brain_effort": 1.2709603309631348,
+        "gut_reaction": 1.221184492111206,
+        "memory_encoding": 0.474974125623703,
+        "social_thinking": 2.2706527709960938,
+        "language_depth": 0.7835602164268494
+      }
+    },
+    {
+      "t": 63.0,
+      "values": {
+        "personal_resonance": 1.401854395866394,
+        "attention": 0.8410489559173584,
+        "brain_effort": 1.005014181137085,
+        "gut_reaction": 1.3637235164642334,
+        "memory_encoding": 0.3439425528049469,
+        "social_thinking": 2.302271604537964,
+        "language_depth": 1.1087640523910522
+      }
+    },
+    {
+      "t": 64.0,
+      "values": {
+        "personal_resonance": 1.2082417011260986,
+        "attention": 0.7592074871063232,
+        "brain_effort": 0.4793001115322113,
+        "gut_reaction": 0.9749377965927124,
+        "memory_encoding": 0.17651724815368652,
+        "social_thinking": 2.0455806255340576,
+        "language_depth": 1.4411965608596802
+      }
+    },
+    {
+      "t": 65.0,
+      "values": {
+        "personal_resonance": 0.8566619753837585,
+        "attention": 0.7758705615997314,
+        "brain_effort": 0.2526358664035797,
+        "gut_reaction": 0.8188801407814026,
+        "memory_encoding": 0.10211881250143051,
+        "social_thinking": 1.2034672498703003,
+        "language_depth": 0.8863277435302734
+      }
+    },
+    {
+      "t": 66.0,
+      "values": {
+        "personal_resonance": 0.8028768301010132,
+        "attention": 0.8430770039558411,
+        "brain_effort": 0.11264883726835251,
+        "gut_reaction": 0.9116908311843872,
+        "memory_encoding": -0.27821698784828186,
+        "social_thinking": 1.190674066543579,
+        "language_depth": 0.4064176380634308
+      }
+    },
+    {
+      "t": 67.0,
+      "values": {
+        "personal_resonance": 0.5667458772659302,
+        "attention": 0.9381938576698303,
+        "brain_effort": -0.0911005437374115,
+        "gut_reaction": 0.8888593912124634,
+        "memory_encoding": -0.7128351926803589,
+        "social_thinking": 0.8628979325294495,
+        "language_depth": -0.2645133435726166
+      }
+    },
+    {
+      "t": 68.0,
+      "values": {
+        "personal_resonance": 0.2770978808403015,
+        "attention": 1.0617226362228394,
+        "brain_effort": -0.13043417036533356,
+        "gut_reaction": 0.9433903098106384,
+        "memory_encoding": -0.690516471862793,
+        "social_thinking": 0.08460505306720734,
+        "language_depth": -0.4806084632873535
+      }
+    },
+    {
+      "t": 69.0,
+      "values": {
+        "personal_resonance": 0.12965478003025055,
+        "attention": 1.0286754369735718,
+        "brain_effort": -0.032338403165340424,
+        "gut_reaction": 0.881920337677002,
+        "memory_encoding": -0.558330774307251,
+        "social_thinking": -0.45547541975975037,
+        "language_depth": -0.43031060695648193
+      }
+    },
+    {
+      "t": 70.0,
+      "values": {
+        "personal_resonance": -0.08726096153259277,
+        "attention": 0.667253851890564,
+        "brain_effort": -0.03216497227549553,
+        "gut_reaction": 0.7126538753509521,
+        "memory_encoding": -0.5661633610725403,
+        "social_thinking": -0.454567015171051,
+        "language_depth": -0.48090487718582153
+      }
+    },
+    {
+      "t": 71.0,
+      "values": {
+        "personal_resonance": -0.34807059168815613,
+        "attention": 0.18800383806228638,
+        "brain_effort": -0.15521210432052612,
+        "gut_reaction": 0.18473100662231445,
+        "memory_encoding": -0.03436058387160301,
+        "social_thinking": -0.873542308807373,
+        "language_depth": 0.42377063632011414
+      }
+    },
+    {
+      "t": 72.0,
+      "values": {
+        "personal_resonance": -0.7376662492752075,
+        "attention": -0.6185506582260132,
+        "brain_effort": -0.4053649306297302,
+        "gut_reaction": -0.35753726959228516,
+        "memory_encoding": 0.10537497699260712,
+        "social_thinking": -1.6086505651474,
+        "language_depth": -0.07683467864990234
+      }
+    },
+    {
+      "t": 73.0,
+      "values": {
+        "personal_resonance": -1.000146746635437,
+        "attention": -1.1124238967895508,
+        "brain_effort": -0.42640960216522217,
+        "gut_reaction": -0.38881418108940125,
+        "memory_encoding": -0.23715293407440186,
+        "social_thinking": -2.054111957550049,
+        "language_depth": -1.0074355602264404
+      }
+    },
+    {
+      "t": 74.0,
+      "values": {
+        "personal_resonance": -1.08995521068573,
+        "attention": -1.36003577709198,
+        "brain_effort": -0.4074404239654541,
+        "gut_reaction": -0.25634706020355225,
+        "memory_encoding": -0.2843514382839203,
+        "social_thinking": -2.4540297985076904,
+        "language_depth": -0.9703980088233948
+      }
+    },
+    {
+      "t": 75.0,
+      "values": {
+        "personal_resonance": -0.7788232564926147,
+        "attention": -0.8532599210739136,
+        "brain_effort": -0.18390196561813354,
+        "gut_reaction": -0.13923269510269165,
+        "memory_encoding": -0.3848678171634674,
+        "social_thinking": -2.0313355922698975,
+        "language_depth": -1.1189935207366943
+      }
+    },
+    {
+      "t": 76.0,
+      "values": {
+        "personal_resonance": -0.8430112600326538,
+        "attention": -0.8749517202377319,
+        "brain_effort": -0.20631982386112213,
+        "gut_reaction": -0.2533659338951111,
+        "memory_encoding": -0.580990731716156,
+        "social_thinking": -2.1502909660339355,
+        "language_depth": -1.066468596458435
+      }
+    },
+    {
+      "t": 77.0,
+      "values": {
+        "personal_resonance": -0.6917720437049866,
+        "attention": -0.7661648392677307,
+        "brain_effort": 0.029893159866333008,
+        "gut_reaction": -0.18105565011501312,
+        "memory_encoding": -0.447282612323761,
+        "social_thinking": -1.7452536821365356,
+        "language_depth": -0.570181667804718
+      }
+    },
+    {
+      "t": 78.0,
+      "values": {
+        "personal_resonance": -0.687829852104187,
+        "attention": -0.8576211333274841,
+        "brain_effort": 0.09900679439306259,
+        "gut_reaction": -0.6761903166770935,
+        "memory_encoding": -0.23983123898506165,
+        "social_thinking": -1.8196202516555786,
+        "language_depth": -0.12256574630737305
+      }
+    },
+    {
+      "t": 79.0,
+      "values": {
+        "personal_resonance": -0.8340441584587097,
+        "attention": -1.1569730043411255,
+        "brain_effort": 0.029465559870004654,
+        "gut_reaction": -0.8810942769050598,
+        "memory_encoding": -0.16226248443126678,
+        "social_thinking": -1.854367971420288,
+        "language_depth": -0.042512960731983185
+      }
+    },
+    {
+      "t": 80.0,
+      "values": {
+        "personal_resonance": -1.0080375671386719,
+        "attention": -0.9822067618370056,
+        "brain_effort": 0.0885101705789566,
+        "gut_reaction": -0.883102536201477,
+        "memory_encoding": -0.029659893363714218,
+        "social_thinking": -1.6643943786621094,
+        "language_depth": 0.26139557361602783
+      }
+    },
+    {
+      "t": 81.0,
+      "values": {
+        "personal_resonance": -1.1321630477905273,
+        "attention": -1.1784306764602661,
+        "brain_effort": -0.11740594357252121,
+        "gut_reaction": -0.8860009908676147,
+        "memory_encoding": -0.022466739639639854,
+        "social_thinking": -1.9357056617736816,
+        "language_depth": 0.2287243753671646
+      }
+    },
+    {
+      "t": 82.0,
+      "values": {
+        "personal_resonance": -1.1974685192108154,
+        "attention": -1.1119204759597778,
+        "brain_effort": 0.23991800844669342,
+        "gut_reaction": -0.855178713798523,
+        "memory_encoding": 0.015314741060137749,
+        "social_thinking": -1.984986662864685,
+        "language_depth": 0.1757921278476715
+      }
+    },
+    {
+      "t": 83.0,
+      "values": {
+        "personal_resonance": -1.0750685930252075,
+        "attention": -1.0473496913909912,
+        "brain_effort": 0.0989365354180336,
+        "gut_reaction": -0.5509080290794373,
+        "memory_encoding": 0.09932931512594223,
+        "social_thinking": -1.6633654832839966,
+        "language_depth": 0.4941539168357849
+      }
+    },
+    {
+      "t": 84.0,
+      "values": {
+        "personal_resonance": -1.194933533668518,
+        "attention": -0.7792112231254578,
+        "brain_effort": 0.16613858938217163,
+        "gut_reaction": -0.49753323197364807,
+        "memory_encoding": 0.1436893492937088,
+        "social_thinking": -1.2884784936904907,
+        "language_depth": 0.6160893440246582
+      }
+    },
+    {
+      "t": 85.0,
+      "values": {
+        "personal_resonance": -0.8891162872314453,
+        "attention": -0.5022348761558533,
+        "brain_effort": 0.6041210889816284,
+        "gut_reaction": -0.41066819429397583,
+        "memory_encoding": 0.13610345125198364,
+        "social_thinking": -0.8982725143432617,
+        "language_depth": 0.5376161336898804
+      }
+    },
+    {
+      "t": 86.0,
+      "values": {
+        "personal_resonance": -1.0290906429290771,
+        "attention": -0.20909631252288818,
+        "brain_effort": 0.568272054195404,
+        "gut_reaction": -0.42497923970222473,
+        "memory_encoding": 0.1318960189819336,
+        "social_thinking": -0.8621617555618286,
+        "language_depth": 0.7535213828086853
+      }
+    },
+    {
+      "t": 87.0,
+      "values": {
+        "personal_resonance": -1.0192290544509888,
+        "attention": -0.5520753860473633,
+        "brain_effort": 0.5197305679321289,
+        "gut_reaction": -0.41851064562797546,
+        "memory_encoding": 0.12228711694478989,
+        "social_thinking": -0.7305257320404053,
+        "language_depth": 0.9070640206336975
+      }
+    },
+    {
+      "t": 88.0,
+      "values": {
+        "personal_resonance": -0.6180151700973511,
+        "attention": 0.003363983239978552,
+        "brain_effort": 0.8793591856956482,
+        "gut_reaction": -0.047751110047101974,
+        "memory_encoding": 0.2992750108242035,
+        "social_thinking": -0.09194888919591904,
+        "language_depth": 0.9017271399497986
+      }
+    },
+    {
+      "t": 89.0,
+      "values": {
+        "personal_resonance": -0.7369741201400757,
+        "attention": 0.16227684915065765,
+        "brain_effort": 1.0396589040756226,
+        "gut_reaction": -0.007382561918348074,
+        "memory_encoding": 0.3279496133327484,
+        "social_thinking": -0.2070024013519287,
+        "language_depth": 0.9374454617500305
+      }
+    },
+    {
+      "t": 90.0,
+      "values": {
+        "personal_resonance": -0.5929360389709473,
+        "attention": -0.2891325056552887,
+        "brain_effort": 0.8675392866134644,
+        "gut_reaction": 0.030576681718230247,
+        "memory_encoding": 0.4680791199207306,
+        "social_thinking": -0.13565389811992645,
+        "language_depth": 1.0775974988937378
+      }
+    },
+    {
+      "t": 91.0,
+      "values": {
+        "personal_resonance": -0.5175521969795227,
+        "attention": -0.3670524060726166,
+        "brain_effort": 0.8208988308906555,
+        "gut_reaction": 0.0705718994140625,
+        "memory_encoding": 0.5028722286224365,
+        "social_thinking": -0.15607067942619324,
+        "language_depth": 0.8085256218910217
+      }
+    },
+    {
+      "t": 92.0,
+      "values": {
+        "personal_resonance": -0.4439724087715149,
+        "attention": -0.37416937947273254,
+        "brain_effort": 0.8314756155014038,
+        "gut_reaction": 0.06093539670109749,
+        "memory_encoding": 0.6448143720626831,
+        "social_thinking": -0.22234168648719788,
+        "language_depth": 0.736050546169281
+      }
+    },
+    {
+      "t": 93.0,
+      "values": {
+        "personal_resonance": 0.10094431042671204,
+        "attention": -0.017387378960847855,
+        "brain_effort": 1.3912454843521118,
+        "gut_reaction": 0.5314294695854187,
+        "memory_encoding": 0.8978570103645325,
+        "social_thinking": 0.5548546314239502,
+        "language_depth": 1.0998252630233765
+      }
+    },
+    {
+      "t": 94.0,
+      "values": {
+        "personal_resonance": 0.05181977525353432,
+        "attention": -0.28806012868881226,
+        "brain_effort": 1.0609322786331177,
+        "gut_reaction": 0.12060126662254333,
+        "memory_encoding": 0.5116856098175049,
+        "social_thinking": 0.800923228263855,
+        "language_depth": 1.035522699356079
+      }
+    },
+    {
+      "t": 95.0,
+      "values": {
+        "personal_resonance": 0.15124419331550598,
+        "attention": -0.23000182211399078,
+        "brain_effort": 1.0864299535751343,
+        "gut_reaction": 0.052496764808893204,
+        "memory_encoding": 0.40431612730026245,
+        "social_thinking": 0.6823851466178894,
+        "language_depth": 0.8097621202468872
+      }
+    },
+    {
+      "t": 96.0,
+      "values": {
+        "personal_resonance": 0.3468869626522064,
+        "attention": 0.10780037194490433,
+        "brain_effort": 0.9882861375808716,
+        "gut_reaction": -0.10703276097774506,
+        "memory_encoding": 0.40740200877189636,
+        "social_thinking": 0.8441260457038879,
+        "language_depth": 0.7268509864807129
+      }
+    },
+    {
+      "t": 97.0,
+      "values": {
+        "personal_resonance": 0.32004332542419434,
+        "attention": 0.5627846121788025,
+        "brain_effort": 1.4058189392089844,
+        "gut_reaction": 0.2085932195186615,
+        "memory_encoding": 0.4419991672039032,
+        "social_thinking": 1.0059922933578491,
+        "language_depth": 0.6720224022865295
+      }
+    },
+    {
+      "t": 98.0,
+      "values": {
+        "personal_resonance": 0.3004024028778076,
+        "attention": 0.371978759765625,
+        "brain_effort": 1.525912880897522,
+        "gut_reaction": 0.004167467355728149,
+        "memory_encoding": 0.5065929889678955,
+        "social_thinking": 0.8619081377983093,
+        "language_depth": 0.428559809923172
+      }
+    },
+    {
+      "t": 99.0,
+      "values": {
+        "personal_resonance": -0.06782976537942886,
+        "attention": 0.26564446091651917,
+        "brain_effort": 1.1974989175796509,
+        "gut_reaction": -0.20456066727638245,
+        "memory_encoding": 0.13977298140525818,
+        "social_thinking": 0.48309841752052307,
+        "language_depth": -0.18243680894374847
+      }
+    },
+    {
+      "t": 100.0,
+      "values": {
+        "personal_resonance": -1.657302975654602,
+        "attention": -0.9593011736869812,
+        "brain_effort": -0.9851006269454956,
+        "gut_reaction": -0.7035632729530334,
+        "memory_encoding": -0.9948721528053284,
+        "social_thinking": -2.600551128387451,
+        "language_depth": -0.6393505334854126
+      }
+    },
+    {
+      "t": 101.0,
+      "values": {
+        "personal_resonance": -2.4001269340515137,
+        "attention": -1.1554676294326782,
+        "brain_effort": -1.01596999168396,
+        "gut_reaction": -1.1342103481292725,
+        "memory_encoding": -0.7238307595252991,
+        "social_thinking": -3.595036745071411,
+        "language_depth": -0.4307129681110382
+      }
+    },
+    {
+      "t": 102.0,
+      "values": {
+        "personal_resonance": -2.2649314403533936,
+        "attention": -1.977238416671753,
+        "brain_effort": -1.294109582901001,
+        "gut_reaction": -1.1427397727966309,
+        "memory_encoding": -0.8397563695907593,
+        "social_thinking": -3.8659183979034424,
+        "language_depth": -0.8288381099700928
+      }
+    },
+    {
+      "t": 103.0,
+      "values": {
+        "personal_resonance": -2.5493805408477783,
+        "attention": -2.370847225189209,
+        "brain_effort": -1.6088321208953857,
+        "gut_reaction": -1.4507241249084473,
+        "memory_encoding": -0.6695143580436707,
+        "social_thinking": -4.195068836212158,
+        "language_depth": -0.827659010887146
+      }
+    },
+    {
+      "t": 104.0,
+      "values": {
+        "personal_resonance": -2.363652229309082,
+        "attention": -2.2406747341156006,
+        "brain_effort": -1.714299201965332,
+        "gut_reaction": -1.4055240154266357,
+        "memory_encoding": -1.261179804801941,
+        "social_thinking": -4.212587356567383,
+        "language_depth": -1.552245020866394
+      }
+    },
+    {
+      "t": 105.0,
+      "values": {
+        "personal_resonance": -1.9457110166549683,
+        "attention": -1.8200739622116089,
+        "brain_effort": -1.465868353843689,
+        "gut_reaction": -0.7818053960800171,
+        "memory_encoding": -1.3334509134292603,
+        "social_thinking": -3.308685779571533,
+        "language_depth": -1.0361477136611938
+      }
+    },
+    {
+      "t": 106.0,
+      "values": {
+        "personal_resonance": -1.8487942218780518,
+        "attention": -1.808957576751709,
+        "brain_effort": -1.5433475971221924,
+        "gut_reaction": -0.9789911508560181,
+        "memory_encoding": -1.415356159210205,
+        "social_thinking": -3.1198253631591797,
+        "language_depth": -0.8854808807373047
+      }
+    },
+    {
+      "t": 107.0,
+      "values": {
+        "personal_resonance": -1.6659234762191772,
+        "attention": -1.762940764427185,
+        "brain_effort": -1.4565531015396118,
+        "gut_reaction": -1.055631160736084,
+        "memory_encoding": -1.2188595533370972,
+        "social_thinking": -2.5806870460510254,
+        "language_depth": -0.3325914442539215
+      }
+    },
+    {
+      "t": 108.0,
+      "values": {
+        "personal_resonance": -1.6075462102890015,
+        "attention": -2.0593206882476807,
+        "brain_effort": -1.6002942323684692,
+        "gut_reaction": -1.2765666246414185,
+        "memory_encoding": -1.2280162572860718,
+        "social_thinking": -2.5572924613952637,
+        "language_depth": 0.02285444177687168
+      }
+    },
+    {
+      "t": 109.0,
+      "values": {
+        "personal_resonance": -1.1445386409759521,
+        "attention": -1.585400104522705,
+        "brain_effort": -1.4065903425216675,
+        "gut_reaction": -1.197078824043274,
+        "memory_encoding": -0.9368317127227783,
+        "social_thinking": -1.4106348752975464,
+        "language_depth": 0.4453163743019104
+      }
+    },
+    {
+      "t": 110.0,
+      "values": {
+        "personal_resonance": -1.0690678358078003,
+        "attention": -1.7595576047897339,
+        "brain_effort": -1.2833738327026367,
+        "gut_reaction": -1.2362209558486938,
+        "memory_encoding": -0.8142403960227966,
+        "social_thinking": -1.2369263172149658,
+        "language_depth": 0.3971123695373535
+      }
+    },
+    {
+      "t": 111.0,
+      "values": {
+        "personal_resonance": -1.2481062412261963,
+        "attention": -1.7673999071121216,
+        "brain_effort": -1.125238299369812,
+        "gut_reaction": -1.2032488584518433,
+        "memory_encoding": -0.9810358881950378,
+        "social_thinking": -1.7711505889892578,
+        "language_depth": -0.3535560667514801
+      }
+    },
+    {
+      "t": 112.0,
+      "values": {
+        "personal_resonance": -1.1409889459609985,
+        "attention": -1.578959584236145,
+        "brain_effort": -0.8832985758781433,
+        "gut_reaction": -1.0885429382324219,
+        "memory_encoding": -0.9083971977233887,
+        "social_thinking": -1.5602483749389648,
+        "language_depth": -0.26350194215774536
+      }
+    },
+    {
+      "t": 113.0,
+      "values": {
+        "personal_resonance": -1.0660107135772705,
+        "attention": -1.5656969547271729,
+        "brain_effort": -0.26269617676734924,
+        "gut_reaction": -1.0178717374801636,
+        "memory_encoding": -0.6152307391166687,
+        "social_thinking": -1.195600152015686,
+        "language_depth": 0.09660973399877548
+      }
+    },
+    {
+      "t": 114.0,
+      "values": {
+        "personal_resonance": -1.0721426010131836,
+        "attention": -1.5463298559188843,
+        "brain_effort": -0.4792754054069519,
+        "gut_reaction": -1.1062244176864624,
+        "memory_encoding": -0.8379586338996887,
+        "social_thinking": -1.5033481121063232,
+        "language_depth": -0.3911323845386505
+      }
+    },
+    {
+      "t": 115.0,
+      "values": {
+        "personal_resonance": -0.9031884074211121,
+        "attention": -2.16413950920105,
+        "brain_effort": -0.5418649315834045,
+        "gut_reaction": -1.5035828351974487,
+        "memory_encoding": -0.7654961943626404,
+        "social_thinking": -0.8947129249572754,
+        "language_depth": 0.17597068846225739
+      }
+    },
+    {
+      "t": 116.0,
+      "values": {
+        "personal_resonance": -0.6926596760749817,
+        "attention": -2.520380973815918,
+        "brain_effort": -0.507350504398346,
+        "gut_reaction": -1.5157886743545532,
+        "memory_encoding": -0.3341060280799866,
+        "social_thinking": -0.20845897495746613,
+        "language_depth": 1.2001041173934937
+      }
+    },
+    {
+      "t": 117.0,
+      "values": {
+        "personal_resonance": -0.433491587638855,
+        "attention": -2.3793094158172607,
+        "brain_effort": -0.45988547801971436,
+        "gut_reaction": -1.2330174446105957,
+        "memory_encoding": -0.2549034357070923,
+        "social_thinking": 0.25009748339653015,
+        "language_depth": 1.3335260152816772
+      }
+    },
+    {
+      "t": 118.0,
+      "values": {
+        "personal_resonance": 0.05393175408244133,
+        "attention": -2.0571224689483643,
+        "brain_effort": -0.6693803071975708,
+        "gut_reaction": -0.8815603256225586,
+        "memory_encoding": 0.17333237826824188,
+        "social_thinking": 0.9948772192001343,
+        "language_depth": 2.250725030899048
+      }
+    },
+    {
+      "t": 119.0,
+      "values": {
+        "personal_resonance": 0.3993540406227112,
+        "attention": -1.6182861328125,
+        "brain_effort": -0.6433794498443604,
+        "gut_reaction": -0.7153761982917786,
+        "memory_encoding": 0.7005458474159241,
+        "social_thinking": 1.698392629623413,
+        "language_depth": 3.52148175239563
+      }
+    },
+    {
+      "t": 120.0,
+      "values": {
+        "personal_resonance": 0.5671499967575073,
+        "attention": -1.2539111375808716,
+        "brain_effort": -0.679611325263977,
+        "gut_reaction": -0.8067659735679626,
+        "memory_encoding": 1.01687753200531,
+        "social_thinking": 1.5219465494155884,
+        "language_depth": 3.7479825019836426
+      }
+    },
+    {
+      "t": 121.0,
+      "values": {
+        "personal_resonance": 0.7030313611030579,
+        "attention": -1.2689400911331177,
+        "brain_effort": -0.8479738235473633,
+        "gut_reaction": -1.1843342781066895,
+        "memory_encoding": 1.0517364740371704,
+        "social_thinking": 1.7269625663757324,
+        "language_depth": 4.311254024505615
+      }
+    },
+    {
+      "t": 122.0,
+      "values": {
+        "personal_resonance": 0.9530184864997864,
+        "attention": -0.44979020953178406,
+        "brain_effort": -0.3990371525287628,
+        "gut_reaction": -0.5725128650665283,
+        "memory_encoding": 1.4012820720672607,
+        "social_thinking": 2.0503435134887695,
+        "language_depth": 4.595163822174072
+      }
+    },
+    {
+      "t": 123.0,
+      "values": {
+        "personal_resonance": 1.4297068119049072,
+        "attention": 0.617874801158905,
+        "brain_effort": 0.24498102068901062,
+        "gut_reaction": -0.09009823203086853,
+        "memory_encoding": 1.7482266426086426,
+        "social_thinking": 2.9517953395843506,
+        "language_depth": 4.870485305786133
+      }
+    },
+    {
+      "t": 124.0,
+      "values": {
+        "personal_resonance": 1.3885101079940796,
+        "attention": 1.0254837274551392,
+        "brain_effort": 0.5225028395652771,
+        "gut_reaction": 0.04183771088719368,
+        "memory_encoding": 1.841528296470642,
+        "social_thinking": 2.885117292404175,
+        "language_depth": 4.837343692779541
+      }
+    },
+    {
+      "t": 125.0,
+      "values": {
+        "personal_resonance": 1.4856749773025513,
+        "attention": 1.295161247253418,
+        "brain_effort": 0.7210114002227783,
+        "gut_reaction": 0.5144513249397278,
+        "memory_encoding": 1.7160035371780396,
+        "social_thinking": 3.190347909927368,
+        "language_depth": 4.2939982414245605
+      }
+    },
+    {
+      "t": 126.0,
+      "values": {
+        "personal_resonance": 1.4924583435058594,
+        "attention": 1.4533426761627197,
+        "brain_effort": 1.1034297943115234,
+        "gut_reaction": 0.9059280753135681,
+        "memory_encoding": 1.9089585542678833,
+        "social_thinking": 3.5285511016845703,
+        "language_depth": 4.151050090789795
+      }
+    },
+    {
+      "t": 127.0,
+      "values": {
+        "personal_resonance": 1.5454165935516357,
+        "attention": 1.4569329023361206,
+        "brain_effort": 1.626702070236206,
+        "gut_reaction": 0.970255434513092,
+        "memory_encoding": 2.26404070854187,
+        "social_thinking": 3.366382598876953,
+        "language_depth": 3.838775873184204
+      }
+    },
+    {
+      "t": 128.0,
+      "values": {
+        "personal_resonance": 1.2055745124816895,
+        "attention": 1.3912211656570435,
+        "brain_effort": 1.8903003931045532,
+        "gut_reaction": 1.0275185108184814,
+        "memory_encoding": 2.0221474170684814,
+        "social_thinking": 2.861839532852173,
+        "language_depth": 2.862104892730713
+      }
+    },
+    {
+      "t": 129.0,
+      "values": {
+        "personal_resonance": 1.14071786403656,
+        "attention": 1.3333258628845215,
+        "brain_effort": 2.319887399673462,
+        "gut_reaction": 1.2684352397918701,
+        "memory_encoding": 2.20473051071167,
+        "social_thinking": 2.9767255783081055,
+        "language_depth": 2.8798434734344482
+      }
+    },
+    {
+      "t": 130.0,
+      "values": {
+        "personal_resonance": 1.521301031112671,
+        "attention": 1.2508771419525146,
+        "brain_effort": 2.368868589401245,
+        "gut_reaction": 1.2067543268203735,
+        "memory_encoding": 2.190487861633301,
+        "social_thinking": 3.55167818069458,
+        "language_depth": 2.8791584968566895
+      }
+    },
+    {
+      "t": 131.0,
+      "values": {
+        "personal_resonance": 1.7108023166656494,
+        "attention": 1.272570252418518,
+        "brain_effort": 2.3487493991851807,
+        "gut_reaction": 0.8877050280570984,
+        "memory_encoding": 2.4872612953186035,
+        "social_thinking": 3.6684978008270264,
+        "language_depth": 3.458282709121704
+      }
+    },
+    {
+      "t": 132.0,
+      "values": {
+        "personal_resonance": 1.9677516222000122,
+        "attention": 1.4957576990127563,
+        "brain_effort": 2.582864284515381,
+        "gut_reaction": 0.9431169033050537,
+        "memory_encoding": 2.9266979694366455,
+        "social_thinking": 3.7669827938079834,
+        "language_depth": 3.867109537124634
+      }
+    },
+    {
+      "t": 133.0,
+      "values": {
+        "personal_resonance": 2.1374359130859375,
+        "attention": 1.9236645698547363,
+        "brain_effort": 2.237654209136963,
+        "gut_reaction": 0.7967257499694824,
+        "memory_encoding": 2.9704842567443848,
+        "social_thinking": 4.171590805053711,
+        "language_depth": 4.513152599334717
+      }
+    },
+    {
+      "t": 134.0,
+      "values": {
+        "personal_resonance": 2.1581528186798096,
+        "attention": 1.9788981676101685,
+        "brain_effort": 2.241807699203491,
+        "gut_reaction": 1.0201371908187866,
+        "memory_encoding": 3.0355119705200195,
+        "social_thinking": 4.570093631744385,
+        "language_depth": 5.088159561157227
+      }
+    },
+    {
+      "t": 135.0,
+      "values": {
+        "personal_resonance": 2.0599076747894287,
+        "attention": 2.398991823196411,
+        "brain_effort": 2.3756275177001953,
+        "gut_reaction": 1.2306978702545166,
+        "memory_encoding": 3.1888020038604736,
+        "social_thinking": 4.304923057556152,
+        "language_depth": 5.306755542755127
+      }
+    },
+    {
+      "t": 136.0,
+      "values": {
+        "personal_resonance": 1.9942041635513306,
+        "attention": 2.6462790966033936,
+        "brain_effort": 2.4554057121276855,
+        "gut_reaction": 1.574212670326233,
+        "memory_encoding": 2.977363109588623,
+        "social_thinking": 4.183792591094971,
+        "language_depth": 4.783523082733154
+      }
+    },
+    {
+      "t": 137.0,
+      "values": {
+        "personal_resonance": 2.007495880126953,
+        "attention": 3.1071786880493164,
+        "brain_effort": 2.6284849643707275,
+        "gut_reaction": 1.7394624948501587,
+        "memory_encoding": 3.230853319168091,
+        "social_thinking": 4.378840446472168,
+        "language_depth": 5.032048225402832
+      }
+    },
+    {
+      "t": 138.0,
+      "values": {
+        "personal_resonance": 1.9336398839950562,
+        "attention": 2.7969095706939697,
+        "brain_effort": 2.8390660285949707,
+        "gut_reaction": 1.1641513109207153,
+        "memory_encoding": 3.270185708999634,
+        "social_thinking": 3.6588499546051025,
+        "language_depth": 4.790867328643799
+      }
+    },
+    {
+      "t": 139.0,
+      "values": {
+        "personal_resonance": 1.7047115564346313,
+        "attention": 2.8923375606536865,
+        "brain_effort": 2.5828211307525635,
+        "gut_reaction": 0.9172641038894653,
+        "memory_encoding": 3.3351786136627197,
+        "social_thinking": 3.86135196685791,
+        "language_depth": 5.0989227294921875
+      }
+    },
+    {
+      "t": 140.0,
+      "values": {
+        "personal_resonance": 1.7491540908813477,
+        "attention": 2.746345281600952,
+        "brain_effort": 3.0090339183807373,
+        "gut_reaction": 1.3767261505126953,
+        "memory_encoding": 3.619817018508911,
+        "social_thinking": 3.8995699882507324,
+        "language_depth": 5.314406871795654
+      }
+    },
+    {
+      "t": 141.0,
+      "values": {
+        "personal_resonance": 1.37515389919281,
+        "attention": 1.7821879386901855,
+        "brain_effort": 2.0547258853912354,
+        "gut_reaction": 0.988131046295166,
+        "memory_encoding": 3.146726608276367,
+        "social_thinking": 3.3620994091033936,
+        "language_depth": 4.676901340484619
+      }
+    },
+    {
+      "t": 142.0,
+      "values": {
+        "personal_resonance": 1.4631755352020264,
+        "attention": 1.6898250579833984,
+        "brain_effort": 2.0182065963745117,
+        "gut_reaction": 1.362282156944275,
+        "memory_encoding": 3.04045033454895,
+        "social_thinking": 3.484574794769287,
+        "language_depth": 4.360973834991455
+      }
+    },
+    {
+      "t": 143.0,
+      "values": {
+        "personal_resonance": 1.6528024673461914,
+        "attention": 1.1305397748947144,
+        "brain_effort": 1.594234824180603,
+        "gut_reaction": 1.5079762935638428,
+        "memory_encoding": 2.5918750762939453,
+        "social_thinking": 3.4030520915985107,
+        "language_depth": 3.7629239559173584
+      }
+    },
+    {
+      "t": 144.0,
+      "values": {
+        "personal_resonance": 1.7665404081344604,
+        "attention": 1.7695519924163818,
+        "brain_effort": 1.843005895614624,
+        "gut_reaction": 1.996925711631775,
+        "memory_encoding": 2.4102776050567627,
+        "social_thinking": 3.3955986499786377,
+        "language_depth": 3.4384398460388184
+      }
+    },
+    {
+      "t": 145.0,
+      "values": {
+        "personal_resonance": 2.1116132736206055,
+        "attention": 1.8475303649902344,
+        "brain_effort": 1.90066659450531,
+        "gut_reaction": 2.0575754642486572,
+        "memory_encoding": 1.7107089757919312,
+        "social_thinking": 3.2203962802886963,
+        "language_depth": 2.1563076972961426
+      }
+    },
+    {
+      "t": 146.0,
+      "values": {
+        "personal_resonance": 2.0896668434143066,
+        "attention": 1.902510643005371,
+        "brain_effort": 1.4752357006072998,
+        "gut_reaction": 2.048837900161743,
+        "memory_encoding": 1.4088430404663086,
+        "social_thinking": 3.2234420776367188,
+        "language_depth": 2.2914822101593018
+      }
+    },
+    {
+      "t": 147.0,
+      "values": {
+        "personal_resonance": 1.9753005504608154,
+        "attention": 2.1844491958618164,
+        "brain_effort": 1.5001442432403564,
+        "gut_reaction": 1.7719889879226685,
+        "memory_encoding": 1.0957390069961548,
+        "social_thinking": 2.8126981258392334,
+        "language_depth": 1.8241063356399536
+      }
+    },
+    {
+      "t": 148.0,
+      "values": {
+        "personal_resonance": 1.8452448844909668,
+        "attention": 2.2322335243225098,
+        "brain_effort": 1.4023823738098145,
+        "gut_reaction": 1.3496510982513428,
+        "memory_encoding": 0.9157652258872986,
+        "social_thinking": 1.9928979873657227,
+        "language_depth": 1.1118884086608887
+      }
+    },
+    {
+      "t": 149.0,
+      "values": {
+        "personal_resonance": 1.6425271034240723,
+        "attention": 1.789272665977478,
+        "brain_effort": 1.2432869672775269,
+        "gut_reaction": 1.09357488155365,
+        "memory_encoding": 0.9782674312591553,
+        "social_thinking": 1.8889895677566528,
+        "language_depth": 1.240584135055542
+      }
+    },
+    {
+      "t": 150.0,
+      "values": {
+        "personal_resonance": 1.3050025701522827,
+        "attention": 0.9365812540054321,
+        "brain_effort": 0.6205925941467285,
+        "gut_reaction": 0.5589473247528076,
+        "memory_encoding": 0.7183634042739868,
+        "social_thinking": 1.503840684890747,
+        "language_depth": 0.8588405251502991
+      }
+    },
+    {
+      "t": 151.0,
+      "values": {
+        "personal_resonance": 0.9109680652618408,
+        "attention": 0.15243513882160187,
+        "brain_effort": 0.3108874559402466,
+        "gut_reaction": -0.03924467787146568,
+        "memory_encoding": 0.782764196395874,
+        "social_thinking": 1.0835058689117432,
+        "language_depth": 0.7795593738555908
+      }
+    },
+    {
+      "t": 152.0,
+      "values": {
+        "personal_resonance": 0.6302705407142639,
+        "attention": -0.45495378971099854,
+        "brain_effort": 0.10029447078704834,
+        "gut_reaction": -0.33402904868125916,
+        "memory_encoding": 0.7698796987533569,
+        "social_thinking": 0.7416957020759583,
+        "language_depth": 1.0084350109100342
+      }
+    },
+    {
+      "t": 153.0,
+      "values": {
+        "personal_resonance": 0.690531849861145,
+        "attention": -0.6629325151443481,
+        "brain_effort": 0.08915673941373825,
+        "gut_reaction": -0.21206921339035034,
+        "memory_encoding": 1.0651652812957764,
+        "social_thinking": 0.8462007641792297,
+        "language_depth": 1.7882261276245117
+      }
+    },
+    {
+      "t": 154.0,
+      "values": {
+        "personal_resonance": 0.6310602426528931,
+        "attention": -0.8256933689117432,
+        "brain_effort": -0.11619217693805695,
+        "gut_reaction": -0.3146112263202667,
+        "memory_encoding": 1.0356651544570923,
+        "social_thinking": 1.0707170963287354,
+        "language_depth": 2.1309144496917725
+      }
+    },
+    {
+      "t": 155.0,
+      "values": {
+        "personal_resonance": 0.42092376947402954,
+        "attention": -0.3919369876384735,
+        "brain_effort": 0.22015024721622467,
+        "gut_reaction": -0.040586620569229126,
+        "memory_encoding": 1.2574292421340942,
+        "social_thinking": 0.8043428063392639,
+        "language_depth": 2.2581191062927246
+      }
+    },
+    {
+      "t": 156.0,
+      "values": {
+        "personal_resonance": 0.38956716656684875,
+        "attention": -0.692945659160614,
+        "brain_effort": -0.009521955624222755,
+        "gut_reaction": -0.3260008692741394,
+        "memory_encoding": 0.9331665635108948,
+        "social_thinking": 0.6712946891784668,
+        "language_depth": 2.0707192420959473
+      }
+    },
+    {
+      "t": 157.0,
+      "values": {
+        "personal_resonance": 0.40870487689971924,
+        "attention": -0.38514387607574463,
+        "brain_effort": 0.19611002504825592,
+        "gut_reaction": -0.3099510967731476,
+        "memory_encoding": 1.0685759782791138,
+        "social_thinking": 1.059801697731018,
+        "language_depth": 2.4148550033569336
+      }
+    },
+    {
+      "t": 158.0,
+      "values": {
+        "personal_resonance": 0.3489379584789276,
+        "attention": -0.7547546625137329,
+        "brain_effort": -0.14404363930225372,
+        "gut_reaction": -0.3328811824321747,
+        "memory_encoding": 1.3243342638015747,
+        "social_thinking": 0.9971737861633301,
+        "language_depth": 2.876225233078003
+      }
+    },
+    {
+      "t": 159.0,
+      "values": {
+        "personal_resonance": 0.17111419141292572,
+        "attention": -0.6875379085540771,
+        "brain_effort": -0.14189530909061432,
+        "gut_reaction": -0.3602552115917206,
+        "memory_encoding": 1.0961772203445435,
+        "social_thinking": 0.47209182381629944,
+        "language_depth": 2.374131917953491
+      }
+    },
+    {
+      "t": 160.0,
+      "values": {
+        "personal_resonance": 0.1429939717054367,
+        "attention": -1.0028194189071655,
+        "brain_effort": -0.19026587903499603,
+        "gut_reaction": -0.44724518060684204,
+        "memory_encoding": 1.114563226699829,
+        "social_thinking": 0.23637104034423828,
+        "language_depth": 2.299609661102295
+      }
+    },
+    {
+      "t": 161.0,
+      "values": {
+        "personal_resonance": 0.06525910645723343,
+        "attention": -1.0760184526443481,
+        "brain_effort": -0.5042715072631836,
+        "gut_reaction": -0.27962225675582886,
+        "memory_encoding": 0.6385967135429382,
+        "social_thinking": -0.27804678678512573,
+        "language_depth": 1.4344922304153442
+      }
+    },
+    {
+      "t": 162.0,
+      "values": {
+        "personal_resonance": -0.15683987736701965,
+        "attention": -1.254024863243103,
+        "brain_effort": -0.7290282845497131,
+        "gut_reaction": -0.15448133647441864,
+        "memory_encoding": 0.15935085713863373,
+        "social_thinking": -0.6404073238372803,
+        "language_depth": 0.9532051682472229
+      }
+    },
+    {
+      "t": 163.0,
+      "values": {
+        "personal_resonance": -0.14180967211723328,
+        "attention": -1.0054177045822144,
+        "brain_effort": -0.6521135568618774,
+        "gut_reaction": 0.010232929140329361,
+        "memory_encoding": 0.09256209433078766,
+        "social_thinking": -0.669492244720459,
+        "language_depth": 0.8260625004768372
+      }
+    },
+    {
+      "t": 164.0,
+      "values": {
+        "personal_resonance": -0.22157567739486694,
+        "attention": -0.8784263134002686,
+        "brain_effort": -0.6468017101287842,
+        "gut_reaction": -0.11559449136257172,
+        "memory_encoding": -0.05989446863532066,
+        "social_thinking": -0.3225727677345276,
+        "language_depth": 0.9779723882675171
+      }
+    },
+    {
+      "t": 165.0,
+      "values": {
+        "personal_resonance": -0.11989644914865494,
+        "attention": -0.9455323219299316,
+        "brain_effort": -0.6511921286582947,
+        "gut_reaction": 0.15293502807617188,
+        "memory_encoding": -0.2241591513156891,
+        "social_thinking": -0.4206891655921936,
+        "language_depth": 0.6115224361419678
+      }
+    },
+    {
+      "t": 166.0,
+      "values": {
+        "personal_resonance": -0.12315122038125992,
+        "attention": -1.2224924564361572,
+        "brain_effort": -0.9710773825645447,
+        "gut_reaction": 0.06238146126270294,
+        "memory_encoding": -0.648306131362915,
+        "social_thinking": -0.08660030364990234,
+        "language_depth": 0.27193376421928406
+      }
+    },
+    {
+      "t": 167.0,
+      "values": {
+        "personal_resonance": -0.004409726709127426,
+        "attention": -1.2748390436172485,
+        "brain_effort": -1.1306792497634888,
+        "gut_reaction": -0.004204982426017523,
+        "memory_encoding": -0.3935757875442505,
+        "social_thinking": 0.2762279808521271,
+        "language_depth": 0.7722318172454834
+      }
+    },
+    {
+      "t": 168.0,
+      "values": {
+        "personal_resonance": 0.09574507176876068,
+        "attention": -1.226881504058838,
+        "brain_effort": -1.1966261863708496,
+        "gut_reaction": 0.020311346277594566,
+        "memory_encoding": -0.26779431104660034,
+        "social_thinking": 0.6123273372650146,
+        "language_depth": 1.0579984188079834
+      }
+    },
+    {
+      "t": 169.0,
+      "values": {
+        "personal_resonance": 0.23968760669231415,
+        "attention": -1.3582684993743896,
+        "brain_effort": -1.186907410621643,
+        "gut_reaction": 0.04457947239279747,
+        "memory_encoding": 0.11772296577692032,
+        "social_thinking": 0.8323000073432922,
+        "language_depth": 1.617216944694519
+      }
+    },
+    {
+      "t": 170.0,
+      "values": {
+        "personal_resonance": 0.3444467782974243,
+        "attention": -1.190148115158081,
+        "brain_effort": -1.0085731744766235,
+        "gut_reaction": 0.034516531974077225,
+        "memory_encoding": 0.49445948004722595,
+        "social_thinking": 1.266213297843933,
+        "language_depth": 1.94083571434021
+      }
+    },
+    {
+      "t": 171.0,
+      "values": {
+        "personal_resonance": 0.4730871617794037,
+        "attention": -1.1187536716461182,
+        "brain_effort": -0.9509005546569824,
+        "gut_reaction": 0.10350467264652252,
+        "memory_encoding": 0.6130439043045044,
+        "social_thinking": 1.6098003387451172,
+        "language_depth": 2.264761447906494
+      }
+    },
+    {
+      "t": 172.0,
+      "values": {
+        "personal_resonance": 0.4887886941432953,
+        "attention": -0.8400376439094543,
+        "brain_effort": -0.5990772247314453,
+        "gut_reaction": 0.3103982210159302,
+        "memory_encoding": 0.6516983509063721,
+        "social_thinking": 1.6594654321670532,
+        "language_depth": 1.9609529972076416
+      }
+    },
+    {
+      "t": 173.0,
+      "values": {
+        "personal_resonance": 0.7278940677642822,
+        "attention": -0.23086297512054443,
+        "brain_effort": -0.11179821193218231,
+        "gut_reaction": 0.7772466540336609,
+        "memory_encoding": 1.1789240837097168,
+        "social_thinking": 2.285459041595459,
+        "language_depth": 2.7860071659088135
+      }
+    },
+    {
+      "t": 174.0,
+      "values": {
+        "personal_resonance": 0.7007724046707153,
+        "attention": -0.34099388122558594,
+        "brain_effort": -0.18733210861682892,
+        "gut_reaction": 0.7415584325790405,
+        "memory_encoding": 0.6629815101623535,
+        "social_thinking": 2.16689133644104,
+        "language_depth": 1.9490967988967896
+      }
+    },
+    {
+      "t": 175.0,
+      "values": {
+        "personal_resonance": 0.8191390037536621,
+        "attention": -0.2629353404045105,
+        "brain_effort": 0.01802629604935646,
+        "gut_reaction": 0.7216733694076538,
+        "memory_encoding": 0.6229693293571472,
+        "social_thinking": 2.3554635047912598,
+        "language_depth": 1.8819462060928345
+      }
+    },
+    {
+      "t": 176.0,
+      "values": {
+        "personal_resonance": 0.9492973685264587,
+        "attention": -0.3012080192565918,
+        "brain_effort": 0.09499455243349075,
+        "gut_reaction": 0.8749775886535645,
+        "memory_encoding": 0.6512668132781982,
+        "social_thinking": 2.6344404220581055,
+        "language_depth": 2.0678372383117676
+      }
+    },
+    {
+      "t": 177.0,
+      "values": {
+        "personal_resonance": 1.0564240217208862,
+        "attention": 0.17367975413799286,
+        "brain_effort": 0.2847073972225189,
+        "gut_reaction": 1.210390329360962,
+        "memory_encoding": 0.35714301466941833,
+        "social_thinking": 2.6178698539733887,
+        "language_depth": 1.404390573501587
+      }
+    },
+    {
+      "t": 178.0,
+      "values": {
+        "personal_resonance": 1.3412872552871704,
+        "attention": 0.501047670841217,
+        "brain_effort": 0.6025705337524414,
+        "gut_reaction": 1.385513186454773,
+        "memory_encoding": 0.16558605432510376,
+        "social_thinking": 2.9697017669677734,
+        "language_depth": 1.3305516242980957
+      }
+    },
+    {
+      "t": 179.0,
+      "values": {
+        "personal_resonance": 1.2929691076278687,
+        "attention": 0.6486719250679016,
+        "brain_effort": 0.6129449009895325,
+        "gut_reaction": 1.33802330493927,
+        "memory_encoding": -0.00542632769793272,
+        "social_thinking": 2.5600364208221436,
+        "language_depth": 0.929154098033905
+      }
+    },
+    {
+      "t": 180.0,
+      "values": {
+        "personal_resonance": 1.2087514400482178,
+        "attention": 0.5733954310417175,
+        "brain_effort": 0.423373281955719,
+        "gut_reaction": 1.1476507186889648,
+        "memory_encoding": 0.00665054377168417,
+        "social_thinking": 2.4891622066497803,
+        "language_depth": 1.2533761262893677
+      }
+    },
+    {
+      "t": 181.0,
+      "values": {
+        "personal_resonance": 1.1046634912490845,
+        "attention": 0.06783795356750488,
+        "brain_effort": -0.00424984423443675,
+        "gut_reaction": 0.9447837471961975,
+        "memory_encoding": -0.2254292070865631,
+        "social_thinking": 2.2328481674194336,
+        "language_depth": 1.0399996042251587
+      }
+    },
+    {
+      "t": 182.0,
+      "values": {
+        "personal_resonance": 0.9571235179901123,
+        "attention": -0.07329031825065613,
+        "brain_effort": -0.19407013058662415,
+        "gut_reaction": 0.8538739681243896,
+        "memory_encoding": -0.38111579418182373,
+        "social_thinking": 1.9511187076568604,
+        "language_depth": 0.8998340964317322
+      }
+    },
+    {
+      "t": 183.0,
+      "values": {
+        "personal_resonance": 1.0660400390625,
+        "attention": -0.4533671736717224,
+        "brain_effort": -0.3136047124862671,
+        "gut_reaction": 0.7319514155387878,
+        "memory_encoding": -0.4031873643398285,
+        "social_thinking": 2.0152366161346436,
+        "language_depth": 1.1481293439865112
+      }
+    },
+    {
+      "t": 184.0,
+      "values": {
+        "personal_resonance": 0.9191119074821472,
+        "attention": -0.5923320651054382,
+        "brain_effort": -0.7402896285057068,
+        "gut_reaction": 0.34057730436325073,
+        "memory_encoding": -0.5013439059257507,
+        "social_thinking": 1.8058428764343262,
+        "language_depth": 1.421860933303833
+      }
+    },
+    {
+      "t": 185.0,
+      "values": {
+        "personal_resonance": 0.8274057507514954,
+        "attention": -0.5475912690162659,
+        "brain_effort": -0.7385503649711609,
+        "gut_reaction": 0.32192787528038025,
+        "memory_encoding": -0.3588079512119293,
+        "social_thinking": 1.3913567066192627,
+        "language_depth": 1.2727144956588745
+      }
+    },
+    {
+      "t": 186.0,
+      "values": {
+        "personal_resonance": 0.8812363147735596,
+        "attention": -0.4886920750141144,
+        "brain_effort": -0.7889671921730042,
+        "gut_reaction": 0.4606139063835144,
+        "memory_encoding": -0.5164759755134583,
+        "social_thinking": 1.386284351348877,
+        "language_depth": 0.9118834733963013
+      }
+    },
+    {
+      "t": 187.0,
+      "values": {
+        "personal_resonance": 0.4612423777580261,
+        "attention": -0.5751085877418518,
+        "brain_effort": -0.8482723832130432,
+        "gut_reaction": 0.21972385048866272,
+        "memory_encoding": -0.8986376523971558,
+        "social_thinking": 0.6875995397567749,
+        "language_depth": 0.297427237033844
+      }
+    },
+    {
+      "t": 188.0,
+      "values": {
+        "personal_resonance": 0.32883986830711365,
+        "attention": -0.6329426765441895,
+        "brain_effort": -0.9812100529670715,
+        "gut_reaction": 0.09484045207500458,
+        "memory_encoding": -0.6571596264839172,
+        "social_thinking": 0.4012470543384552,
+        "language_depth": 0.6627568006515503
+      }
+    },
+    {
+      "t": 189.0,
+      "values": {
+        "personal_resonance": 0.04833614081144333,
+        "attention": -0.6781934499740601,
+        "brain_effort": -0.9274656176567078,
+        "gut_reaction": -0.02016458846628666,
+        "memory_encoding": -0.6193341612815857,
+        "social_thinking": -0.42615780234336853,
+        "language_depth": 0.4225592315196991
+      }
+    },
+    {
+      "t": 190.0,
+      "values": {
+        "personal_resonance": -0.14788037538528442,
+        "attention": -0.6915481090545654,
+        "brain_effort": -0.979479968547821,
+        "gut_reaction": -0.1668795943260193,
+        "memory_encoding": -0.6431072950363159,
+        "social_thinking": -0.6479088068008423,
+        "language_depth": 0.38948115706443787
+      }
+    },
+    {
+      "t": 191.0,
+      "values": {
+        "personal_resonance": -0.4963324964046478,
+        "attention": -1.114404559135437,
+        "brain_effort": -1.047894835472107,
+        "gut_reaction": -0.5512033700942993,
+        "memory_encoding": -0.34876957535743713,
+        "social_thinking": -1.0152174234390259,
+        "language_depth": 0.9784860014915466
+      }
+    },
+    {
+      "t": 192.0,
+      "values": {
+        "personal_resonance": -0.7078660130500793,
+        "attention": -1.444214940071106,
+        "brain_effort": -1.253177523612976,
+        "gut_reaction": -0.7357979416847229,
+        "memory_encoding": -0.4436571002006531,
+        "social_thinking": -1.2886102199554443,
+        "language_depth": 0.6638044714927673
+      }
+    },
+    {
+      "t": 193.0,
+      "values": {
+        "personal_resonance": -0.8230396509170532,
+        "attention": -1.3829413652420044,
+        "brain_effort": -1.0725687742233276,
+        "gut_reaction": -0.7050413489341736,
+        "memory_encoding": -0.6283586025238037,
+        "social_thinking": -1.501022219657898,
+        "language_depth": -0.1405976265668869
+      }
+    },
+    {
+      "t": 194.0,
+      "values": {
+        "personal_resonance": -0.7833550572395325,
+        "attention": -1.3614140748977661,
+        "brain_effort": -1.027703881263733,
+        "gut_reaction": -0.7150350213050842,
+        "memory_encoding": -0.7799434661865234,
+        "social_thinking": -1.6075446605682373,
+        "language_depth": -0.4730472266674042
+      }
+    },
+    {
+      "t": 195.0,
+      "values": {
+        "personal_resonance": -0.684120237827301,
+        "attention": -0.9150198101997375,
+        "brain_effort": -0.6635518670082092,
+        "gut_reaction": -0.4606444239616394,
+        "memory_encoding": -0.6865777969360352,
+        "social_thinking": -1.5851527452468872,
+        "language_depth": -0.6891416907310486
+      }
+    },
+    {
+      "t": 196.0,
+      "values": {
+        "personal_resonance": -0.5600754022598267,
+        "attention": -0.8242405652999878,
+        "brain_effort": -0.5609068274497986,
+        "gut_reaction": -0.3453289866447449,
+        "memory_encoding": -0.6348481178283691,
+        "social_thinking": -1.4421331882476807,
+        "language_depth": -0.49519291520118713
+      }
+    },
+    {
+      "t": 197.0,
+      "values": {
+        "personal_resonance": -0.7360538840293884,
+        "attention": -1.3403265476226807,
+        "brain_effort": -0.51912921667099,
+        "gut_reaction": -0.5126628279685974,
+        "memory_encoding": -0.4601882994174957,
+        "social_thinking": -1.4859453439712524,
+        "language_depth": -0.1517508178949356
+      }
+    },
+    {
+      "t": 198.0,
+      "values": {
+        "personal_resonance": -0.8282665014266968,
+        "attention": -1.6718199253082275,
+        "brain_effort": -0.5724179744720459,
+        "gut_reaction": -1.0621381998062134,
+        "memory_encoding": -0.5797854661941528,
+        "social_thinking": -1.3258236646652222,
+        "language_depth": -0.016758253797888756
+      }
+    },
+    {
+      "t": 199.0,
+      "values": {
+        "personal_resonance": -0.7961675524711609,
+        "attention": -1.7714295387268066,
+        "brain_effort": -0.46617770195007324,
+        "gut_reaction": -1.0664483308792114,
+        "memory_encoding": -0.5494176149368286,
+        "social_thinking": -1.2150166034698486,
+        "language_depth": 0.21655409038066864
+      }
+    },
+    {
+      "t": 200.0,
+      "values": {
+        "personal_resonance": -0.6072825193405151,
+        "attention": -1.35011887550354,
+        "brain_effort": -0.4899124503135681,
+        "gut_reaction": -1.2532150745391846,
+        "memory_encoding": 0.09599393606185913,
+        "social_thinking": -0.7088502049446106,
+        "language_depth": 1.7378517389297485
+      }
+    },
+    {
+      "t": 201.0,
+      "values": {
+        "personal_resonance": -0.4454997181892395,
+        "attention": -1.5529946088790894,
+        "brain_effort": -0.6103434562683105,
+        "gut_reaction": -1.1201705932617188,
+        "memory_encoding": 0.2258407324552536,
+        "social_thinking": -0.590254545211792,
+        "language_depth": 1.9467295408248901
+      }
+    },
+    {
+      "t": 202.0,
+      "values": {
+        "personal_resonance": -0.48593267798423767,
+        "attention": -1.4938956499099731,
+        "brain_effort": -0.41828417778015137,
+        "gut_reaction": -0.8972705602645874,
+        "memory_encoding": 0.223770871758461,
+        "social_thinking": -0.5450041890144348,
+        "language_depth": 1.8380175828933716
+      }
+    },
+    {
+      "t": 203.0,
+      "values": {
+        "personal_resonance": 0.02572355605661869,
+        "attention": -1.1271085739135742,
+        "brain_effort": 0.06876524537801743,
+        "gut_reaction": -0.41397106647491455,
+        "memory_encoding": 0.8733316659927368,
+        "social_thinking": -0.17606103420257568,
+        "language_depth": 2.447026014328003
+      }
+    },
+    {
+      "t": 204.0,
+      "values": {
+        "personal_resonance": -0.013390439562499523,
+        "attention": -1.0963354110717773,
+        "brain_effort": 0.057581525295972824,
+        "gut_reaction": -0.5999056100845337,
+        "memory_encoding": 0.8815603256225586,
+        "social_thinking": -0.0866912305355072,
+        "language_depth": 2.260207414627075
+      }
+    },
+    {
+      "t": 205.0,
+      "values": {
+        "personal_resonance": 0.01518344134092331,
+        "attention": -1.048757791519165,
+        "brain_effort": 0.3795630931854248,
+        "gut_reaction": -0.4923929274082184,
+        "memory_encoding": 1.220869779586792,
+        "social_thinking": 0.0895753875374794,
+        "language_depth": 2.6096444129943848
+      }
+    },
+    {
+      "t": 206.0,
+      "values": {
+        "personal_resonance": -0.018601905554533005,
+        "attention": -1.1367353200912476,
+        "brain_effort": 0.3773631155490875,
+        "gut_reaction": -0.7059918642044067,
+        "memory_encoding": 1.4037644863128662,
+        "social_thinking": 0.16349215805530548,
+        "language_depth": 2.9247803688049316
+      }
+    },
+    {
+      "t": 207.0,
+      "values": {
+        "personal_resonance": 0.16752907633781433,
+        "attention": -0.9825664162635803,
+        "brain_effort": 0.493009090423584,
+        "gut_reaction": -0.41871029138565063,
+        "memory_encoding": 1.4315059185028076,
+        "social_thinking": 0.3049464523792267,
+        "language_depth": 2.844780445098877
+      }
+    },
+    {
+      "t": 208.0,
+      "values": {
+        "personal_resonance": 0.3379383087158203,
+        "attention": -0.7846475839614868,
+        "brain_effort": 0.5902550220489502,
+        "gut_reaction": -0.17129068076610565,
+        "memory_encoding": 1.1952747106552124,
+        "social_thinking": 0.5919948816299438,
+        "language_depth": 2.704091787338257
+      }
+    },
+    {
+      "t": 209.0,
+      "values": {
+        "personal_resonance": 0.5054813027381897,
+        "attention": -0.12058405578136444,
+        "brain_effort": 0.9775140881538391,
+        "gut_reaction": 0.22657282650470734,
+        "memory_encoding": 1.5682145357131958,
+        "social_thinking": 0.9583381414413452,
+        "language_depth": 3.343723773956299
+      }
+    },
+    {
+      "t": 210.0,
+      "values": {
+        "personal_resonance": 0.7728020548820496,
+        "attention": 0.1984778791666031,
+        "brain_effort": 1.161142349243164,
+        "gut_reaction": 0.5594003796577454,
+        "memory_encoding": 1.532508373260498,
+        "social_thinking": 1.550912857055664,
+        "language_depth": 3.4301161766052246
+      }
+    },
+    {
+      "t": 211.0,
+      "values": {
+        "personal_resonance": 0.6940119862556458,
+        "attention": 0.41850894689559937,
+        "brain_effort": 0.930649995803833,
+        "gut_reaction": 0.3221505582332611,
+        "memory_encoding": 1.3670382499694824,
+        "social_thinking": 1.2494488954544067,
+        "language_depth": 3.0514237880706787
+      }
+    },
+    {
+      "t": 212.0,
+      "values": {
+        "personal_resonance": 0.7268695831298828,
+        "attention": 0.6999302506446838,
+        "brain_effort": 1.0972455739974976,
+        "gut_reaction": 0.5077081918716431,
+        "memory_encoding": 1.3743529319763184,
+        "social_thinking": 1.4737725257873535,
+        "language_depth": 2.823262929916382
+      }
+    },
+    {
+      "t": 213.0,
+      "values": {
+        "personal_resonance": 1.0892651081085205,
+        "attention": 1.391421914100647,
+        "brain_effort": 1.0871320962905884,
+        "gut_reaction": 0.5829084515571594,
+        "memory_encoding": 0.8692339658737183,
+        "social_thinking": 2.04453706741333,
+        "language_depth": 2.1885883808135986
+      }
+    },
+    {
+      "t": 214.0,
+      "values": {
+        "personal_resonance": 0.8907740116119385,
+        "attention": 1.3591623306274414,
+        "brain_effort": 1.098305106163025,
+        "gut_reaction": 0.421893447637558,
+        "memory_encoding": 1.0943251848220825,
+        "social_thinking": 1.6339777708053589,
+        "language_depth": 2.4033656120300293
+      }
+    },
+    {
+      "t": 215.0,
+      "values": {
+        "personal_resonance": 0.8250792622566223,
+        "attention": 1.3333778381347656,
+        "brain_effort": 1.0533447265625,
+        "gut_reaction": 0.13493147492408752,
+        "memory_encoding": 1.2043507099151611,
+        "social_thinking": 1.4828811883926392,
+        "language_depth": 2.2783570289611816
+      }
+    },
+    {
+      "t": 216.0,
+      "values": {
+        "personal_resonance": 0.8747745156288147,
+        "attention": 1.5566340684890747,
+        "brain_effort": 1.0084694623947144,
+        "gut_reaction": 0.1595582365989685,
+        "memory_encoding": 1.0036516189575195,
+        "social_thinking": 1.6668155193328857,
+        "language_depth": 1.8851804733276367
+      }
+    },
+    {
+      "t": 217.0,
+      "values": {
+        "personal_resonance": 0.5713728070259094,
+        "attention": 1.7997478246688843,
+        "brain_effort": 1.0838125944137573,
+        "gut_reaction": 0.3043614327907562,
+        "memory_encoding": 0.893555760383606,
+        "social_thinking": 0.9438323974609375,
+        "language_depth": 1.3348519802093506
+      }
+    },
+    {
+      "t": 218.0,
+      "values": {
+        "personal_resonance": 0.34788793325424194,
+        "attention": 1.3434998989105225,
+        "brain_effort": 0.8573702573776245,
+        "gut_reaction": 0.1295851469039917,
+        "memory_encoding": 0.7005321383476257,
+        "social_thinking": 0.5755702257156372,
+        "language_depth": 1.0863525867462158
+      }
+    },
+    {
+      "t": 219.0,
+      "values": {
+        "personal_resonance": -0.2905040383338928,
+        "attention": 1.0768829584121704,
+        "brain_effort": 0.3352062404155731,
+        "gut_reaction": -0.3656098246574402,
+        "memory_encoding": 0.11032351851463318,
+        "social_thinking": 0.0006324588321149349,
+        "language_depth": 0.5137258172035217
+      }
+    },
+    {
+      "t": 220.0,
+      "values": {
+        "personal_resonance": -0.12238455563783646,
+        "attention": 1.3056660890579224,
+        "brain_effort": 0.5001651644706726,
+        "gut_reaction": -0.19092269241809845,
+        "memory_encoding": 0.4256118834018707,
+        "social_thinking": 0.07131166756153107,
+        "language_depth": 0.6219119429588318
+      }
+    },
+    {
+      "t": 221.0,
+      "values": {
+        "personal_resonance": -0.6144556403160095,
+        "attention": 0.7913567423820496,
+        "brain_effort": 0.15470179915428162,
+        "gut_reaction": -0.7345648407936096,
+        "memory_encoding": 0.28524428606033325,
+        "social_thinking": -0.5424506664276123,
+        "language_depth": 0.6668380498886108
+      }
+    },
+    {
+      "t": 222.0,
+      "values": {
+        "personal_resonance": -0.5076390504837036,
+        "attention": 0.7142184972763062,
+        "brain_effort": 0.026565540581941605,
+        "gut_reaction": -0.4618600308895111,
+        "memory_encoding": 0.41677263379096985,
+        "social_thinking": -0.3934909999370575,
+        "language_depth": 0.6592196822166443
+      }
+    },
+    {
+      "t": 223.0,
+      "values": {
+        "personal_resonance": -0.6250626444816589,
+        "attention": 0.5146134495735168,
+        "brain_effort": -0.12096194177865982,
+        "gut_reaction": -0.48879340291023254,
+        "memory_encoding": 0.27609002590179443,
+        "social_thinking": -0.7117140889167786,
+        "language_depth": 0.3914315402507782
+      }
+    },
+    {
+      "t": 224.0,
+      "values": {
+        "personal_resonance": -0.47937050461769104,
+        "attention": 0.32074496150016785,
+        "brain_effort": -0.5518496632575989,
+        "gut_reaction": -0.5069494843482971,
+        "memory_encoding": -0.19014251232147217,
+        "social_thinking": -0.45383012294769287,
+        "language_depth": 0.12523487210273743
+      }
+    },
+    {
+      "t": 225.0,
+      "values": {
+        "personal_resonance": -0.2608918249607086,
+        "attention": 0.4371320903301239,
+        "brain_effort": -0.37796854972839355,
+        "gut_reaction": -0.049257393926382065,
+        "memory_encoding": -0.5089550614356995,
+        "social_thinking": -0.4377858638763428,
+        "language_depth": -0.29921025037765503
+      }
+    },
+    {
+      "t": 226.0,
+      "values": {
+        "personal_resonance": -0.12674428522586823,
+        "attention": 0.8881810307502747,
+        "brain_effort": -0.16320259869098663,
+        "gut_reaction": 0.1687028706073761,
+        "memory_encoding": -0.01895223744213581,
+        "social_thinking": 0.15006889402866364,
+        "language_depth": 0.8089969158172607
+      }
+    },
+    {
+      "t": 227.0,
+      "values": {
+        "personal_resonance": -0.1688874512910843,
+        "attention": 0.23762238025665283,
+        "brain_effort": -0.4338281452655792,
+        "gut_reaction": -0.1808788776397705,
+        "memory_encoding": -0.030782425776124,
+        "social_thinking": -0.1202048733830452,
+        "language_depth": 0.8462430834770203
+      }
+    },
+    {
+      "t": 228.0,
+      "values": {
+        "personal_resonance": -0.3505963385105133,
+        "attention": -0.0379452109336853,
+        "brain_effort": -0.4981190860271454,
+        "gut_reaction": -0.4054603576660156,
+        "memory_encoding": -0.22711344063282013,
+        "social_thinking": -0.5258983969688416,
+        "language_depth": 0.652657151222229
+      }
+    },
+    {
+      "t": 229.0,
+      "values": {
+        "personal_resonance": -0.2622322738170624,
+        "attention": -0.03866172209382057,
+        "brain_effort": -0.459382563829422,
+        "gut_reaction": -0.3887553811073303,
+        "memory_encoding": -0.2399149388074875,
+        "social_thinking": -0.38976794481277466,
+        "language_depth": 0.5218809247016907
+      }
+    },
+    {
+      "t": 230.0,
+      "values": {
+        "personal_resonance": -0.5221216082572937,
+        "attention": -0.7783493399620056,
+        "brain_effort": -0.7136719822883606,
+        "gut_reaction": -0.68181973695755,
+        "memory_encoding": -0.06781662255525589,
+        "social_thinking": -0.5203763842582703,
+        "language_depth": 0.8504108190536499
+      }
+    },
+    {
+      "t": 231.0,
+      "values": {
+        "personal_resonance": -0.7446069121360779,
+        "attention": -1.2189620733261108,
+        "brain_effort": -0.8780218958854675,
+        "gut_reaction": -1.0053181648254395,
+        "memory_encoding": -0.20185253024101257,
+        "social_thinking": -1.1799802780151367,
+        "language_depth": 0.4532342553138733
+      }
+    },
+    {
+      "t": 232.0,
+      "values": {
+        "personal_resonance": -0.6933180093765259,
+        "attention": -0.9247106909751892,
+        "brain_effort": -0.5155717730522156,
+        "gut_reaction": -0.8773754239082336,
+        "memory_encoding": 0.145111545920372,
+        "social_thinking": -0.9639374017715454,
+        "language_depth": 0.7655107975006104
+      }
+    },
+    {
+      "t": 233.0,
+      "values": {
+        "personal_resonance": -0.8916175961494446,
+        "attention": -1.2322685718536377,
+        "brain_effort": -0.4192308187484741,
+        "gut_reaction": -0.9880915880203247,
+        "memory_encoding": 0.01710553467273712,
+        "social_thinking": -1.1234334707260132,
+        "language_depth": 0.7432513236999512
+      }
+    },
+    {
+      "t": 234.0,
+      "values": {
+        "personal_resonance": -0.8255475163459778,
+        "attention": -1.3001298904418945,
+        "brain_effort": -0.37520602345466614,
+        "gut_reaction": -0.9978998303413391,
+        "memory_encoding": 0.052169352769851685,
+        "social_thinking": -1.1882747411727905,
+        "language_depth": 0.8228522539138794
+      }
+    },
+    {
+      "t": 235.0,
+      "values": {
+        "personal_resonance": -0.6615887880325317,
+        "attention": -1.6975963115692139,
+        "brain_effort": -0.24273894727230072,
+        "gut_reaction": -1.0611261129379272,
+        "memory_encoding": -0.1010248214006424,
+        "social_thinking": -0.7260361909866333,
+        "language_depth": 1.2251769304275513
+      }
+    },
+    {
+      "t": 236.0,
+      "values": {
+        "personal_resonance": -0.6155490875244141,
+        "attention": -1.7524654865264893,
+        "brain_effort": -0.17125095427036285,
+        "gut_reaction": -1.0871765613555908,
+        "memory_encoding": 0.1360080987215042,
+        "social_thinking": -0.4978354573249817,
+        "language_depth": 1.7206777334213257
+      }
+    },
+    {
+      "t": 237.0,
+      "values": {
+        "personal_resonance": -0.23647120594978333,
+        "attention": -1.642874002456665,
+        "brain_effort": -0.17150424420833588,
+        "gut_reaction": -0.8400381803512573,
+        "memory_encoding": -0.00018257573537994176,
+        "social_thinking": -0.017729686573147774,
+        "language_depth": 1.4015014171600342
+      }
+    },
+    {
+      "t": 238.0,
+      "values": {
+        "personal_resonance": -0.020650876685976982,
+        "attention": -1.8583885431289673,
+        "brain_effort": -0.5217568278312683,
+        "gut_reaction": -0.8312088251113892,
+        "memory_encoding": 0.304027795791626,
+        "social_thinking": 0.1493992805480957,
+        "language_depth": 1.8183691501617432
+      }
+    },
+    {
+      "t": 239.0,
+      "values": {
+        "personal_resonance": 0.09775502979755402,
+        "attention": -2.236823558807373,
+        "brain_effort": -0.9027101397514343,
+        "gut_reaction": -0.8019187450408936,
+        "memory_encoding": 0.404398649930954,
+        "social_thinking": 0.3321216404438019,
+        "language_depth": 2.6702609062194824
+      }
+    },
+    {
+      "t": 240.0,
+      "values": {
+        "personal_resonance": 0.04489770531654358,
+        "attention": -2.106027126312256,
+        "brain_effort": -1.0515488386154175,
+        "gut_reaction": -0.7246508598327637,
+        "memory_encoding": 0.3474728465080261,
+        "social_thinking": 0.0017015798948705196,
+        "language_depth": 1.9063032865524292
+      }
+    },
+    {
+      "t": 241.0,
+      "values": {
+        "personal_resonance": 0.22511398792266846,
+        "attention": -2.367807626724243,
+        "brain_effort": -1.211226224899292,
+        "gut_reaction": -0.744500458240509,
+        "memory_encoding": 0.34073421359062195,
+        "social_thinking": 0.23900802433490753,
+        "language_depth": 2.281344413757324
+      }
+    },
+    {
+      "t": 242.0,
+      "values": {
+        "personal_resonance": 0.3871195316314697,
+        "attention": -2.0169460773468018,
+        "brain_effort": -0.8587102293968201,
+        "gut_reaction": -0.6089212894439697,
+        "memory_encoding": 0.6973598003387451,
+        "social_thinking": 0.5576922297477722,
+        "language_depth": 3.048006296157837
+      }
+    },
+    {
+      "t": 243.0,
+      "values": {
+        "personal_resonance": 0.47487878799438477,
+        "attention": -1.7999205589294434,
+        "brain_effort": -0.7311916351318359,
+        "gut_reaction": -0.5386775135993958,
+        "memory_encoding": 0.3062758445739746,
+        "social_thinking": 0.6471871137619019,
+        "language_depth": 2.3126580715179443
+      }
+    },
+    {
+      "t": 244.0,
+      "values": {
+        "personal_resonance": 0.5422347784042358,
+        "attention": -0.9643842577934265,
+        "brain_effort": -0.06455612927675247,
+        "gut_reaction": -0.18308433890342712,
+        "memory_encoding": 0.5931850671768188,
+        "social_thinking": 0.4697570204734802,
+        "language_depth": 2.0219597816467285
+      }
+    },
+    {
+      "t": 245.0,
+      "values": {
+        "personal_resonance": 0.7552580237388611,
+        "attention": -0.7572735548019409,
+        "brain_effort": 0.3384566009044647,
+        "gut_reaction": 0.015133400447666645,
+        "memory_encoding": 0.8050258159637451,
+        "social_thinking": 1.0501831769943237,
+        "language_depth": 2.38786244392395
+      }
+    },
+    {
+      "t": 246.0,
+      "values": {
+        "personal_resonance": 0.9428815841674805,
+        "attention": -0.2420548051595688,
+        "brain_effort": 0.829788327217102,
+        "gut_reaction": 0.39952197670936584,
+        "memory_encoding": 1.2426236867904663,
+        "social_thinking": 1.5731074810028076,
+        "language_depth": 2.808224678039551
+      }
+    },
+    {
+      "t": 247.0,
+      "values": {
+        "personal_resonance": 1.4148263931274414,
+        "attention": 0.8702351450920105,
+        "brain_effort": 2.0985043048858643,
+        "gut_reaction": 1.0850774049758911,
+        "memory_encoding": 2.4959051609039307,
+        "social_thinking": 2.1967861652374268,
+        "language_depth": 3.634418249130249
+      }
+    },
+    {
+      "t": 248.0,
+      "values": {
+        "personal_resonance": 1.1520650386810303,
+        "attention": 0.8129658102989197,
+        "brain_effort": 2.1388137340545654,
+        "gut_reaction": 1.287755012512207,
+        "memory_encoding": 2.3637046813964844,
+        "social_thinking": 2.394404172897339,
+        "language_depth": 3.283439874649048
+      }
+    },
+    {
+      "t": 249.0,
+      "values": {
+        "personal_resonance": 1.2566744089126587,
+        "attention": 0.9696175456047058,
+        "brain_effort": 2.3752777576446533,
+        "gut_reaction": 1.3171401023864746,
+        "memory_encoding": 2.233980894088745,
+        "social_thinking": 2.711540460586548,
+        "language_depth": 2.9833452701568604
+      }
+    },
+    {
+      "t": 250.0,
+      "values": {
+        "personal_resonance": 1.1429901123046875,
+        "attention": 0.6705945730209351,
+        "brain_effort": 2.008737087249756,
+        "gut_reaction": 1.0820916891098022,
+        "memory_encoding": 2.0041866302490234,
+        "social_thinking": 2.7915046215057373,
+        "language_depth": 2.8199362754821777
+      }
+    },
+    {
+      "t": 251.0,
+      "values": {
+        "personal_resonance": 1.0074012279510498,
+        "attention": 0.3067236840724945,
+        "brain_effort": 1.5835882425308228,
+        "gut_reaction": 0.6851030588150024,
+        "memory_encoding": 1.7441059350967407,
+        "social_thinking": 2.460031747817993,
+        "language_depth": 2.6087045669555664
+      }
+    },
+    {
+      "t": 252.0,
+      "values": {
+        "personal_resonance": 1.1108030080795288,
+        "attention": 0.8704032301902771,
+        "brain_effort": 1.701651692390442,
+        "gut_reaction": 0.627493679523468,
+        "memory_encoding": 1.6251417398452759,
+        "social_thinking": 2.7464122772216797,
+        "language_depth": 2.6170880794525146
+      }
+    },
+    {
+      "t": 253.0,
+      "values": {
+        "personal_resonance": 1.188103199005127,
+        "attention": 0.9560202956199646,
+        "brain_effort": 1.4160577058792114,
+        "gut_reaction": 0.4353717863559723,
+        "memory_encoding": 1.568442702293396,
+        "social_thinking": 2.6723973751068115,
+        "language_depth": 2.790217876434326
+      }
+    },
+    {
+      "t": 254.0,
+      "values": {
+        "personal_resonance": 1.024315357208252,
+        "attention": 1.248059868812561,
+        "brain_effort": 1.570249319076538,
+        "gut_reaction": 0.36287355422973633,
+        "memory_encoding": 1.9063451290130615,
+        "social_thinking": 2.698758602142334,
+        "language_depth": 3.4475388526916504
+      }
+    },
+    {
+      "t": 255.0,
+      "values": {
+        "personal_resonance": 1.1565757989883423,
+        "attention": 1.6442333459854126,
+        "brain_effort": 1.9647091627120972,
+        "gut_reaction": 0.5840262174606323,
+        "memory_encoding": 2.101536750793457,
+        "social_thinking": 2.6930620670318604,
+        "language_depth": 3.571195602416992
+      }
+    },
+    {
+      "t": 256.0,
+      "values": {
+        "personal_resonance": 1.1073054075241089,
+        "attention": 1.3195189237594604,
+        "brain_effort": 1.615398645401001,
+        "gut_reaction": 0.5914463996887207,
+        "memory_encoding": 1.866419792175293,
+        "social_thinking": 2.3622336387634277,
+        "language_depth": 3.306792974472046
+      }
+    },
+    {
+      "t": 257.0,
+      "values": {
+        "personal_resonance": 1.094112753868103,
+        "attention": 1.1714396476745605,
+        "brain_effort": 1.6921123266220093,
+        "gut_reaction": 0.6558414697647095,
+        "memory_encoding": 1.8705408573150635,
+        "social_thinking": 2.151542901992798,
+        "language_depth": 3.194671392440796
+      }
+    },
+    {
+      "t": 258.0,
+      "values": {
+        "personal_resonance": 0.8800521492958069,
+        "attention": 1.427748441696167,
+        "brain_effort": 2.0035922527313232,
+        "gut_reaction": 0.5120112299919128,
+        "memory_encoding": 2.114975690841675,
+        "social_thinking": 2.2130885124206543,
+        "language_depth": 3.6549692153930664
+      }
+    },
+    {
+      "t": 259.0,
+      "values": {
+        "personal_resonance": 0.7205806970596313,
+        "attention": 0.47197794914245605,
+        "brain_effort": 1.0037943124771118,
+        "gut_reaction": 0.2891235053539276,
+        "memory_encoding": 1.4942705631256104,
+        "social_thinking": 1.6503303050994873,
+        "language_depth": 2.757972002029419
+      }
+    },
+    {
+      "t": 260.0,
+      "values": {
+        "personal_resonance": 0.5830002427101135,
+        "attention": 0.643379271030426,
+        "brain_effort": 1.034088373184204,
+        "gut_reaction": 0.39757516980171204,
+        "memory_encoding": 1.195926308631897,
+        "social_thinking": 1.5162243843078613,
+        "language_depth": 1.9054316282272339
+      }
+    },
+    {
+      "t": 261.0,
+      "values": {
+        "personal_resonance": 0.7198829054832458,
+        "attention": 1.1202099323272705,
+        "brain_effort": 1.1935153007507324,
+        "gut_reaction": 1.0314826965332031,
+        "memory_encoding": 0.5855461955070496,
+        "social_thinking": 1.418129801750183,
+        "language_depth": 0.4059334397315979
+      }
+    }
+  ],
+  "patterns": [],
+  "alignment": {
+    "alignmentSource": "audio_word_timestamps",
+    "hrfLagSec": 5.0,
+    "generatedAudioDurationSec": 141.861,
+    "analysisDurationSec": 262.0,
+    "trailingAudioPaddingSec": 120.13900000000001
+  },
+  "source": {
+    "npz": "/Users/ishita/Downloads/Work code/braindiff new site/exports/tribev2_raw/fa9fee4f-dc8e-4a67-b801-0240a209bd77/maya_call_script_tribev2_raw.npz",
+    "audioTsv": "/Users/ishita/Downloads/Work code/braindiff new site/cache/tribev2.demo_utils.TextToEvents.get_events,0/text=Hey,-this-is-Maya-from-Northstar-Revenue.-I-know-this-is-out-of-the-blue,-so-Ill-be-quick.-Im-calling-because-your-team-pos...12-946aa79c/audio.tsv",
+    "predictionShape": [
+      262,
+      20484
+    ],
+    "wholeBrainReferenceScale": 0.08668974041938782,
+    "schema": "rep_message_impact_input.v1"
+  }
+}

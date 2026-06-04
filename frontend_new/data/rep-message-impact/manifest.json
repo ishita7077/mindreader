@@ -1,0 +1,32 @@
+{
+  "maya": {
+    "title": "Maya call script",
+    "path": "/data/rep-message-impact/maya.json",
+    "alignment": {
+      "alignmentSource": "audio_word_timestamps",
+      "hrfLagSec": 5.0,
+      "generatedAudioDurationSec": 141.861,
+      "analysisDurationSec": 262.0,
+      "trailingAudioPaddingSec": 120.13900000000001
+    },
+    "predictionShape": [
+      262,
+      20484
+    ]
+  },
+  "rahul": {
+    "title": "Rahul call script",
+    "path": "/data/rep-message-impact/rahul.json",
+    "alignment": {
+      "alignmentSource": "audio_word_timestamps",
+      "hrfLagSec": 5.0,
+      "generatedAudioDurationSec": 154.638,
+      "analysisDurationSec": 395.0,
+      "trailingAudioPaddingSec": 240.362
+    },
+    "predictionShape": [
+      395,
+      20484
+    ]
+  }
+}
