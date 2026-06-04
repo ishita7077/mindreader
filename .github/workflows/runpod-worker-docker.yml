@@ -66,10 +66,6 @@ jobs:
             type=raw,value=runpod-latest
             type=sha,prefix=runpod-
 
-      - name: Temporary public image name
-        id: ttl
-        run: echo "image=ttl.sh/braindiff-${GITHUB_SHA::12}:24h" >> "$GITHUB_OUTPUT"
-
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
@@ -79,7 +75,153 @@ jobs:
           push: true
           provenance: false
           sbom: false
-          tags: |
-            ${{ steps.meta.outputs.tags }}
-            ${{ steps.ttl.outputs.image }}
+          tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+      # Keep production off ttl.sh. ttl.sh images expire after 24h; when the
+      # RunPod prod template points at one, jobs are accepted but workers never
+      # start, leaving every run stuck at IN_QUEUE.
+      #
+      # This sync copies the latest permanent image from the RunPod-managed test
+      # template into the production template. If the RunPod API key is missing
+      # or invalid, fail loudly so the deploy cannot look green while prod is
+      # still pointed at a stale image.
+      - name: Sync prod RunPod template to latest image
+        env:
+          RUNPOD_API_KEY: ${{ secrets.RUNPOD_API_KEY }}
+          PROD_TEMPLATE_ID: ss0081newr
+          TEST_TEMPLATE_ID: pym3c39fe0
+          COMMIT_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          python3 <<'PY'
+          import json
+          import os
+          import sys
+          import time
+          import urllib.error
+          import urllib.parse
+          import urllib.request
+
+          key = os.environ.get("RUNPOD_API_KEY", "")
+          prod_template_id = os.environ["PROD_TEMPLATE_ID"]
+          test_template_id = os.environ["TEST_TEMPLATE_ID"]
+          sha = os.environ["COMMIT_SHA"]
+          sha9 = sha[:9]
+
+          if len(key) < 20:
+              print("RUNPOD_API_KEY GitHub secret is missing or clearly invalid.")
+              print("Set a valid RunPod API key in GitHub Actions secrets, then rerun this workflow.")
+              sys.exit(1)
+
+          def graphql(query, variables=None):
+              url = "https://api.runpod.io/graphql?api_key=" + urllib.parse.quote(key)
+              payload = {"query": query}
+              if variables is not None:
+                  payload["variables"] = variables
+              req = urllib.request.Request(
+                  url,
+                  data=json.dumps(payload).encode("utf-8"),
+                  headers={"Content-Type": "application/json"},
+              )
+              try:
+                  with urllib.request.urlopen(req, timeout=45) as resp:
+                      text = resp.read().decode("utf-8", errors="replace")
+              except urllib.error.HTTPError as err:
+                  text = err.read().decode("utf-8", errors="replace")
+                  print(f"RunPod GraphQL HTTP {err.code}: {text[:500]}")
+                  raise
+              try:
+                  data = json.loads(text)
+              except json.JSONDecodeError:
+                  print(f"RunPod GraphQL returned non-JSON: {text[:500]}")
+                  raise
+              if data.get("errors"):
+                  print("RunPod GraphQL errors:")
+                  print(json.dumps(data["errors"], indent=2))
+                  raise RuntimeError("RunPod GraphQL request failed")
+              return data["data"]
+
+          template_query = """
+          query($id: String!) {
+            podTemplate(id: $id) {
+              id
+              name
+              imageName
+              containerDiskInGb
+              volumeInGb
+              dockerArgs
+              ports
+              startScript
+              volumeMountPath
+              isServerless
+              env { key value }
+            }
+          }
+          """
+
+          print(f"Waiting for RunPod test template {test_template_id} to publish image for :{sha9}...")
+          deadline = time.time() + 900
+          test_template = None
+          while time.time() < deadline:
+              test_template = graphql(template_query, {"id": test_template_id})["podTemplate"]
+              if not test_template:
+                  raise RuntimeError(f"RunPod test template {test_template_id} was not found")
+              current_image = test_template.get("imageName") or ""
+              print(f"Test template image: {current_image}")
+              if f":{sha9}" in current_image or f":runpod-{sha[:7]}" in current_image:
+                  break
+              time.sleep(30)
+          else:
+              raise RuntimeError(f"Timed out waiting for test template image to reach commit {sha9}")
+
+          new_image = test_template["imageName"]
+          if "ttl.sh/" in new_image:
+              raise RuntimeError(f"Refusing to sync temporary ttl.sh image to prod: {new_image}")
+
+          prod_template = graphql(template_query, {"id": prod_template_id})["podTemplate"]
+          if not prod_template:
+              raise RuntimeError(f"RunPod prod template {prod_template_id} was not found")
+
+          env_lines = []
+          for item in prod_template.get("env") or []:
+              name = item.get("key") or ""
+              value = item.get("value") or ""
+              env_lines.append({
+                  "key": name,
+                  "value": value,
+              })
+
+          def gql_string(value):
+              return json.dumps(str(value or ""))
+
+          env_input = ", ".join(
+              "{ key: " + gql_string(item["key"]) + ", value: " + gql_string(item["value"]) + " }"
+              for item in env_lines
+          )
+          save_query = f"""
+          mutation {{
+            saveTemplate(input: {{
+              id: {gql_string(prod_template["id"])},
+              name: {gql_string(prod_template["name"])},
+              imageName: {gql_string(new_image)},
+              containerDiskInGb: {int(prod_template["containerDiskInGb"])},
+              volumeInGb: {int(prod_template.get("volumeInGb") or 0)},
+              isServerless: {str(bool(prod_template.get("isServerless", True))).lower()},
+              dockerArgs: {gql_string(prod_template.get("dockerArgs") or "")},
+              ports: {gql_string(prod_template.get("ports") or "")},
+              readme: "",
+              startScript: {gql_string(prod_template.get("startScript") or "")},
+              volumeMountPath: {gql_string(prod_template.get("volumeMountPath") or "/workspace")},
+              env: [{env_input}]
+            }}) {{
+              id
+              imageName
+            }}
+          }}
+          """
+          saved = graphql(save_query)["saveTemplate"]
+          if saved.get("imageName") != new_image:
+              raise RuntimeError(f"Prod template image mismatch after save: {saved}")
+          print(f"Prod RunPod template {prod_template_id} now uses {new_image}")
+          PY
