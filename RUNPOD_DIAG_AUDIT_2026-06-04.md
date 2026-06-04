@@ -448,3 +448,46 @@ Reason:
 
 - PyTorch 2.7 CUDA 12.8 wheels are the smallest image-level move from the existing PyTorch 2.6 stack toward Blackwell compatibility.
 - If this starts successfully on Blackwell but TRIBE has a runtime incompatibility with torch 2.7, the worker should now reach BrainDiff logs instead of dying inside RunPod's pre-job fitness check.
+
+## 2026-06-04 14:15 UTC - Worker Image Build Log Result
+
+GitHub Actions run:
+
+- `26956301716`
+- Commit: `103e512 fix: install Blackwell-ready PyTorch worker wheel`
+- Log captured locally at `/tmp/runpod-worker-26956301716.log`
+
+Build result from log:
+
+- Docker `Build and push` step succeeded.
+- PyTorch reinstall step ran and passed the explicit build-time assertion:
+  - `PyTorch Blackwell-ready wheel: 2.7.0+cu128 CUDA 12.8`
+- Image pushed:
+  - `ghcr.io/ishita7077/runpod_braindiff_test:runpod-latest`
+  - `ghcr.io/ishita7077/runpod_braindiff_test:runpod-103e512`
+  - digest `sha256:b6ae610c1f2da9aa2ec645bcd52b5736935f61efb2a2b0957fa24d49980b3d11`
+
+Dependency warnings from build log:
+
+- `tribev2 0.1.0 requires torch<2.7,>=2.5.1`
+- `tribev2 0.1.0 requires torchvision<0.22,>=0.20`
+- `whisperx 3.8.6 requires torch~=2.8.0`
+- `whisperx 3.8.6 requires torchaudio~=2.8.0`
+- `whisperx 3.8.6 requires torchvision~=0.23.0`
+- `pyannote-audio 4.0.4 requires torch>=2.8.0`
+- `pyannote-audio 4.0.4 requires torchaudio>=2.8.0`
+
+Interpretation:
+
+- The image now exists in GHCR with a PyTorch CUDA 12.8 wheel.
+- This has not yet proven runtime success on RunPod.
+- The next required evidence is a fresh RunPod worker log after this image is used.
+- If the next log still shows `sm_50 ... sm_90`, RunPod is still using the old image.
+- If the next log passes fitness but fails later at `[RP-10]` or `[RP-11]`, the problem has moved from RunPod fitness check to BrainDiff/Tribe runtime compatibility.
+
+Deploy blocker from log:
+
+- Workflow failed at `Sync prod RunPod template to latest image`.
+- Exact log line:
+  - `RUNPOD_API_KEY GitHub secret is missing or clearly invalid.`
+- Therefore the image was built and pushed, but the workflow could not confirm/update the RunPod production template.
