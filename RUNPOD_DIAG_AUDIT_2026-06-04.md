@@ -312,3 +312,61 @@ Revised confidence statement:
 - Proven: both observed text jobs remain `IN_QUEUE` with no worker events.
 - Strong but not directly proven without RunPod console/API template access: production is likely pointed at an unavailable/stale worker image or otherwise has no usable workers.
 - The GitHub secret issue explains why the automated durable-image fix cannot complete; it may not be the original root cause by itself.
+
+## 2026-06-04 13:30 UTC - New RunPod Worker Log Evidence
+
+User provided a RunPod worker-log screenshot.
+
+Key log lines from screenshot:
+
+```text
+2026-06-04T13:16:48.452Z [info] --- Starting Serverless Worker | Version 1.9.0 ---
+2026-06-04T13:16:48.452Z [info] Running 7 fitness check(s)...
+2026-06-04T13:16:48.452Z [info] GPU binary test passed: 1 GPU(s) healthy (CUDA 13.0)
+2026-06-04T13:16:48.452Z [info] CUDA version check passed: 13.0 (minimum: 11.8)
+2026-06-04T13:16:48.452Z [info] The current PyTorch install supports CUDA capabilities sm_50 sm_60 sm_70 sm_75 sm_80 sm_86 sm_90.
+2026-06-04T13:16:48.452Z [info] NVIDIA RTX PRO 6000 Blackwell Server Edition MIG 1g.24gb with CUDA capability sm_120 is not compatible with the current PyTorch installation.
+2026-06-04T13:16:48.452Z [error] Fitness check failed: _cuda_init_check | RuntimeError: CUDA initialization failed
+2026-06-04T13:16:48.452Z [error] Worker is unhealthy, exiting.
+2026-06-04T13:17:06.800Z [error] worker exited with exit code 1
+```
+
+Interpretation update:
+
+- RunPod is now starting a worker.
+- The worker is dying before it reaches BrainDiff application code.
+- The failure is RunPod/PyTorch/CUDA compatibility: the image's PyTorch build does not support the assigned Blackwell `sm_120` GPU.
+- This is a stronger direct cause than the earlier queue-only hypothesis.
+
+Worker image/dependency timeline:
+
+- `82dd3b8` (`2026-04-28T22:04:19+07:00`) added the production RunPod Docker install path for `backend/requirements_frozen.txt`.
+- `backend/requirements_frozen.txt` pins:
+  - `torch==2.6.0`
+  - `torchvision==0.21.0`
+- That pin is still present at:
+  - `0f5465a`
+  - `63288e5`
+  - `e53b450`
+  - `d8d9f33`
+- So the incompatible PyTorch stack was not introduced by today's visual-site work; it was latent in the worker image.
+
+Current worker-build timeline:
+
+- `d8d9f33 fix: restore durable RunPod worker image sync` was pushed at `2026-06-04T20:02:30+07:00`.
+- GitHub Actions run `26953422239` built the worker image from `d8d9f33`.
+- The action pushed:
+  - `ghcr.io/ishita7077/runpod_braindiff_test:runpod-latest`
+  - `ghcr.io/ishita7077/runpod_braindiff_test:runpod-d8d9f33`
+  - digest `sha256:1ec89b34c82ff4dad56924165d46be1f9d07b6c729c13a4b7f69c1110f2a0ec6`
+- The image push completed at `2026-06-04T13:12:57Z`.
+- RunPod worker logs show the Blackwell/PyTorch failure at `2026-06-04T13:16:48Z`.
+
+Forensic conclusion:
+
+- The specific failure shown in the screenshot started immediately after the `d8d9f33` worker image build/push, when RunPod launched a worker on an RTX PRO 6000 Blackwell GPU.
+- The deeper code/config problem is older: the worker image pins `torch==2.6.0`, which does not support `sm_120`.
+- If production was working before, the likely reason is that the old worker was running on a GPU architecture supported by PyTorch 2.6, or it had not been restarted onto Blackwell yet.
+- The GitHub push that most directly preceded the screenshot failure is `d8d9f33`.
+- The GitHub push that reintroduced the earlier temporary-image/template-sync risk is `63288e5`.
+- The GitHub push where the latent PyTorch 2.6 worker dependency entered the Docker image path is `82dd3b8`.
