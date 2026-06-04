@@ -230,3 +230,59 @@ Important caveat:
 
 - If the GitHub Actions `RUNPOD_API_KEY` secret is still invalid, the next workflow run should fail clearly instead of pretending production was fixed.
 - In that case the required operational fix is to replace the GitHub Actions secret with a valid RunPod API key, then rerun the workflow.
+
+## 2026-06-04 13:03 UTC - Fix Pushed
+
+Commit pushed:
+
+- `d8d9f33 fix: restore durable RunPod worker image sync`
+
+Files in commit:
+
+- `.github/workflows/runpod-worker-docker.yml`
+- `RUNPOD_DIAG_AUDIT_2026-06-04.md`
+
+GitHub Actions run triggered:
+
+- Run ID: `26953422239`
+- URL: `https://github.com/ishita7077/runpod_braindiff_test/actions/runs/26953422239`
+- Initial state: `in_progress`
+- Current observed step at 13:04 UTC: `Build and push`
+- Prod template sync step has not started yet.
+
+## 2026-06-04 13:13 UTC - Workflow Result
+
+GitHub Actions run `26953422239` completed with failure.
+
+Step results:
+
+- `Build and push`: success
+- `Sync prod RunPod template to latest image`: failure
+
+Image build evidence:
+
+- The workflow produced permanent GHCR tags for commit `d8d9f33`:
+  - `ghcr.io/ishita7077/runpod_braindiff_test:runpod-latest`
+  - `ghcr.io/ishita7077/runpod_braindiff_test:runpod-d8d9f33`
+- The workflow no longer pushed a `ttl.sh/*:24h` image.
+
+Failure log:
+
+```text
+RUNPOD_API_KEY GitHub secret is missing or clearly invalid.
+Set a valid RunPod API key in GitHub Actions secrets, then rerun this workflow.
+Process completed with exit code 1.
+```
+
+Interpretation:
+
+- The code/workflow fix did what it should: it prevented a false-green deploy.
+- The blocker is now the GitHub Actions `RUNPOD_API_KEY` secret.
+- Until that secret is replaced with a valid RunPod API key, the workflow cannot update the production RunPod template.
+- Until the production template is updated, production runs are expected to remain stuck at `IN_QUEUE`.
+
+Required operational fix:
+
+- In GitHub repo secrets, replace `RUNPOD_API_KEY` with a valid RunPod API key that can read/write templates.
+- Rerun GitHub Actions run `26953422239`, or manually run the `Runpod worker Docker image` workflow from `main`.
+- After the sync step succeeds, submit a tiny text run and confirm worker progress events appear.
