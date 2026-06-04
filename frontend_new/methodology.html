@@ -396,6 +396,7 @@ h4 { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 
 </style>
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Crimson+Pro:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Caveat:wght@400;500;700&family=Kalam:wght@300;400;700&family=Inter+Tight:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/theme.css">
+<link rel="stylesheet" href="/assets/neon-site.css?v=1">
 </head>
 <body>
 
@@ -413,7 +414,6 @@ h4 { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 
   <nav class="nav">
     <a href="/research">Research</a>
     <a href="/methodology" class="is-active">Methodology</a>
-    <a href="/#case-study">Case studies</a>
     <a href="/launch" class="nav-cta">Launch →</a>
   </nav>
 </header>
@@ -434,6 +434,7 @@ h4 { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 
         <li><a href="#step5">Chord detection</a></li>
       </ul></li>
       <li class="toc-divider"></li>
+      <li><a href="#run-modes">Run modes</a></li>
       <li><a href="#seven-dimensions">The 7 dimensions</a></li>
       <li><a href="#limitations">Model limitations</a></li>
       <li><a href="#data">Data &amp; open source</a></li>
@@ -448,7 +449,7 @@ h4 { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 
     <header class="page-header" id="overview">
       <span class="page-eyebrow">Methodology</span>
       <h1 class="page-title">Measuring <em>Brain Diff</em></h1>
-      <p class="page-subtitle">Brain Diff runs two pieces of content through a computational model trained on real fMRI measurements from 720+ participants. What comes back is a predicted map of how the average human cortex responds — compared second by second, across seven functional systems.</p>
+      <p class="page-subtitle">Brain Diff runs content through a computational model trained on real fMRI measurements from 720+ participants. In a comparison run, two pieces of content are processed through the same model and contrasted second by second. In a single run, one piece of content gets the same cortical readout without the A-vs-B delta.</p>
       <div class="version-tag">
         <span class="version-dot"></span>
         v1 methodology — thresholds updated as data accumulates
@@ -466,6 +467,22 @@ h4 { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 
       <p>The person is not the variable. The content is. And because the brain being used is the same for both pieces of content — the same model, trained on the same population — whatever difference emerges in the output is a difference in the content, not a difference in the audience.</p>
     </section>
 
+    <section class="section" id="run-modes">
+      <div class="section-label">Run modes</div>
+      <h2>Comparison runs, single runs, and fIV</h2>
+
+      <p><strong>Comparison runs</strong> process two inputs through the same TRIBEv2/fIV pipeline, then subtract the predicted cortical response for A from the response for B. This is the full Brain Diff output: cortical heatmap, dimension bars, time-series differences, and comparison-level interpretation.</p>
+
+      <p><strong>Single runs</strong> process one input through the same prediction stack and report the strongest cortical systems inside that one piece of content. There is no A/B winner because there is no second input. The result answers: what does this content ask the average cortex to do?</p>
+
+      <p><strong>fIV</strong> is the model layer that turns multimodal content features into predicted cortical activity. For text, audio, and video, the feature streams are aligned to time and projected onto the same fsaverage5 cortical surface, so the same seven-system readout can be used across run types.</p>
+
+      <div class="connectivity-inner" style="margin: 22px 0;">
+        <h4>Single-run availability</h4>
+        <p>Available now: cortical surface map, strongest systems, and plain-language readout. Still in beta for single runs: chord progression and connectivity/correlation matrices, because those views are currently tuned around comparison time series.</p>
+      </div>
+    </section>
+
     <!-- PIPELINE -->
     <section class="section" id="pipeline">
       <div class="section-label">How it works</div>
@@ -478,8 +495,8 @@ h4 { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 
           <div class="graph-step" data-step="1"><div class="graph-node">02</div><div class="graph-step-name">Media prep</div></div>
           <div class="graph-step" data-step="2"><div class="graph-node">03</div><div class="graph-step-name">Feature extraction</div></div>
           <div class="graph-step" data-step="3"><div class="graph-node">04</div><div class="graph-step-name">Neural prediction</div></div>
-          <div class="graph-step" data-step="4"><div class="graph-node">05</div><div class="graph-step-name">Contrast</div></div>
-          <div class="graph-step" data-step="5"><div class="graph-node">06</div><div class="graph-step-name">Chord detection</div></div>
+          <div class="graph-step" data-step="4"><div class="graph-node">05</div><div class="graph-step-name">Contrast / readout</div></div>
+          <div class="graph-step" data-step="5"><div class="graph-node">06</div><div class="graph-step-name">Patterns*</div></div>
           <div class="graph-step" data-step="6"><div class="graph-node">07</div><div class="graph-step-name">Results</div></div>
         </div>
         <div class="graph-tooltip" id="graph-tooltip">
@@ -487,9 +504,9 @@ h4 { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 
           <div class="graph-tooltip-inner" data-step="1"><div class="graph-tooltip-title">Media preprocessing</div>Audio is transcribed to word-level timestamps. Waveforms are computed for display. Video keyframes are extracted at scene transitions. Text is synthesized to speech first.<div class="graph-tooltip-time">10–60s</div></div>
           <div class="graph-tooltip-inner" data-step="2"><div class="graph-tooltip-title">Feature extraction</div>Three specialist models read the content simultaneously — one each for language, visuals, and audio — each producing a numerical description of what is happening at every second.<div class="graph-tooltip-time">30–300s depending on modality and hardware</div></div>
           <div class="graph-tooltip-inner" data-step="3"><div class="graph-tooltip-title">Neural prediction</div>TRIBEv2 fuses the three streams and predicts blood-flow activity across 20,484 cortical surface locations at 1Hz — one second at a time, for the full duration of the content.<div class="graph-tooltip-time">The dominant compute cost</div></div>
-          <div class="graph-tooltip-inner" data-step="4"><div class="graph-tooltip-title">Contrast</div>The two predicted activation matrices are compared — vertex by vertex, second by second. The signed difference is what the waveforms and dimension bars show.<div class="graph-tooltip-time">&lt; 10ms</div></div>
-          <div class="graph-tooltip-inner" data-step="5"><div class="graph-tooltip-title">Chord detection</div>The seven dimension time series are checked every second for co-activation patterns. Each detected pattern is a chord — a named brain state with a grounded scientific definition.<div class="graph-tooltip-time">1–5s</div></div>
-          <div class="graph-tooltip-inner" data-step="6"><div class="graph-tooltip-title">Results delivered</div>All outputs — dimension contrasts, waveforms, cortical heatmap, chord progression, connectivity matrix — are returned to your browser. Your uploaded file is deleted. Total time: roughly 5–6 minutes.</div>
+          <div class="graph-tooltip-inner" data-step="4"><div class="graph-tooltip-title">Contrast / readout</div>For comparison runs, the two predicted activation matrices are compared vertex by vertex and second by second. For single runs, the same predicted matrix is summarized without subtracting another input.<div class="graph-tooltip-time">&lt; 10ms after prediction</div></div>
+          <div class="graph-tooltip-inner" data-step="5"><div class="graph-tooltip-title">Patterns*</div>Comparison runs can derive co-activation patterns from the seven dimension time series. Single-run chord and connectivity views are still in beta while thresholds are tuned for one-input results.<div class="graph-tooltip-time">1–5s</div></div>
+          <div class="graph-tooltip-inner" data-step="6"><div class="graph-tooltip-title">Results delivered</div>The browser receives the available outputs for the run type: cortical map, dimension readout, waveforms when media timing is present, and comparison-only pattern/connectivity views where enabled. Your uploaded file is deleted.</div>
         </div>
       </div>
     </section>
@@ -757,13 +774,13 @@ h4 { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 
       <table class="dim-table">
         <thead><tr><th>#</th><th>Dimension</th><th>Region</th><th>What activates here</th></tr></thead>
         <tbody>
-          <tr><td class="dim-num">01</td><td class="dim-name">Personal Resonance</td><td class="dim-region">mPFC</td><td class="dim-desc">Self-referential processing; content tagged as personally relevant. Northoff et al. 2006; Falk et al. 2012.</td></tr>
-          <tr><td class="dim-num">02</td><td class="dim-name">Attention</td><td class="dim-region">DAN (FEF, IPS, MT+)</td><td class="dim-desc">Goal-directed, sustained top-down attention. Corbetta &amp; Shulman 2002.</td></tr>
-          <tr><td class="dim-num">03</td><td class="dim-name">Brain Effort</td><td class="dim-region">dlPFC (BA 9/46)</td><td class="dim-desc">Cognitive control; working memory; effortful processing. Miller &amp; Cohen 2001.</td></tr>
-          <tr><td class="dim-num">04</td><td class="dim-name">Gut Reaction</td><td class="dim-region">Anterior Insula</td><td class="dim-desc">Interoception; visceral bodily response; the cortical address of felt sensation. Critchley 2005; Craig 2009.</td></tr>
+          <tr><td class="dim-num">01</td><td class="dim-name">Attention</td><td class="dim-region">DAN (FEF, IPS, MT+)</td><td class="dim-desc">Goal-directed, sustained top-down attention. Corbetta &amp; Shulman 2002.</td></tr>
+          <tr><td class="dim-num">02</td><td class="dim-name">Brain Effort</td><td class="dim-region">dlPFC (BA 9/46)</td><td class="dim-desc">Cognitive control; working memory; effortful processing. Miller &amp; Cohen 2001.</td></tr>
+          <tr><td class="dim-num">03</td><td class="dim-name">Gut Reaction</td><td class="dim-region">Anterior Insula</td><td class="dim-desc">Interoception; visceral bodily response; the cortical address of felt sensation. Critchley 2005; Craig 2009.</td></tr>
+          <tr><td class="dim-num">04</td><td class="dim-name">Language Depth</td><td class="dim-region">Broca's + Wernicke's</td><td class="dim-desc">High-level linguistic processing — semantics, syntax, pragmatics. Fedorenko et al. 2011.</td></tr>
           <tr><td class="dim-num">05</td><td class="dim-name">Memory Encoding</td><td class="dim-region">Left vlPFC (BA 44/45/47)</td><td class="dim-desc">Subsequent-memory effect: activation here at encoding predicts later recall. Wagner et al. 1998; Kim 2011.</td></tr>
-          <tr><td class="dim-num">06</td><td class="dim-name">Social Thinking</td><td class="dim-region">Right TPJ</td><td class="dim-desc">Theory of mind; mentalizing about another person's intentions. Saxe &amp; Kanwisher 2003.</td></tr>
-          <tr><td class="dim-num">07</td><td class="dim-name">Language Depth</td><td class="dim-region">Broca's + Wernicke's</td><td class="dim-desc">High-level linguistic processing — semantics, syntax, pragmatics. Fedorenko et al. 2011.</td></tr>
+          <tr><td class="dim-num">06</td><td class="dim-name">Personal Resonance</td><td class="dim-region">mPFC</td><td class="dim-desc">Self-referential processing; content tagged as personally relevant. Northoff et al. 2006; Falk et al. 2012.</td></tr>
+          <tr><td class="dim-num">07</td><td class="dim-name">Social Thinking</td><td class="dim-region">Right TPJ</td><td class="dim-desc">Theory of mind; mentalizing about another person's intentions. Saxe &amp; Kanwisher 2003.</td></tr>
         </tbody>
       </table>
 

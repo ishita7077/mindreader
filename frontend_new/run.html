@@ -661,6 +661,7 @@
 </style>
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Crimson+Pro:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Caveat:wght@400;500;700&family=Kalam:wght@300;400;700&family=Inter+Tight:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/theme.css">
+<link rel="stylesheet" href="/assets/neon-site.css?v=1">
 </head>
 <body>
 <div class="theme-switcher">
@@ -681,7 +682,7 @@
   <aside class="status-card">
     <div class="eyebrow" id="statusEyebrow">Analysis in progress</div>
     <h1 class="status-headline" id="statusHeadline">Running your brain-response <em>contrast.</em></h1>
-    <p class="status-sub" id="statusSub">Your two texts are being encoded and compared across seven cortical dimensions.</p>
+    <p class="status-sub" id="statusSub">Your two texts are being encoded and compared across seven cortical systems.</p>
 
     <div class="eta-pill hide" id="etaPill"><span class="dot"></span></div>
 
@@ -719,14 +720,14 @@
       <div class="edu-hero">
         <div class="edu-brain-wrap">
           <canvas class="edu-brain-canvas" id="eduBrain"></canvas>
-          <div class="brain-caption" id="brainCaption">Highlighted region · medial prefrontal cortex</div>
+          <div class="brain-caption" id="brainCaption">Highlighted system · dorsal attention network</div>
         </div>
         <div class="edu-card">
-          <div class="edu-number" id="eduNum">Dimension 1 of 7</div>
-          <h2 class="edu-title" id="eduTitle">Does it feel like it's <em>about me?</em></h2>
-          <div class="edu-region" id="eduRegion">Medial prefrontal cortex</div>
+          <div class="edu-number" id="eduNum">System spotlight</div>
+          <h2 class="edu-title" id="eduTitle">Where does it hold <em>attention?</em></h2>
+          <div class="edu-region" id="eduRegion">Dorsal attention network</div>
           <p class="edu-body" id="eduBody">
-            This region tracks self-relevance. When two versions carry similar information but one hits personally, the medial prefrontal lights up more on its side of the contrast map — useful for spotting which version actually lands versus the one that just sounds good.
+            This system tracks what the viewer selects and keeps in focus. In a comparison run, the results page shows which input pulls this network harder. In a single run, it shows how strongly the content holds attention on its own.
           </p>
           <div class="edu-footer">
             <div class="edu-dots" id="eduDots">
@@ -861,7 +862,9 @@ function toggleTheme(){
       if (stay) stay.innerHTML = '<strong>Your map is ready.</strong> — take a breath; the deep card unfolds in the next screen.';
       const h1 = document.getElementById('statusHeadline');
       const eyebrow = document.getElementById('statusEyebrow');
+      const sub = document.getElementById('statusSub');
       if (eyebrow) eyebrow.textContent = 'Complete';
+      if (sub) sub.textContent = 'Your cortical readout is ready. Open the results page to inspect the map and system-level takeaways.';
       if (h1 && !REDUCE){
         h1.classList.add('fade-out');
         setTimeout(function(){
@@ -899,7 +902,7 @@ function toggleTheme(){
   if (jobLbl) jobLbl.textContent = 'job · ' + JOB_ID.slice(0, 8);
   const statusSub = document.getElementById('statusSub');
   if (statusSub) {
-    statusSub.textContent = 'Your two ' + RUN_KIND + ' are being encoded and compared across seven cortical dimensions.';
+    statusSub.textContent = 'Your two ' + RUN_KIND + ' are being encoded and compared across seven cortical systems.';
   }
 
   // ===== Deep Scope ======================================================
@@ -1547,20 +1550,20 @@ function toggleTheme(){
 import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js";
 
 const DIMENSIONS = [
-  { key:"personal_resonance",  num:"Dimension 1 of 7", title:'Does it feel like it&rsquo;s <em>about me?</em>',        region:"Medial prefrontal cortex",
-    body:"This region tracks self-relevance. When two versions carry similar information but one hits personally, the medial prefrontal lights up more on its side of the contrast map — useful for spotting which version actually lands versus the one that just sounds good." },
-  { key:"social_thinking",     num:"Dimension 2 of 7", title:'Am I <em>modeling</em> another mind?',                    region:"Temporoparietal junction",
-    body:"This region lights up when the brain is inferring someone else's perspective or intent. If one version pulls harder here, it's asking the reader to think about people — their motives, feelings, or point of view." },
-  { key:"brain_effort",        num:"Dimension 3 of 7", title:'How <em>hard</em> is the system working?',                 region:"Dorsolateral prefrontal cortex",
-    body:"This region indexes cognitive load. Higher isn't always worse — it means the reader is working harder to make sense of what they're reading. Sometimes that's a feature. Sometimes it's friction." },
-  { key:"language_depth",      num:"Dimension 4 of 7", title:'How <em>deeply</em> is meaning being parsed?',             region:"Broca's and Wernicke's networks",
-    body:"The brain's canonical language systems. Big shifts here usually mean one version is structurally richer — more syntactic or semantic texture — not just longer." },
-  { key:"gut_reaction",        num:"Dimension 5 of 7", title:'Does this hit <em>viscerally?</em>',                        region:"Anterior insula",
-    body:"This region tracks felt salience — the bodily edge of a message. If one version provokes a stronger gut response, the insula will show it, even when the literal content is nearly identical." },
-  { key:"memory_encoding",     num:"Dimension 6 of 7", title:'Will this <em>stick?</em>',                                 region:"Left ventrolateral prefrontal cortex",
-    body:"A cortical driver of memory formation. Two versions can feel similar in the moment but differ in what endures. If you care about a message lasting, watch this dimension closely." },
-  { key:"attention_salience",  num:"Dimension 7 of 7", title:'Is the system <em>orienting</em> toward this?',             region:"Dorsal attention network",
-    body:"This reflects what the reader selects and holds focus on. Content that commands attention through novelty, urgency, or contrast tends to pull this network harder than content that drifts." },
+  { key:"attention_salience",  num:"System spotlight", title:'Where does it hold <em>attention?</em>',             region:"Dorsal attention network",
+    body:"This system tracks what the viewer selects and keeps in focus. In a comparison run, the results page shows which input pulls this network harder. In a single run, it shows how strongly the content holds attention on its own." },
+  { key:"brain_effort",        num:"System spotlight", title:'How much <em>work</em> does it ask for?',            region:"Dorsolateral prefrontal cortex",
+    body:"This system indexes cognitive load. Higher effort can mean useful depth, or it can mean friction. The result readout separates effort from impact so hard-to-read content does not get mistaken for strong content." },
+  { key:"gut_reaction",        num:"System spotlight", title:'Does it land in the <em>body?</em>',                 region:"Anterior insula",
+    body:"This system tracks felt salience: urgency, risk, moral weight, and bodily response. It helps distinguish a message people understand from a message people feel." },
+  { key:"language_depth",      num:"System spotlight", title:'How much meaning is carried by the <em>words?</em>', region:"Broca's and Wernicke's networks",
+    body:"The language network tracks semantic and structural richness. A stronger signal here usually means the wording is doing more of the explanatory work." },
+  { key:"memory_encoding",     num:"System spotlight", title:'What is likely to <em>stick?</em>',                  region:"Left ventrolateral prefrontal cortex",
+    body:"This cortical region is tied to the subsequent-memory effect. It helps identify moments that are more likely to be encoded for later recall." },
+  { key:"personal_resonance",  num:"System spotlight", title:'Does it feel like it is <em>about me?</em>',         region:"Medial prefrontal cortex",
+    body:"This system tracks self-relevance. If one version pulls harder here, it is more likely to feel personally meaningful rather than merely understandable." },
+  { key:"social_thinking",     num:"System spotlight", title:'Am I modeling <em>another mind?</em>',               region:"Temporoparietal junction",
+    body:"This system lights up when the brain infers another person's intent, feeling, or point of view. It matters for story, characters, and human stakes." },
 ];
 // 3D centroids (in the post-scaled real-mesh space, radius ~1.4) per region.
 // Same numbers as the landing page so the same anatomy lights up everywhere.
@@ -1805,7 +1808,7 @@ function mountEdu() {
     document.getElementById("eduTitle").innerHTML = d.title;
     document.getElementById("eduRegion").textContent = d.region;
     document.getElementById("eduBody").textContent = d.body;
-    document.getElementById("brainCaption").textContent = "Highlighted region · " + d.region.toLowerCase();
+    document.getElementById("brainCaption").textContent = "Highlighted system · " + d.region.toLowerCase();
     document.querySelectorAll(".edu-dot").forEach((el, idx) => el.classList.toggle("active", idx === currentIdx));
   }
 

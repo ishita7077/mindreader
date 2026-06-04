@@ -387,6 +387,22 @@ body {
   border-radius: 6px;
   overflow: hidden;
 }
+.respond-video-frame img { width: 100%; height: 100%; object-fit: cover; display: block; filter: saturate(0.92) contrast(1.05) brightness(0.86); transition: transform .2s ease, filter .2s ease; }
+.respond-video-frame:hover img { transform: scale(1.03); filter: saturate(1.04) contrast(1.08) brightness(0.94); }
+.respond-static-play {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  padding: 8px 12px;
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+  border-radius: 999px;
+  background: rgba(3, 7, 21, 0.82);
+  color: var(--gold-bright);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
 .respond-video-frame video { width: 100%; height: 100%; object-fit: cover; }
 .respond-video-placeholder {
   position: absolute; inset: 0;
@@ -896,6 +912,25 @@ body {
 
 .eq-reveal.shown {
   display: block;
+}
+
+.eq-reset {
+  margin-top: 16px;
+  padding: 10px 14px;
+  border: 1px solid var(--rule-warm);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--gold-bright);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.eq-reset:hover {
+  border-color: var(--gold);
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
 }
 
 .eq-reveal h4 {
@@ -1685,6 +1720,7 @@ path[stroke="#2a2a3e"] { stroke: var(--line); }
 </style>
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Crimson+Pro:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Caveat:wght@400;500;700&family=Kalam:wght@300;400;700&family=Inter+Tight:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/theme.css">
+<link rel="stylesheet" href="/assets/neon-site.css?v=1">
 </head>
 <body>
 
@@ -1702,7 +1738,6 @@ path[stroke="#2a2a3e"] { stroke: var(--line); }
   <nav class="nav-new">
     <a href="/research" class="is-active">Research</a>
     <a href="/methodology">Methodology</a>
-    <a href="/#case-study">Case studies</a>
     <a href="/launch" class="nav-cta-new">Launch →</a>
   </nav>
 </header>
@@ -1745,7 +1780,7 @@ path[stroke="#2a2a3e"] { stroke: var(--line); }
 
   <div class="cold-frame">
     <p style="font-size:14px;color:var(--text-soft);font-family:'JetBrains Mono',monospace;letter-spacing:0.04em;line-height:1.7;text-align:left;max-width:600px;margin:0 auto">
-      One thing before you read further: when we say <strong style="color:var(--text)">brain</strong>, we're being sloppy on purpose. We mean <strong style="color:var(--text)">cortex</strong> — the outer surface. It's where language gets parsed, attention gets allocated, and memories get filed. TRIBE v2 does not model subcortical structures.
+      One clarification before you read further: Brain Diff models the <strong style="color:var(--text)">cortex</strong>, not the whole brain. That is the outer surface where language, attention, memory encoding, and social reasoning are represented in TRIBE v2.
     </p>
     <p style="font-size:12px;color:var(--text-mute);font-family:'JetBrains Mono',monospace;letter-spacing:0.12em;text-transform:uppercase;margin-top:28px">
       Skim the headlines · expand any section to read deeper
@@ -2016,6 +2051,7 @@ path[stroke="#2a2a3e"] { stroke: var(--line); }
       </div>
 
       <p style="margin-top: 16px;"><strong>This is what thirty-five years of measurement looks like.</strong> Items that vary by culture, correlate with personality traits, and never converge on a stable construct. The field has never agreed on what it is measuring.</p>
+      <button class="eq-reset" id="eq-reset" type="button">Restart scale</button>
     </div>
   </div>
 </section>
@@ -2027,7 +2063,7 @@ path[stroke="#2a2a3e"] { stroke: var(--line); }
   <div class="section-header">
     <div class="section-num">SECTION <strong>03</strong> · THEREFORE</div>
     <span class="therefore-tag">→ THEREFORE</span>
-    <h2 class="section-h2">We'd need a brain that wasn't <em>anyone's</em> brain.</h2>
+    <h2 class="section-h2">So we use a population-average <em>cortex</em>.</h2>
   </div>
 
   <p class="section-lead">
@@ -2058,7 +2094,7 @@ path[stroke="#2a2a3e"] { stroke: var(--line); }
   <div class="section-header">
     <div class="section-num">SECTION <strong>04</strong> · BUT</div>
     <span class="but-tag">↺ BUT</span>
-    <h2 class="section-h2">Aggregated brains don't watch <em>real videos</em>.<br>They lie in scanners doing lab tasks.</h2>
+    <h2 class="section-h2">The next problem: lab tasks are not <em>real content</em>.</h2>
   </div>
 
   <p class="section-lead">
@@ -2200,48 +2236,35 @@ path[stroke="#2a2a3e"] { stroke: var(--line); }
     </div>
   </details>
 
-  <!-- INTERACTIVE 4: Watch the cortex respond — Cleo vs MrBeast only, with side-by-side video placeholders -->
+  <!-- Static response comparison — no local MP4 dependency. -->
   <div class="cortex-respond-wrap">
-    <div class="iact-tag">Press play &middot; videos and bars run together</div>
-    <div class="respond-title">Cleo Abram vs. MrBeast — press Play, watch the seven systems diverge.</div>
+    <div class="iact-tag">Static readout &middot; two public videos</div>
+    <div class="respond-title">Two messages. Same seven systems. One static cortical readout.</div>
     <div style="font-size:13.5px;color:var(--text-soft);font-family:'Newsreader',serif;line-height:1.6;max-width:600px;margin:8px 0 24px">
-      Two creators. Two opening hooks. Same seven cortical systems. Watch where each one wins — and where they're surprisingly identical. <em style="color:var(--text-mute)">More presets coming as the comparator library grows.</em>
+      This is a fixed example, not synced playback. Open either video if you want context; the bars below show the kind of seven-system comparison Brain Diff returns.
     </div>
 
-    <!-- Side-by-side video stage (placeholders until clips land) -->
     <div class="respond-videos" id="respond-videos">
       <div class="respond-video-cell">
-        <div class="respond-video-label">A · Cleo Abram &mdash; intro</div>
-        <div class="respond-video-frame" id="vidA-frame">
-          <div class="respond-video-placeholder">
-            <div class="respond-video-placeholder-icon">▶</div>
-            <div>Video clip placeholder</div>
-            <div class="respond-video-placeholder-sub">Drop the Cleo Abram intro MP4 in <code>/assets/research/cleo.mp4</code></div>
-          </div>
-          <video id="vidA" preload="metadata" playsinline muted style="display:none" src="/assets/research/cleo.mp4"></video>
-        </div>
+        <div class="respond-video-label">A · Calm &amp; informative</div>
+        <a class="respond-video-frame" href="https://www.youtube.com/watch?v=lBYC4_Lccjw&start=0&end=30" target="_blank" rel="noopener" aria-label="Open video A on YouTube">
+          <img src="https://img.youtube.com/vi/lBYC4_Lccjw/hqdefault.jpg" alt="" loading="lazy">
+          <span class="respond-static-play">Open video →</span>
+        </a>
       </div>
       <div class="respond-video-cell">
-        <div class="respond-video-label">B · MrBeast &mdash; hook</div>
-        <div class="respond-video-frame" id="vidB-frame">
-          <div class="respond-video-placeholder">
-            <div class="respond-video-placeholder-icon">▶</div>
-            <div>Video clip placeholder</div>
-            <div class="respond-video-placeholder-sub">Drop the MrBeast hook MP4 in <code>/assets/research/mrbeast.mp4</code></div>
-          </div>
-          <video id="vidB" preload="metadata" playsinline muted style="display:none" src="/assets/research/mrbeast.mp4"></video>
-        </div>
+        <div class="respond-video-label">B · Sharp &amp; personal</div>
+        <a class="respond-video-frame" href="https://www.youtube.com/watch?v=0e3GPea1Tyg&start=0&end=30" target="_blank" rel="noopener" aria-label="Open video B on YouTube">
+          <img src="https://img.youtube.com/vi/0e3GPea1Tyg/hqdefault.jpg" alt="" loading="lazy">
+          <span class="respond-static-play">Open video →</span>
+        </a>
       </div>
     </div>
 
     <div class="respond-display">
       <div class="respond-controls">
-        <button class="respond-play" id="respond-play">▶ Play</button>
-        <span>TIME &nbsp;<span class="respond-time" id="respond-time">0:00</span> / 0:30</span>
-        <label class="respond-video-toggle" style="margin-left:auto;display:inline-flex;align-items:center;gap:6px;font-size:11px;font-family:'JetBrains Mono',monospace;letter-spacing:0.06em;color:var(--text-mute);cursor:pointer">
-          <input type="checkbox" id="respond-video-on" checked style="accent-color:var(--gold)"/>
-          Show videos
-        </label>
+        <span>STATIC MOMENT &nbsp;<span class="respond-time" id="respond-time">0:18</span></span>
+        <span style="margin-left:auto;color:var(--text-mute)">A / B scores</span>
       </div>
 
       <div class="respond-bars" id="respond-bars">
@@ -2251,7 +2274,7 @@ path[stroke="#2a2a3e"] { stroke: var(--line); }
   </div>
 
   <div class="section-bottom">
-    The bars below the videos are the seven cortical systems responding to each clip in real time. Where the bars rise together, both videos are recruiting the same system. Where they diverge, the cortex is responding differently — and that divergence is where most of the interesting questions about content actually live.
+    The bars are a static example of the seven cortical systems responding to two different messages. Where the bars rise together, both videos are recruiting the same system. Where they diverge, the cortex is responding differently — and that divergence is where most of the useful content questions live.
   </div>
 </section>
 
@@ -2578,7 +2601,6 @@ path[stroke="#2a2a3e"] { stroke: var(--line); }
           <p>
             <a href="/methodology">Methodology — how we compute</a><br>
             <a href="/methodology/patterns">Pattern definitions (open source)</a><br>
-            <a href="/#case-study">Case studies</a><br>
             <a href="https://huggingface.co/facebook/tribev2" target="_blank" rel="noopener">TRIBE v2 · Meta FAIR</a><br>
             <a href="https://github.com/ishita7077/runpod_braindiff_test" target="_blank" rel="noopener">GitHub — open a PR</a>
           </p>
@@ -2650,10 +2672,22 @@ document.querySelectorAll('.eq-item').forEach(item => {
       // Show reveal once all 3 answered
       if (Object.keys(eqAnswers).length === 3) {
         document.getElementById('eq-reveal').classList.add('shown');
-        document.getElementById('eq-reveal').scrollIntoView({behavior: 'smooth', block: 'nearest'});
+        if (!document.getElementById('eq-reveal').dataset.seen) {
+          document.getElementById('eq-reveal').dataset.seen = 'true';
+          document.getElementById('eq-reveal').scrollIntoView({behavior: 'smooth', block: 'nearest'});
+        }
       }
     });
   });
+});
+document.getElementById('eq-reset')?.addEventListener('click', () => {
+  Object.keys(eqAnswers).forEach(key => delete eqAnswers[key]);
+  document.querySelectorAll('.eq-option.selected').forEach(btn => btn.classList.remove('selected'));
+  const reveal = document.getElementById('eq-reveal');
+  if (reveal) {
+    reveal.classList.remove('shown');
+    delete reveal.dataset.seen;
+  }
 });
 
 // ════════════════════════════════════════════════
@@ -2814,9 +2848,9 @@ renderTimeline();
 // INTERACTIVE 4: Watch Cortex Respond
 // ════════════════════════════════════════════════
 const respondPresets = [
-  { // Cleo vs MrBeast
-    a: { name: 'Cleo Abram', peaks: [0.42, 0.48, 0.78, 0.34, 0.65, 0.55, 0.75], shapes: ['plateau','oscillation','sustained','flatline','plateau','plateau','sustained'] },
-    b: { name: 'MrBeast',    peaks: [0.88, 0.85, 0.60, 0.78, 0.71, 0.62, 0.62], shapes: ['slow-build','sustained','episodic','cliff','cliff','late-surge','oscillation'] }
+  { // Landing-page A/B example
+    a: { name: 'Dove', peaks: [0.72, 0.46, 0.38, 0.54, 0.68, 0.86, 0.74], shapes: ['sustained','plateau','flatline','plateau','slow-build','sustained','sustained'] },
+    b: { name: 'Nike', peaks: [0.82, 0.72, 0.60, 0.42, 0.56, 0.70, 0.48], shapes: ['slow-build','sustained','plateau','flatline','plateau','plateau','oscillation'] }
   },
   { // PSA A vs B
     a: { name: 'PSA A', peaks: [0.55, 0.60, 0.45, 0.50, 0.62, 0.55, 0.58], shapes: ['plateau','plateau','plateau','plateau','plateau','plateau','plateau'] },
@@ -2828,8 +2862,8 @@ const respondPresets = [
   }
 ];
 
-const dimensions = ['Personal Resonance', 'Attention', 'Brain Effort', 'Gut Reaction', 'Memory Encoding', 'Social Thinking', 'Language Depth'];
-const dimColors = ['#FFD89E', '#D4A857', '#7FB3C6', '#E25B43', '#E8C788', '#B89BC9', '#8AA876'];
+const dimensions = ['Attention', 'Brain Effort', 'Gut Reaction', 'Language Depth', 'Memory Encoding', 'Personal Resonance', 'Social Thinking'];
+const dimColors = ['#D4A857', '#7FB3C6', '#E25B43', '#8AA876', '#E8C788', '#FFD89E', '#B89BC9'];
 
 let currentPreset = 0;
 let respondPlaying = false;
@@ -2892,11 +2926,12 @@ function updateRespond(t) {
     const vb = preset.b.dataB[dim][tt];
     el.textContent = `${va.toFixed(2)} / ${vb.toFixed(2)}`;
   });
-  document.getElementById('respond-time').textContent = `0:${String(Math.floor(t)).padStart(2,'0')}`;
+  const timeEl = document.getElementById('respond-time');
+  if (timeEl) timeEl.textContent = `0:${String(Math.floor(t)).padStart(2,'0')}`;
 }
 
 buildRespondBars();
-updateRespond(0);
+updateRespond(18);
 
 document.querySelectorAll('.respond-preset').forEach(btn => {
   btn.addEventListener('click', () => {
@@ -2908,73 +2943,23 @@ document.querySelectorAll('.respond-preset').forEach(btn => {
   });
 });
 
-// Play / pause — also drives the optional side-by-side video clips
-const vidA = document.getElementById('vidA');
-const vidB = document.getElementById('vidB');
-const videosWrap = document.getElementById('respond-videos');
-const videosToggle = document.getElementById('respond-video-on');
-
-function videosAvailable() {
-  // If the file 404s, the <video> readyState stays 0 and duration is NaN.
-  // We treat the videos as available only if both have loaded metadata.
-  return vidA && vidB && vidA.readyState >= 1 && vidB.readyState >= 1
-         && Number.isFinite(vidA.duration) && Number.isFinite(vidB.duration);
-}
-
-function tryShowVideos() {
-  if (!videosToggle || !videosToggle.checked) return;
-  if (!videosAvailable()) return;
-  vidA.style.display = 'block';
-  vidB.style.display = 'block';
-  // Hide the placeholder cards once videos are confirmed loaded
-  document.querySelectorAll('.respond-video-placeholder').forEach(p => p.style.display = 'none');
-}
-
-if (vidA) vidA.addEventListener('loadedmetadata', tryShowVideos);
-if (vidB) vidB.addEventListener('loadedmetadata', tryShowVideos);
-
-if (videosToggle) {
-  videosToggle.addEventListener('change', () => {
-    if (videosToggle.checked) {
-      videosWrap.classList.remove('is-hidden');
-      tryShowVideos();
-    } else {
-      videosWrap.classList.add('is-hidden');
-      if (vidA && !vidA.paused) vidA.pause();
-      if (vidB && !vidB.paused) vidB.pause();
-    }
-  });
-}
-
-document.getElementById('respond-play').addEventListener('click', () => {
+const respondPlay = document.getElementById('respond-play');
+if (respondPlay) respondPlay.addEventListener('click', () => {
   if (respondPlaying) {
     clearInterval(respondInterval);
     respondPlaying = false;
-    document.getElementById('respond-play').textContent = '▶ Play';
-    if (vidA && !vidA.paused) vidA.pause();
-    if (vidB && !vidB.paused) vidB.pause();
+    respondPlay.textContent = '▶ Play';
   } else {
     if (respondTime >= 29) respondTime = 0;
     respondPlaying = true;
-    document.getElementById('respond-play').textContent = '❚❚ Pause';
-    // If real videos are loaded, sync them to the bar timer.
-    if (videosAvailable() && videosToggle && videosToggle.checked) {
-      try {
-        vidA.currentTime = respondTime;
-        vidB.currentTime = respondTime;
-        vidA.play().catch(() => {});
-        vidB.play().catch(() => {});
-      } catch (_) { /* placeholder mode */ }
-    }
+    respondPlay.textContent = '❚❚ Pause';
     respondInterval = setInterval(() => {
       respondTime += 0.5;
       if (respondTime >= 29) {
         clearInterval(respondInterval);
         respondPlaying = false;
-        document.getElementById('respond-play').textContent = '▶ Play';
+        respondPlay.textContent = '▶ Play';
         respondTime = 29;
-        if (vidA && !vidA.paused) vidA.pause();
-        if (vidB && !vidB.paused) vidB.pause();
       }
       updateRespond(respondTime);
     }, 100);
@@ -3097,7 +3082,7 @@ updateMontage(1995);
       // Respond bars: animate to midpoint on first scroll entry
       if (!respondAnimated && (el.classList.contains('cortex-respond-wrap') || el === respondSection)) {
         respondAnimated = true;
-        setTimeout(() => updateRespond(14), 200);
+        setTimeout(() => updateRespond(18), 200);
       }
 
       // Timeline: pre-activate middle dot
