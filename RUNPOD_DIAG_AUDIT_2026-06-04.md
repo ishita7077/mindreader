@@ -370,3 +370,38 @@ Forensic conclusion:
 - The GitHub push that most directly preceded the screenshot failure is `d8d9f33`.
 - The GitHub push that reintroduced the earlier temporary-image/template-sync risk is `63288e5`.
 - The GitHub push where the latent PyTorch 2.6 worker dependency entered the Docker image path is `82dd3b8`.
+
+## 2026-06-04 13:45 UTC - Prior Blackwell/Worker-Boot Fix Check
+
+Question checked: whether this is the same issue previously fixed and whether the same patch should be reapplied.
+
+Prior worker-start fixes found in git history:
+
+- `c30f524` (`2026-05-21T18:39:17+07:00`) - isolated fast boot worker entrypoint.
+- `90d2b5f` (`2026-05-21T19:01:22+07:00`) - lazy TRIBE warmup; register worker before model download.
+- `a348484` (`2026-05-22T13:37:12+07:00`) - bootstrap RunPod worker before heavy imports.
+- `8e83059` (`2026-05-22T15:19:09+07:00`) - RP-NN checkpoint logs.
+
+Current status of those patches:
+
+- They are still present in `runpod_worker/handler.py` and `runpod_worker/worker_impl.py`.
+- The current handler still imports only stdlib + RunPod SDK before registering the worker.
+- Heavy BrainDiff imports still happen after the worker receives its first job.
+- Therefore, this is not a missing-reapply of the old bootstrap patch.
+
+Difference in the new failure:
+
+- The new screenshot failure is inside RunPod's own serverless fitness check before BrainDiff reaches its job handler.
+- The log names the incompatible GPU directly: `NVIDIA RTX PRO 6000 Blackwell Server Edition MIG 1g.24gb` (`sm_120`).
+- The image still pins `torch==2.6.0`, and the log confirms that install supports only up to `sm_90`.
+
+Most likely previous operational resolution:
+
+- The worker was run on GPUs documented for this project as `A40 / RTX A5000`, not Blackwell.
+- That is a RunPod endpoint/template GPU-selection fix, not a code diff in this repo.
+
+Conclusion:
+
+- Same family of problem: worker cannot get past GPU/runtime startup.
+- Not the same code patch: the old fast-boot/bootstrap patch is already in place.
+- Equivalent immediate fix is to move the RunPod endpoint back to a non-Blackwell GPU supported by the current PyTorch image, or rebuild the image with a PyTorch/CUDA stack that supports Blackwell `sm_120`.
