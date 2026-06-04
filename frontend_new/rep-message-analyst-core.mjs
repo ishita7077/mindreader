@@ -583,13 +583,13 @@ function movementPhrase(shape) {
 function analystTitle(packet) {
   const dim = packet.dimension;
   const low = packet.event_shape === "trough" || packet.event_shape === "sustained_low" || packet.event_shape === "sharp_drop";
-  if (dim === "attention") return packet.event_shape.includes("drop") ? "The message lost some pull here." : "This is where attention concentrated.";
-  if (dim === "memory_encoding") return "This is the part most likely to stick.";
+  if (dim === "attention") return low ? "Focus dipped here." : "This is where attention concentrated.";
+  if (dim === "memory_encoding") return low ? "The memory signal dipped here." : "This is the part most likely to stick.";
   if (dim === "gut_reaction") return low ? "The immediate reaction cooled here." : "This is where the message produced a gut-level shift.";
-  if (dim === "brain_effort") return "The message became heavier to process.";
+  if (dim === "brain_effort") return low ? "The message became easier to process here." : "The message became heavier to process.";
   if (dim === "personal_resonance") return low ? "Personal relevance dipped here." : "This moment felt more personally situated.";
-  if (dim === "social_thinking") return low ? "The message became less about other people here." : "The message pulled other people into the listener's frame.";
-  if (dim === "language_depth") return low ? "The explanation became less distinctive here." : "The explanation stood out here.";
+  if (dim === "social_thinking") return low ? "People and intent mattered less here." : "The message pulled other people into the listener's frame.";
+  if (dim === "language_depth") return low ? "The meaning got lighter here." : "The explanation stood out here.";
   return "A clear brain-signal shift appeared here.";
 }
 
@@ -628,8 +628,8 @@ function trimWordWindow(selected, words, peakTime) {
   while (
     end < words.length - 1 &&
     words[end + 1].segmentId === segmentId &&
-    !/[.!?]$/.test(words[end].word) &&
-    end - start < 21
+    (!/[.!?]$/.test(words[end].word) || isWeakEndingWord(words[end].word)) &&
+    end - start < 30
   ) {
     end += 1;
   }
@@ -680,6 +680,12 @@ function nearestWord(words, time) {
 
 function wordsToText(words) {
   return words.map((word) => word.word).join(" ").replace(/\s+([,.!?;:])/g, "$1").replace(/\s+/g, " ").trim();
+}
+
+function isWeakEndingWord(word) {
+  return /^(and|or|but|because|so|then|that|this|the|a|an|to|of|in|on|with|for|from)$/i.test(
+    String(word || "").replace(/[^\w'-]+$/g, "")
+  );
 }
 
 function percentileRank(sorted, value) {

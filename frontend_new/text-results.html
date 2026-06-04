@@ -5,6 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#F7F2EA">
 <title>Brain Diff — Results</title>
+<script>
+(function(){
+  var params = new URLSearchParams(location.search);
+  var jobId = params.get('jobId') || params.get('job_id') || params.get('job');
+  if (jobId && params.get('legacy') !== '1') {
+    location.replace('./rep-message-analyst-neon.html?jobId=' + encodeURIComponent(jobId) + '&side=' + encodeURIComponent(params.get('side') || 'a'));
+  }
+})();
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- Lab-notebook palette fonts:

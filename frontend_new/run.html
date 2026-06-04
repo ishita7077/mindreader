@@ -87,7 +87,7 @@
   .status-card {
     background: var(--panel); border: 1px solid var(--line);
     border-radius: 14px; padding: 28px; box-shadow: var(--shadow-md);
-    position: sticky; top: 32px; backdrop-filter: blur(10px);
+    position: sticky; top: 32px; z-index: 3; backdrop-filter: blur(10px);
   }
   .eyebrow {
     font-family: 'JetBrains Mono', monospace; font-size: 10.5px;
@@ -512,6 +512,7 @@
     background: color-mix(in srgb, var(--good) 10%, var(--panel-2));
     border: 1px solid color-mix(in srgb, var(--good) 40%, transparent);
     border-radius: 10px;
+    position: relative; z-index: 2;
   }
   body.run-done .done-cta { display: block; animation: bdDoneIn 700ms cubic-bezier(0.2, 0.8, 0.25, 1) forwards; opacity: 0; transform: translateY(6px); }
   @keyframes bdDoneIn { to { opacity: 1; transform: translateY(0); } }
@@ -709,7 +710,7 @@
 
     <div class="done-cta" id="doneCta" aria-hidden="true">
       <p class="done-cta-label">Your contrast map is ready.</p>
-      <button class="done-cta-btn" id="viewResultsBtn" type="button">View results <span aria-hidden="true">→</span></button>
+      <a class="done-cta-btn" id="viewResultsBtn" href="#">View results <span aria-hidden="true">→</span></a>
     </div>
   </aside>
 
@@ -894,12 +895,19 @@ function toggleTheme(){
     // Text and audio share the same page — both come down to a TTS-derived
     // waveform + the same TRIBE-driven cortical timeseries. Video keeps the
     // dedicated results.html that has the visual chord progression view.
-    if (RUN_MODE === 'audio' || RUN_MODE === 'text') return './text-results.html';
+    if (RUN_MODE === 'audio' || RUN_MODE === 'text') return './rep-message-analyst-neon.html';
     return './results.html';
+  }
+  function resultsHrefForRun(){
+    const page = resultsPageForMode();
+    const side = params.get('side') || 'a';
+    return page + '?jobId=' + encodeURIComponent(JOB_ID) + '&side=' + encodeURIComponent(side) + '&reveal=1';
   }
 
   const jobLbl = document.getElementById('jobIdLabel');
   if (jobLbl) jobLbl.textContent = 'job · ' + JOB_ID.slice(0, 8);
+  const viewResultsBtn = document.getElementById('viewResultsBtn');
+  if (viewResultsBtn) viewResultsBtn.setAttribute('href', resultsHrefForRun());
   const statusSub = document.getElementById('statusSub');
   if (statusSub) {
     statusSub.textContent = 'Your two ' + RUN_KIND + ' are being encoded and compared across seven cortical systems.';
@@ -1440,19 +1448,8 @@ function toggleTheme(){
   document.addEventListener('click', function(e){
     const btn = e.target.closest('#viewResultsBtn');
     if (!btn) return;
-    const go = resultsPageForMode() + '?jobId=' + encodeURIComponent(JOB_ID) + '&reveal=1';
-    if (REDUCE){ window.location.href = go; return; }
-    const r = btn.getBoundingClientRect();
-    const cx = r.left + r.width / 2;
-    const cy = r.top + r.height / 2;
-    const blot = document.getElementById('inkBlot');
-    if (!blot){ window.location.href = go; return; }
-    blot.style.left = cx + 'px';
-    blot.style.top  = cy + 'px';
-    requestAnimationFrame(function(){
-      blot.classList.add('on');
-      setTimeout(function(){ window.location.href = go; }, 760);
-    });
+    e.preventDefault();
+    window.location.assign(btn.getAttribute('href') || resultsHrefForRun());
   });
 
   // bfcache safety: clear .ink-blot.on if the page is restored from the

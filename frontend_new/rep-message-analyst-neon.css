@@ -143,6 +143,19 @@ a { color: inherit; text-decoration: none; }
   border-radius: 8px;
 }
 
+.job-chip {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 9px 13px;
+  background: rgba(6, 14, 30, 0.72);
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
 .switch-pill {
   border: 0;
   border-radius: 7px;
@@ -2306,6 +2319,9 @@ blockquote {
     flex-direction: column;
   }
   .run-switch {
+    align-self: start;
+  }
+  .job-chip {
     align-self: start;
   }
   .page {

@@ -40,7 +40,10 @@ const PLAYBACK_SECONDS_PER_SECOND = 2.15;
 const LONG_TRANSCRIPT_WORD_LIMIT = 58;
 
 const params = new URLSearchParams(location.search);
+const jobId = params.get("jobId") || params.get("job_id") || params.get("job");
+const resultSide = String(params.get("side") || "a").toLowerCase() === "b" ? "b" : "a";
 let runId = params.get("run") || "maya";
+let isJobReport = Boolean(jobId);
 let report = null;
 let cortex = null;
 let activeInsightId = null;
@@ -60,7 +63,7 @@ boot();
 
 async function boot() {
   try {
-    report = await loadReport(runId);
+    report = await loadReport();
     activeInsightId = report.finalInsights[0]?.id || null;
     scrubTime = activeInsight()?.event.peakTime || 0;
     activeDimension = activeInsight()?.event.signalName || "attention";
@@ -71,7 +74,12 @@ async function boot() {
   }
 }
 
-async function loadReport(id) {
+async function loadReport() {
+  if (jobId) {
+    return loadJobReport(jobId, resultSide);
+  }
+
+  const id = runId;
   const generated = await fetch(`/data/rep-message-analyst/${encodeURIComponent(id)}.json`, { cache: "no-store" });
   if (generated.ok) return generated.json();
 
@@ -80,6 +88,158 @@ async function loadReport(id) {
     return res.json();
   });
   return buildRepMessageAnalystReport(raw);
+}
+
+async function loadJobReport(id, side) {
+  const response = await fetch(`/api/diff/status/${encodeURIComponent(id)}`, { cache: "no-store" });
+  if (!response.ok) throw new Error(`Could not load job '${id}' (HTTP ${response.status}).`);
+  const job = await response.json();
+  if (job.status === "error") {
+    throw new Error(job.error?.message || "This run failed before returning a result.");
+  }
+  if (job.status !== "done") {
+    throw new Error("This run is not finished yet. Open the run page and wait for completion.");
+  }
+  return buildRepMessageAnalystReport(adaptWorkerJobToSingleRun(job, side));
+}
+
+function adaptWorkerJobToSingleRun(job, side) {
+  const result = job.result || {};
+  const meta = result.meta || {};
+  const prefix = side === "b" ? "b" : "a";
+  const transcript =
+    meta[`transcript_${prefix}`] ||
+    meta[`text_${prefix}`] ||
+    result[`transcript_${prefix}`] ||
+    "";
+  if (!transcript.trim()) {
+    throw new Error(`This completed job does not include transcript ${prefix.toUpperCase()} data.`);
+  }
+
+  const displayName =
+    meta[`display_name_${prefix}`] ||
+    meta[`media_name_${prefix}`] ||
+    `${meta.modality || "Input"} ${prefix.toUpperCase()}`;
+  const seriesLength = workerSeriesLength(result.dimensions || [], prefix);
+  const duration = Math.max(
+    Number(meta[`${prefix === "a" ? "text_a" : "text_b"}_timesteps`] || 0),
+    seriesLength - 1,
+    1
+  );
+  const dimensions = adaptDimensionSeries(result.dimensions || [], prefix, duration);
+  if (!dimensions.length) {
+    throw new Error("This completed job does not include the seven brain-signal timelines needed for the neon report.");
+  }
+
+  const transcriptSegments = adaptTranscriptSegments(meta[`transcript_segments_${prefix}`], transcript, duration);
+  const transcriptWords = buildWordTimings(transcriptSegments, transcript, duration);
+
+  return {
+    id: String(job.job_id || jobId || "job"),
+    title: String(displayName || "Completed BrainDiff run"),
+    transcriptText: transcript,
+    transcriptWords,
+    transcriptSegments,
+    dimensions,
+    alignment: {
+      alignmentSource: meta.pipeline || meta.modality || "worker_result",
+      hrfLagSec: 5,
+      generatedAudioDurationSec: duration,
+      analysisDurationSec: duration,
+      trailingAudioPaddingSec: 0,
+    },
+  };
+}
+
+function workerSeriesLength(workerDimensions, side) {
+  const seriesKey = side === "b" ? "timeseries_b" : "timeseries_a";
+  return Math.max(0, ...workerDimensions.map((item) => Array.isArray(item?.[seriesKey]) ? item[seriesKey].length : 0));
+}
+
+function adaptDimensionSeries(workerDimensions, side, duration) {
+  const seriesKey = side === "b" ? "timeseries_b" : "timeseries_a";
+  const byDim = new Map();
+  let maxLen = 0;
+  for (const item of workerDimensions) {
+    const key = normalizeWorkerDimensionKey(item?.key);
+    if (!DIMENSION_LABELS[key]) continue;
+    const values = Array.isArray(item?.[seriesKey]) ? item[seriesKey].map(Number).filter(Number.isFinite) : [];
+    if (!values.length) continue;
+    byDim.set(key, values);
+    maxLen = Math.max(maxLen, values.length);
+  }
+  if (!maxLen) return [];
+  return Array.from({ length: maxLen }, (_, index) => {
+    const t = maxLen === 1 ? 0 : (index / (maxLen - 1)) * duration;
+    const values = Object.fromEntries(Object.keys(DIMENSION_LABELS).map((dim) => {
+      const arr = byDim.get(dim) || [];
+      return [dim, Number.isFinite(arr[index]) ? arr[index] : Number.isFinite(arr.at(-1)) ? arr.at(-1) : 0];
+    }));
+    return { t, values };
+  });
+}
+
+function normalizeWorkerDimensionKey(key) {
+  const value = String(key || "").trim();
+  if (value === "attention_salience") return "attention";
+  return value;
+}
+
+function adaptTranscriptSegments(rawSegments, transcript, duration) {
+  if (Array.isArray(rawSegments) && rawSegments.length) {
+    const normalized = rawSegments
+      .map((segment, index) => ({
+        id: String(segment.id ?? index),
+        start: Number(segment.start),
+        end: Number(segment.end),
+        text: String(segment.text || segment.transcript || ""),
+      }))
+      .filter((segment) => segment.text && Number.isFinite(segment.start) && Number.isFinite(segment.end));
+    if (normalized.length) return normalized;
+  }
+
+  const sentences = splitSentences(transcript);
+  const totalChars = Math.max(1, sentences.reduce((sum, sentence) => sum + sentence.length, 0));
+  let cursor = 0;
+  return sentences.map((sentence, index) => {
+    const span = Math.max(0.8, (sentence.length / totalChars) * duration);
+    const start = cursor;
+    const end = index === sentences.length - 1 ? duration : Math.min(duration, start + span);
+    cursor = end;
+    return { id: String(index), start, end, text: sentence };
+  });
+}
+
+function buildWordTimings(segments, transcript, duration) {
+  const sourceSegments = segments.length ? segments : [{ id: "0", start: 0, end: duration, text: transcript }];
+  const words = [];
+  for (const segment of sourceSegments) {
+    const tokens = String(segment.text || "").match(/\S+/g) || [];
+    const span = Math.max(0.1, Number(segment.end) - Number(segment.start));
+    tokens.forEach((word, index) => {
+      const start = Number(segment.start) + (index / Math.max(1, tokens.length)) * span;
+      const end = Number(segment.start) + ((index + 1) / Math.max(1, tokens.length)) * span;
+      words.push({
+        word,
+        start,
+        end,
+        segmentId: String(segment.id),
+        index: words.length,
+      });
+    });
+  }
+  return words;
+}
+
+function splitSentences(text) {
+  const clean = String(text || "").replace(/\s+/g, " ").trim();
+  if (!clean) return [];
+  const matches = clean.match(/[^.!?]+[.!?]+|[^.!?]+$/g) || [clean];
+  return matches.map((sentence) => sentence.trim()).filter(Boolean);
+}
+
+function trimTerminalPunctuation(text) {
+  return String(text || "").trim().replace(/[.!?]+$/, "");
 }
 
 async function mountBrain() {
@@ -118,10 +278,12 @@ function render() {
           <span>${formatTime(report.input.alignment.generatedAudioDurationSec || report.input.alignment.analysisDurationSec)}</span>
           <span>Single call</span>
         </div>
-        <nav class="run-switch" aria-label="Run switcher">
-          ${switchButton("maya", "Maya")}
-          ${switchButton("rahul", "Rahul")}
-        </nav>
+        ${isJobReport ? `<div class="job-chip">Job · ${esc(short(report.input.id))}</div>` : `
+          <nav class="run-switch" aria-label="Run switcher">
+            ${switchButton("maya", "Maya")}
+            ${switchButton("rahul", "Rahul")}
+          </nav>
+        `}
       </header>
 
       <section class="hero">
@@ -434,6 +596,7 @@ function renderScrubBars(dim, time) {
 function plainInsightLead(item) {
   const title = item.analyst.title.toLowerCase();
   const dim = DIMENSION_LABELS[item.event.signalName];
+  const low = isLowEvent(item);
   if (title.includes("manual call review")) {
     return "The strongest moment is the line that names the buyer's manual work clearly.";
   }
@@ -444,10 +607,22 @@ function plainInsightLead(item) {
     return "The instinctive reaction rises when the script connects a likely motive to a concrete pain.";
   }
   if (item.event.signalName === "attention") {
-    return "This is where the listener is most likely to lock onto the message.";
+    return low ? "This is where attention becomes quieter." : "This is where the listener is most likely to lock onto the message.";
+  }
+  if (item.event.signalName === "personal_resonance") {
+    return low ? "This is where personal relevance becomes quieter." : "This is where the wording connects most clearly to the listener's situation.";
+  }
+  if (item.event.signalName === "brain_effort") {
+    return low ? "This is where the wording asks for less mental work." : "This is where the wording asks the listener to do the most mental work.";
+  }
+  if (item.event.signalName === "memory_encoding") {
+    return low ? "This is where the memory signal becomes quieter." : "This is where the wording is most likely to stay available later.";
+  }
+  if (item.event.signalName === "social_thinking") {
+    return low ? "This is where people and intent become less central." : "This is where the wording makes people, roles, or trust more central.";
   }
   if (item.event.signalName === "language_depth") {
-    return "This is where the wording asks the listener to process the meaning more deeply.";
+    return low ? "This is where the explanation becomes lighter." : "This is where the wording asks the listener to process the meaning more deeply.";
   }
   return `${dim} changes most clearly at this point in the call.`;
 }
@@ -455,6 +630,7 @@ function plainInsightLead(item) {
 function simpleDriver(item, sentenceText) {
   const title = item.analyst.title.toLowerCase();
   const quote = sentenceText || item.analyst.quote;
+  const low = isLowEvent(item);
   if (title.includes("manual call review")) {
     return "The line names the exact burden: managers having to listen to every call. That is more concrete than saying teams need better coaching or faster ramp.";
   }
@@ -464,11 +640,43 @@ function simpleDriver(item, sentenceText) {
   if (title.includes("motive") || item.event.signalName === "gut_reaction") {
     return "The line puts motive and friction in the same breath. It turns the point from explanation into something more immediate.";
   }
-  return `The nearby sentence carries the trigger: "${truncateWords(quote, 26)}". This is the wording closest to the measured response change.`;
+  const cleanQuote = trimTerminalPunctuation(truncateWords(quote, 28));
+  if (item.event.signalName === "attention") {
+    return low
+      ? `The line carries less pull than the surrounding call: "${cleanQuote}." The attention signal gets quieter here instead of building.`
+      : `The line gives the listener a concrete reason to keep tracking the message: "${cleanQuote}." It is the part of the call where focus rises most clearly.`;
+  }
+  if (item.event.signalName === "personal_resonance") {
+    return low
+      ? `The line feels less tied to the listener's own situation: "${cleanQuote}." The personal-relevance signal drops against the surrounding call.`
+      : `The line makes the message feel tied to the listener's own situation: "${cleanQuote}." It is less abstract than the surrounding setup.`;
+  }
+  if (item.event.signalName === "brain_effort") {
+    return low
+      ? `The line asks for less mental work: "${cleanQuote}." It reads as lighter processing than the surrounding script.`
+      : `The line asks the listener to process more detail: "${cleanQuote}." The wording carries more mental work than the surrounding script.`;
+  }
+  if (item.event.signalName === "memory_encoding") {
+    return low
+      ? `The line is less sticky than nearby wording: "${cleanQuote}." The memory signal becomes quieter here.`
+      : `The line gives the listener a phrase that can be held onto later: "${cleanQuote}." It is the clearest memory cue near this signal movement.`;
+  }
+  if (item.event.signalName === "social_thinking") {
+    return low
+      ? `The line carries less people-and-intent framing: "${cleanQuote}." The social-thinking signal dips instead of rising.`
+      : `The line brings people, roles, or trust into the frame: "${cleanQuote}." That is what pulls the social-thinking signal upward here.`;
+  }
+  if (item.event.signalName === "language_depth") {
+    return low
+      ? `The line carries lighter meaning than nearby wording: "${cleanQuote}." The language-depth signal dips in this window.`
+      : `The line carries the densest meaning in this window: "${cleanQuote}." It asks the listener to parse the message more deeply.`;
+  }
+  return `The signal attaches to this nearby line: "${cleanQuote}." It is the clearest wording around this response shift.`;
 }
 
 function simpleWhy(item) {
   const title = item.analyst.title.toLowerCase();
+  const low = isLowEvent(item);
   if (title.includes("manual call review")) {
     return "This is where the problem becomes specific, not generic. The call is strongest when the pain is easy to picture.";
   }
@@ -476,20 +684,59 @@ function simpleWhy(item) {
     return "This is where the call loses some pull as it moves into the ask. The useful read is the contrast between the strong pain language and the weaker next-step language.";
   }
   if (title.includes("motive") || item.event.signalName === "gut_reaction") {
-    return "This is the line that made the message feel more immediate. The reaction is tied to the claim itself, not just the overall topic.";
+    return low
+      ? "This is where the immediate reaction cools. The useful read is the contrast between this quieter stretch and the parts that feel more urgent."
+      : "This is the line that made the message feel more immediate. The reaction is tied to the claim itself, not just the overall topic.";
   }
-  return "This points to the wording that moved the response. It helps separate the useful signal from the rest of the transcript.";
+  if (item.event.signalName === "attention") {
+    return low
+      ? "This is a quieter attention moment. It marks wording that carries less pull than the stronger parts around it."
+      : "This is the part of the call that earns focus. It shows where the message stops being background and becomes something to track.";
+  }
+  if (item.event.signalName === "personal_resonance") {
+    return low
+      ? "This is where personal relevance drops. The call is less tied to the listener's world in this window."
+      : "This is where the script feels closest to the listener's world. The useful read is relevance, not persuasion or agreement.";
+  }
+  if (item.event.signalName === "brain_effort") {
+    return low
+      ? "This is where the script becomes easier to process. The low signal does not mean bad; it means this part asks for less mental work."
+      : "This is where the script becomes heavier to process. That can mean useful depth, or it can mean friction, so the wording deserves a closer look.";
+  }
+  if (item.event.signalName === "memory_encoding") {
+    return low
+      ? "This is where the memory signal gets quieter. The wording is less likely to be the part that stays available later."
+      : "This is the part most likely to remain available after the call. It marks the phrase the listener's brain treated as most memorable.";
+  }
+  if (item.event.signalName === "social_thinking") {
+    return low
+      ? "This is where the call becomes less about people and intent. The signal is about social meaning, not whether the listener trusted the rep."
+      : "This is where the call becomes more about people and intent. The signal is about social meaning, not whether the listener trusted the rep.";
+  }
+  if (item.event.signalName === "language_depth") {
+    return low
+      ? "This is where the explanation becomes lighter to parse. It is a quieter language-depth moment, not a quality score."
+      : "This is where the explanation carries the most meaning. The signal shows deeper parsing, not automatically better wording.";
+  }
+  return "This marks the sentence that moved the brain response most clearly in this window. It gives the report a concrete line to inspect.";
 }
 
 function momentChartCaption(item) {
   const dim = DIMENSION_LABELS[item.event.signalName];
-  if (item.analyst.title.toLowerCase().includes("trough")) {
+  if (item.analyst.title.toLowerCase().includes("working-session") || item.analyst.title.toLowerCase().includes("trough")) {
     return `${dim} sinks into a long, broad trough as the ask turns procedural.`;
+  }
+  if (isLowEvent(item)) {
+    return `${dim} dips through the highlighted line.`;
   }
   if (item.event.signalName === "gut_reaction") {
     return `${dim} rises fastest as the wording turns from explanation into instinct.`;
   }
   return `${dim} climbs as the highlighted sentence lands.`;
+}
+
+function isLowEvent(item) {
+  return ["trough", "sustained_low", "sharp_drop"].includes(item?.event?.eventShape);
 }
 
 function renderStackedTraces(item) {
@@ -708,9 +955,11 @@ function heroNudgeTitle(item, index) {
   if (title.includes("motive") || item.event.signalName === "gut_reaction") return "What created the gut reaction?";
   if (item.event.signalName === "memory_encoding") return "What might stick later?";
   if (item.event.signalName === "language_depth") return "Where did meaning deepen?";
-  if (item.event.signalName === "social_thinking") return "Where did trust enter?";
+  if (item.event.signalName === "social_thinking") return "Where did people matter?";
+  if (item.event.signalName === "personal_resonance") return "What felt most relevant?";
+  if (item.event.signalName === "brain_effort") return "What made them think?";
   if (item.event.signalName === "attention") return index ? "Where did focus shift?" : "What grabbed attention?";
-  return "What changed here?";
+  return "Which line moved the signal?";
 }
 
 function phraseForInsight(item, index) {
@@ -852,12 +1101,18 @@ function networkMomentInsight(link, sentenceText) {
     if ((link.a === "gut_reaction" && link.b === "language_depth") || (link.a === "language_depth" && link.b === "gut_reaction")) {
       return "The gut reaction did not come from dense language here. The instinctive hit is probably carried by the claim itself, not by complex wording.";
     }
-    return `${a} and ${b} stayed separate. This part of the call created one kind of response without pulling the other along.`;
+    return `${a} and ${b} moved apart here. The call created one kind of response without turning it into the other.`;
+  }
+  if ((link.a === "language_depth" && link.b === "memory_encoding") || (link.a === "memory_encoding" && link.b === "language_depth")) {
+    return "The fuller explanation also became easier to retain. In simple terms: the part with more meaning was also the part most likely to stick.";
+  }
+  if ((link.a === "attention" && link.b === "gut_reaction") || (link.a === "gut_reaction" && link.b === "attention")) {
+    return "The line that pulled focus also produced a fast gut response. It did not just get noticed; it felt immediate.";
   }
   if (link.a === "personal_resonance" && link.b === "social_thinking") {
     return "The line felt relevant while also making the listener think about people, roles, and trust. In simple terms: it connected the problem to their world.";
   }
-  return `${a} and ${b} rose together. This part of the call pulled both reactions at once.`;
+  return `${a} and ${b} rose together. This part of the call pulled both reactions at once, so the two signals should be read as one moment.`;
 }
 
 function bindInteractions() {
@@ -1124,6 +1379,10 @@ function switchButton(id, label) {
   return `<button class="switch-pill ${id === runId ? "is-active" : ""}" type="button" data-run="${id}">${label}</button>`;
 }
 
+function short(value) {
+  return String(value || "").slice(0, 8);
+}
+
 function nearest(points = [], time) {
   if (!points.length) return null;
   return points.reduce((best, point) => Math.abs(point.t - time) < Math.abs(best.t - time) ? point : best, points[0]);
@@ -1196,6 +1455,7 @@ function sentenceWindowAtSignalTime(signalTime, sentenceTarget = 2) {
     endIndex += 1;
   }
   while (endIndex < words.length - 1 && !endsSentence(words[endIndex].word)) endIndex += 1;
+  ({ startIndex, endIndex } = expandWeakSentenceRange(words, startIndex, endIndex));
 
   const selectedWords = words.slice(startIndex, endIndex + 1);
   const text = cleanTranscriptText(selectedWords.map((word) => word.word).join(" "));
@@ -1254,7 +1514,9 @@ function transcriptEvidenceForInsight(item) {
 function truncateWords(text, limit) {
   const words = cleanTranscriptText(text).split(/\s+/).filter(Boolean);
   if (words.length <= limit) return words.join(" ");
-  return words.slice(0, limit).join(" ");
+  const cut = words.slice(0, limit);
+  while (cut.length > 4 && isWeakEndingWord(cut.at(-1))) cut.pop();
+  return cut.join(" ");
 }
 
 function transcriptSentenceForInsight(item) {
@@ -1281,6 +1543,7 @@ function sentenceAtSignalTime(signalTime, radiusSec) {
   while (startIndex > 0 && !endsSentence(words[startIndex - 1].word)) startIndex -= 1;
   let endIndex = targetIndex;
   while (endIndex < words.length - 1 && !endsSentence(words[endIndex].word)) endIndex += 1;
+  ({ startIndex, endIndex } = expandWeakSentenceRange(words, startIndex, endIndex));
   const sentenceWords = words.slice(startIndex, endIndex + 1);
   const fallback = transcriptWindowAtSignalTime(signalTime, radiusSec);
   const text = cleanTranscriptText(sentenceWords.map((word) => word.word).join(" "));
@@ -1292,7 +1555,42 @@ function sentenceAtSignalTime(signalTime, radiusSec) {
 }
 
 function cleanTranscriptText(text) {
-  return String(text || "").replace(/\s+([,.!?;:])/g, "$1").replace(/\s+/g, " ").trim();
+  return String(text || "")
+    .replace(/\b([ap])\.\s*m\./gi, "$1.m.")
+    .replace(/\s+([,.!?;:])/g, "$1")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function expandWeakSentenceRange(words, startIndex, endIndex) {
+  let start = startIndex;
+  let end = endIndex;
+  let guard = 0;
+  while (sentenceLooksBroken(words.slice(start, end + 1)) && guard < 3 && (start > 0 || end < words.length - 1)) {
+    guard += 1;
+    if (start > 0) {
+      start -= 1;
+      while (start > 0 && !endsSentence(words[start - 1].word)) start -= 1;
+    } else if (end < words.length - 1) {
+      end += 1;
+      while (end < words.length - 1 && !endsSentence(words[end].word)) end += 1;
+    }
+  }
+  return { startIndex: start, endIndex: end };
+}
+
+function sentenceLooksBroken(sentenceWords) {
+  const text = cleanTranscriptText(sentenceWords.map((word) => word.word).join(" "));
+  const tokens = text.split(/\s+/).filter(Boolean);
+  if (tokens.length < 4) return true;
+  if (text.length < 24) return true;
+  return isWeakEndingWord(tokens.at(-1));
+}
+
+function isWeakEndingWord(word) {
+  return /^(and|or|but|because|so|then|that|this|the|a|an|to|of|in|on|with|for|from)$/i.test(
+    String(word || "").replace(/[^\w'-]+$/g, "")
+  );
 }
 
 function highlightTranscriptPhrase(text, phrase) {
