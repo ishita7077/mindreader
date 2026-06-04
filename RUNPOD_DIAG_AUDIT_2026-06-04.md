@@ -286,3 +286,29 @@ Required operational fix:
 - In GitHub repo secrets, replace `RUNPOD_API_KEY` with a valid RunPod API key that can read/write templates.
 - Rerun GitHub Actions run `26953422239`, or manually run the `Runpod worker Docker image` workflow from `main`.
 - After the sync step succeeds, submit a tiny text run and confirm worker progress events appear.
+
+## 2026-06-04 13:20 UTC - Clarification After User Challenge
+
+User challenged the conclusion that the RunPod API key was the issue, noting they did not revoke the onboarding API key.
+
+Clarification:
+
+- The invalid key evidence is specifically for the **GitHub Actions secret** named `RUNPOD_API_KEY`.
+- It is separate from the Vercel production `RUNPOD_API_KEY`.
+- Vercel production can still have a valid RunPod key and successfully submit jobs while GitHub Actions has an invalid/mis-set key and cannot update the RunPod production template.
+
+Additional evidence:
+
+- `gh secret list` shows repository secret `RUNPOD_API_KEY` exists.
+- It was last updated at `2026-05-27T07:45:28Z`.
+- The failed `0f5465a` workflow began immediately after that, at `2026-05-27T07:45:57Z`.
+- Diagnostic run `26501833412` later showed the GitHub Actions secret was set but length `1`, and RunPod returned `401 invalid api key`.
+- Current run `26953422239` failed at the explicit length guard before RunPod GraphQL was called.
+
+Revised confidence statement:
+
+- Proven: Vercel production can submit jobs to RunPod.
+- Proven: GitHub Actions currently cannot sync the RunPod production template because its `RUNPOD_API_KEY` secret is not a valid key.
+- Proven: both observed text jobs remain `IN_QUEUE` with no worker events.
+- Strong but not directly proven without RunPod console/API template access: production is likely pointed at an unavailable/stale worker image or otherwise has no usable workers.
+- The GitHub secret issue explains why the automated durable-image fix cannot complete; it may not be the original root cause by itself.
