@@ -34,12 +34,14 @@ RUN pip install --upgrade pip
 #
 # Install order:
 #   1. whisperx — establishes its torch/torchaudio lower bounds first
-#   2. frozen requirements — pins everything (torch 2.6.0, numpy 2.2.6, etc.),
+#   2. frozen requirements — pins most backend deps (including torch 2.6.0),
 #      overriding what whisperx just pulled; pip upgrades in-place so the wheel
 #      is only on disk once at the end.
 #   3. tribev2 git install — its deps are already satisfied by the frozen reqs
 #   4. runpod + accelerate — small runtime packages, installed last. accelerate
 #      is installed with --no-deps so it cannot perturb the frozen stack.
+#   5. PyTorch CUDA 12.8 — overrides the frozen torch 2.6.0 wheel so RunPod
+#      workers can pass fitness checks on NVIDIA Blackwell (sm_120) GPUs.
 #
 # The editable (-e) line for tribev2 is removed from frozen reqs with grep
 # because we install it properly via git+ in step 3.
@@ -53,7 +55,11 @@ RUN pip install whisperx && \
     pip install \
         "git+https://github.com/facebookresearch/tribev2.git@72399081ed3f1040c4d996cefb2864a4c46f5b8e#egg=tribev2" && \
     pip install runpod && \
-    pip install --no-deps accelerate==1.10.1
+    pip install --no-deps accelerate==1.10.1 && \
+    pip install --upgrade --force-reinstall \
+        torch==2.7.0+cu128 torchvision==0.22.0+cu128 torchaudio==2.7.0+cu128 \
+        --index-url https://download.pytorch.org/whl/cu128 && \
+    python -c "import torch; assert torch.__version__.startswith('2.7.0'), torch.__version__; assert torch.version.cuda == '12.8', torch.version.cuda; print('PyTorch Blackwell-ready wheel:', torch.__version__, 'CUDA', torch.version.cuda)"
 
 # ── Application code ──────────────────────────────────────────────────────────
 COPY backend /app/backend

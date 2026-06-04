@@ -405,3 +405,46 @@ Conclusion:
 - Same family of problem: worker cannot get past GPU/runtime startup.
 - Not the same code patch: the old fast-boot/bootstrap patch is already in place.
 - Equivalent immediate fix is to move the RunPod endpoint back to a non-Blackwell GPU supported by the current PyTorch image, or rebuild the image with a PyTorch/CUDA stack that supports Blackwell `sm_120`.
+
+## 2026-06-04 14:00 UTC - Full RunPod Log File Review and Image Fix
+
+Input reviewed:
+
+- `/Users/ishita/Downloads/logs-runpod_braindiff_test (1).txt`
+- 998 log lines.
+
+Key finding from the full log:
+
+- The same worker image successfully ran at `2026-06-04 16:09` local log time on `NVIDIA RTX A5000`.
+- That worker reached:
+  - `[RP-10] gpu_detect: cuda=True device=NVIDIA RTX A5000`
+  - `[RP-13] tribe_loaded_on_gpu_ok`
+  - `[RP-16] job_validated`
+  - `[RP-21] predictions_packaged`
+- Later workers repeatedly landed on `NVIDIA RTX PRO 6000 Blackwell Server Edition MIG 1g.24gb` and failed the RunPod SDK fitness check before any job was handled.
+- Repeated failure line:
+  - `The current PyTorch install supports CUDA capabilities sm_50 sm_60 sm_70 sm_75 sm_80 sm_86 sm_90.`
+  - `NVIDIA RTX PRO 6000 Blackwell Server Edition MIG 1g.24gb with CUDA capability sm_120 is not compatible with the current PyTorch installation.`
+
+Operational constraint:
+
+- Local `.env*` files do not contain a valid `RUNPOD_API_KEY` / `RUNPOD_ENDPOINT_ID`.
+- GitHub Actions repository secret `RUNPOD_API_KEY` was previously proven invalid for template sync.
+- Therefore I cannot directly change the RunPod endpoint GPU selection/template from this machine.
+
+Code/deploy fix applied:
+
+- Edited `runpod_worker/Dockerfile`.
+- After the frozen requirements + TRIBE install, force reinstall:
+  - `torch==2.7.0+cu128`
+  - `torchvision==0.22.0+cu128`
+  - `torchaudio==2.7.0+cu128`
+  - from `https://download.pytorch.org/whl/cu128`
+- Added a build-time assertion that fails the image build unless:
+  - `torch.__version__` starts with `2.7.0`
+  - `torch.version.cuda == "12.8"`
+
+Reason:
+
+- PyTorch 2.7 CUDA 12.8 wheels are the smallest image-level move from the existing PyTorch 2.6 stack toward Blackwell compatibility.
+- If this starts successfully on Blackwell but TRIBE has a runtime incompatibility with torch 2.7, the worker should now reach BrainDiff logs instead of dying inside RunPod's pre-job fitness check.
