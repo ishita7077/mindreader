@@ -892,16 +892,21 @@ h1 {
 }
 
 .play-scrub {
-  border: 1px solid rgba(255, 217, 74, 0.68);
-  border-radius: 12px;
-  background: #f0cc50;
+  border: 1px solid rgba(255, 188, 83, 0.84);
+  border-radius: 10px;
+  background:
+    radial-gradient(90px 42px at 50% 0%, rgba(255,255,255,0.18), transparent 72%),
+    linear-gradient(180deg, #ffc96a, #ffaf4d);
   color: #051020;
-  padding: 14px 18px;
+  padding: 12px 17px;
   font-family: var(--mono);
-  font-size: 17px;
+  font-size: 15px;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 10px 22px rgba(255,216,79,0.13);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.24),
+    0 10px 22px rgba(255, 177, 76, 0.20),
+    0 0 24px rgba(255, 177, 76, 0.16);
 }
 
 .scrub-rail {
@@ -1435,11 +1440,11 @@ h1 {
 }
 
 .spine-right .spine-visual {
-  padding-top: 116px;
+  padding-top: 62px;
 }
 
 .spine-moment.is-trough .spine-visual {
-  transform: translateY(72px);
+  transform: none;
 }
 
 .spine-signal-row {
@@ -1878,6 +1883,11 @@ blockquote {
   gap: 7px;
 }
 
+.chart-dim-toggle small,
+.moment-dim-toggle small {
+  display: none;
+}
+
 .chart-dim-toggle span {
   width: 9px;
   height: 9px;
@@ -1895,6 +1905,10 @@ blockquote {
 
 .chart-dim-toggle.is-active span {
   opacity: 1;
+}
+
+.chart-stage {
+  position: relative;
 }
 
 .full-call-chart {
@@ -1921,10 +1935,53 @@ blockquote {
 }
 
 .chart-event-note {
+  display: none;
+}
+
+.chart-hover-readout {
+  position: absolute;
+  z-index: 4;
+  min-width: 210px;
+  max-width: 280px;
+  border: 1px solid rgba(87, 181, 255, 0.58);
+  border-radius: 12px;
+  background:
+    radial-gradient(170px 80px at 20% 0%, rgba(79,212,255,0.20), transparent 70%),
+    rgba(5, 11, 24, 0.94);
+  color: var(--ink);
+  padding: 10px 12px;
+  pointer-events: none;
+  box-shadow:
+    0 16px 34px rgba(0,0,0,0.34),
+    0 0 22px rgba(79,212,255,0.16);
+}
+
+.chart-hover-line {
+  position: absolute;
+  top: 17px;
+  bottom: 17px;
+  z-index: 3;
+  width: 1px;
+  background: rgba(244, 249, 255, 0.62);
+  box-shadow: 0 0 14px rgba(79, 212, 255, 0.46);
+  pointer-events: none;
+}
+
+.chart-hover-readout b {
+  display: block;
   font-family: var(--mono);
-  font-size: 10px;
-  fill: rgba(215,222,238,0.72);
-  letter-spacing: 0.06em;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--cyan);
+  margin-bottom: 4px;
+}
+
+.chart-hover-readout span {
+  display: block;
+  font-size: 13px;
+  line-height: 1.35;
+  color: #d7deee;
 }
 .chart-lane { stroke: rgba(86,125,183,0.16); }
 .chart-label, .chart-legend {
@@ -1935,20 +1992,18 @@ blockquote {
 
 .network-card {
   display: grid;
-  grid-template-columns: minmax(0, 0.66fr) minmax(500px, 0.74fr);
-  gap: 22px;
-  align-items: start;
+  grid-template-columns: minmax(0, 0.82fr) minmax(460px, 0.72fr);
+  gap: 42px;
+  align-items: center;
 }
 
 .network-graph {
   width: 100%;
-  min-height: 390px;
-  border: 1px solid var(--line);
-  border-radius: 18px;
-  background:
-    radial-gradient(460px 260px at 50% 45%, rgba(78, 212, 255, 0.07), transparent 72%),
-    linear-gradient(180deg, #07101f, #040914);
-  box-shadow: inset 0 0 42px rgba(79,212,255,0.04);
+  min-height: 420px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
 }
 
 .research-network {
@@ -1956,12 +2011,12 @@ blockquote {
 }
 
 .network-bg {
-  fill: rgba(7, 16, 31, 0.86);
+  fill: transparent;
 }
 
 .network-ring {
   fill: none;
-  stroke: rgba(128, 211, 255, 0.24);
+  stroke: rgba(128, 211, 255, 0.16);
   stroke-width: 1.2;
 }
 
@@ -1981,18 +2036,18 @@ blockquote {
 }
 
 .network-edge {
-  opacity: 0.22;
+  opacity: 0.16;
   transition: opacity 160ms ease, stroke-width 160ms ease;
 }
 
 .network-edge.is-coupling {
-  opacity: 0.74;
-  filter: drop-shadow(0 0 8px rgba(110,220,255,0.18));
+  opacity: 0.82;
+  filter: drop-shadow(0 0 8px rgba(110,220,255,0.15));
 }
 
 .network-edge.is-anti {
   stroke-dasharray: 7 12;
-  opacity: 0.34;
+  opacity: 0.42;
 }
 
 .network-edge.is-active {
@@ -2014,17 +2069,16 @@ blockquote {
 
 .network-list {
   display: grid;
-  gap: 18px;
+  gap: 0;
   align-content: start;
 }
 
 .network-item {
-  border: 1px solid var(--line);
-  background:
-    radial-gradient(360px 180px at 15% 0%, rgba(79,212,255,0.10), transparent 70%),
-    linear-gradient(180deg, rgba(8,17,34,0.96), rgba(5,11,24,0.88));
-  border-radius: 18px;
-  padding: 28px;
+  border: 0;
+  border-top: 1px solid rgba(110, 205, 255, 0.18);
+  background: transparent;
+  border-radius: 0;
+  padding: 22px 0 24px;
   text-align: left;
   cursor: pointer;
   font-family: var(--sans);
@@ -2035,16 +2089,14 @@ blockquote {
 }
 
 .network-item.is-anti {
-  background:
-    radial-gradient(360px 180px at 15% 0%, rgba(255,156,87,0.10), transparent 70%),
-    linear-gradient(180deg, rgba(20,14,22,0.96), rgba(8,10,20,0.9));
-  border-color: color-mix(in srgb, var(--orange) 48%, var(--line));
+  border-color: rgba(255,156,87,0.24);
+  background: transparent;
 }
 
 .network-item.is-active {
-  border-color: rgba(79,212,255,0.72);
-  box-shadow: 0 0 0 1px rgba(79,212,255,0.12), 0 18px 42px rgba(0,0,0,0.30);
-  transform: translateY(-1px);
+  border-color: rgba(79,212,255,0.46);
+  box-shadow: none;
+  transform: none;
 }
 
 .network-item.is-anti:not(.is-active) {
@@ -2076,7 +2128,7 @@ blockquote {
 
 .network-item b {
   display: block;
-  font-size: 22px;
+  font-size: 25px;
   line-height: 1.12;
   letter-spacing: -0.02em;
 }
@@ -2096,10 +2148,11 @@ blockquote {
 
 .network-transcript {
   margin-top: 2px;
-  border: 1px solid rgba(110, 205, 255, 0.16);
-  border-radius: 12px;
-  background: rgba(3, 7, 18, 0.42);
-  padding: 12px;
+  border: 0;
+  border-left: 2px solid rgba(110, 205, 255, 0.40);
+  border-radius: 0;
+  background: rgba(9, 21, 42, 0.34);
+  padding: 10px 0 10px 14px;
   display: grid;
   gap: 8px;
 }

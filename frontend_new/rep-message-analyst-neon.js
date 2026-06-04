@@ -127,7 +127,7 @@ function render() {
       <section class="hero">
         <div class="hero-copy">
           <p class="eyebrow"><span class="eyebrow-dot"></span> BrainDiff · Neural response engine</p>
-          <h1>How did it <span>feel?</span></h1>
+          <h1>What the <span>brain</span> heard.</h1>
           <h2 class="hero-subtitle">${esc(active?.analyst.title || "Whole-call response trace")}</h2>
           <p class="hero-metric"><span data-scrub-dimension>${esc(DIMENSION_LABELS[activeDimension])}</span> · score <b data-scrub-score>${active?.event.brainScore.toFixed(2) || "--"}</b> · <span data-scrub-shape>${esc(active?.event.eventShape.replaceAll("_", " ") || "signal")}</span></p>
           ${renderDimensionControls()}
@@ -165,7 +165,7 @@ function render() {
 
       <section>
         <div class="section-head report-head">
-          <div><p class="eyebrow">Final report</p><h2>Moments That Changed the Listener</h2></div>
+          <div><p class="eyebrow">Report</p><h2>Final Report</h2></div>
         </div>
         ${renderCallSpine(selected)}
       </section>
@@ -206,7 +206,6 @@ function renderHeroNudge(item, index) {
     <button class="hero-card" type="button" data-insight-id="${escAttr(item.id)}">
       <span>Insight ${index + 2}</span>
       <b>${esc(question)}</b>
-      <small>${esc(DIMENSION_TAGLINES[item.event.signalName])}</small>
     </button>
   `;
 }
@@ -240,7 +239,7 @@ function renderInsight(item, index) {
 
 function renderCallSpine(items) {
   return `
-    <div class="call-spine" aria-label="Three key call moments">
+    <div class="call-spine" aria-label="Final report signals">
       <div class="spine-line" aria-hidden="true"></div>
       ${items.map((item, index) => renderSpineMoment(item, index)).join("")}
     </div>
@@ -262,14 +261,14 @@ function renderSpineMoment(item, index) {
       </div>
       <div class="spine-copy">
         <div class="spine-ghost">${String(index + 1).padStart(2, "0")}</div>
-        <p class="spine-kicker"><i></i> Moment ${String(index + 1).padStart(2, "0")} · ${esc(DIMENSION_LABELS[item.event.signalName])} <span>${isTrough ? "Trough" : "Peak"} · ${formatTime(item.event.peakTime)}</span></p>
+        <p class="spine-kicker"><i></i> Signal ${String(index + 1).padStart(2, "0")} · ${esc(DIMENSION_LABELS[item.event.signalName])} <span>${isTrough ? "Trough" : "Peak"} · ${formatTime(item.event.peakTime)}</span></p>
         <h3>${esc(item.analyst.title)}</h3>
         <p class="spine-lead">${esc(plainInsightLead(item))}</p>
         <blockquote class="spine-quote">${highlightTranscriptPhrase(evidence.shortText || item.analyst.quote, item.analyst.quote)}</blockquote>
         ${evidence.hasMore ? `<details class="spine-details"><summary>Show full transcript context</summary><p>${esc(evidence.fullText)}</p></details>` : ""}
         <div class="spine-reads">
-          <div><b>What caused it</b><span>${esc(simpleDriver(item, evidence.fullText))}</span></div>
-          <div><b>What it tells you</b><span>${esc(simpleWhy(item))}</span></div>
+          <div><b>Why it moved</b><span>${esc(simpleDriver(item, evidence.fullText))}</span></div>
+          <div><b>What it means</b><span>${esc(simpleWhy(item))}</span></div>
         </div>
       </div>
       <div class="spine-visual">
@@ -324,7 +323,7 @@ function renderSpineCurve(item, index) {
           <stop offset="100%" stop-color="${primaryColor}" stop-opacity="0" />
         </linearGradient>
       </defs>
-      <text x="${pad.left}" y="14" class="axis-label">Y: predicted brain response</text>
+      <text x="${pad.left}" y="14" class="axis-label">Y: response strength</text>
       <text x="${width - pad.right}" y="${height - 6}" text-anchor="end" class="axis-label">X: call time</text>
       <line x1="${pad.left}" x2="${width - pad.right}" y1="${height - pad.bottom}" y2="${height - pad.bottom}" class="axis-line" />
       <line x1="${pad.left}" x2="${pad.left}" y1="${pad.top}" y2="${height - pad.bottom}" class="axis-line" />
@@ -375,7 +374,6 @@ function renderDimensionControls() {
       ${DIMENSION_ORDER.map((dim) => `
         <button class="dimension-pill ${dim === activeDimension ? "is-active" : ""}" type="button" data-dimension="${escAttr(dim)}" style="--signal:${COLORS[dim]}">
           <span>${esc(DIMENSION_LABELS[dim])}</span>
-          <small>${esc(DIMENSION_TAGLINES[dim])}</small>
         </button>
       `).join("")}
     </div>
@@ -458,29 +456,29 @@ function simpleDriver(item, sentenceText) {
   const title = item.analyst.title.toLowerCase();
   const quote = sentenceText || item.analyst.quote;
   if (title.includes("manual call review")) {
-    return "It names the exact burden: managers having to listen to every call.";
+    return "The line names the exact burden: managers having to listen to every call. That is more concrete than saying teams need better coaching or faster ramp.";
   }
   if (title.includes("working-session") || title.includes("trough")) {
-    return "The wording shifts into logistics: meeting length, setup, and process.";
+    return "The wording shifts into logistics: meeting length, setup, and process. It stops carrying the same problem-and-payoff language that made the earlier section stronger.";
   }
   if (title.includes("motive") || item.event.signalName === "gut_reaction") {
-    return "It puts the buyer's motive and the friction in the same breath.";
+    return "The line puts motive and friction in the same breath. It turns the point from explanation into something more immediate.";
   }
-  return `The nearby sentence carries the trigger: "${truncateWords(quote, 26)}"`;
+  return `The nearby sentence carries the trigger: "${truncateWords(quote, 26)}". This is the wording closest to the measured response change.`;
 }
 
 function simpleWhy(item) {
   const title = item.analyst.title.toLowerCase();
   if (title.includes("manual call review")) {
-    return "This is the wording that made the problem feel specific, not generic.";
+    return "This is where the problem becomes specific, not generic. The call is strongest when the pain is easy to picture.";
   }
   if (title.includes("working-session") || title.includes("trough")) {
-    return "This is where the call may need a cleaner bridge from pain to next step.";
+    return "This is where the call loses some pull as it moves into the ask. The useful read is the contrast between the strong pain language and the weaker next-step language.";
   }
   if (title.includes("motive") || item.event.signalName === "gut_reaction") {
-    return "This shows the line that made the message feel immediate.";
+    return "This is the line that made the message feel more immediate. The reaction is tied to the claim itself, not just the overall topic.";
   }
-  return "This points to the wording that actually moved the response.";
+  return "This points to the wording that moved the response. It helps separate the useful signal from the rest of the transcript.";
 }
 
 function momentChartCaption(item) {
@@ -510,7 +508,7 @@ function renderMomentChartShell(item) {
       <div class="moment-chart-toolbar" aria-label="Toggle moment signal dimensions">
         ${dims.map((dim) => `
           <button class="moment-dim-toggle ${momentActiveDimensions(item).has(dim) ? "is-active" : ""}" type="button" data-moment-id="${escAttr(item.id)}" data-dimension="${escAttr(dim)}" style="--signal:${COLORS[dim]}">
-            <span></span><b>${esc(DIMENSION_LABELS[dim])}</b><small>${esc(DIMENSION_TAGLINES[dim])}</small>
+            <span></span><b>${esc(DIMENSION_LABELS[dim])}</b>
           </button>
         `).join("")}
       </div>
@@ -628,13 +626,15 @@ function renderAppendixActivity() {
         <div class="dimension-toggles" aria-label="Toggle signal dimensions">
           ${DIMENSION_ORDER.map((dim) => `
             <button class="chart-dim-toggle ${activeChartDimensions.has(dim) ? "is-active" : ""}" type="button" data-dimension="${escAttr(dim)}" style="--signal:${COLORS[dim]}">
-              <span></span><b>${esc(DIMENSION_LABELS[dim])}</b><small>${esc(DIMENSION_TAGLINES[dim])}</small>
+              <span></span><b>${esc(DIMENSION_LABELS[dim])}</b>
             </button>
           `).join("")}
         </div>
       </div>
-      <div class="chart-stage" data-chart-stage>
+        <div class="chart-stage" data-chart-stage>
         ${renderFullCallChart("overlay")}
+        <div class="chart-hover-line" data-chart-hover-line hidden></div>
+        <div class="chart-hover-readout" data-chart-hover-readout hidden></div>
       </div>
     </div>
   `;
@@ -665,12 +665,12 @@ function renderFullCallChart(mode) {
   `).join("") : "";
   const eventTicks = report.finalInsights.map((item, index) => {
     const eventX = x(item.event.peakTime);
-    const labelY = pad.top + 18 + (index % 2) * 24;
+    const labelY = pad.top + 14 + index * 24;
     return `
       <line x1="${eventX.toFixed(2)}" x2="${eventX.toFixed(2)}" y1="${pad.top}" y2="${height - pad.bottom}" class="chart-event" />
       <rect x="${(eventX - 13).toFixed(2)}" y="${labelY}" width="26" height="18" rx="9" fill="${COLORS[item.event.signalName]}" class="chart-event-pill" />
       <text x="${eventX.toFixed(2)}" y="${labelY + 12}" text-anchor="middle" class="chart-event-label">${String(index + 1).padStart(2, "0")}</text>
-      <text x="${(eventX + 18).toFixed(2)}" y="${labelY + 13}" class="chart-event-note">${esc(DIMENSION_LABELS[item.event.signalName])} · ${formatTime(item.event.peakTime)}</text>
+      <title>Signal ${String(index + 1).padStart(2, "0")} · ${esc(DIMENSION_LABELS[item.event.signalName])} · ${formatTime(item.event.peakTime)}</title>
     `;
   }).join("");
   const legend = mode === "overlay" ? dims.map((dim, index) => {
@@ -683,7 +683,7 @@ function renderFullCallChart(mode) {
       <rect x="0" y="0" width="${width}" height="${height}" rx="8" class="chart-bg" />
       ${labels}
       <line x1="${pad.left}" x2="${width - pad.right}" y1="${pad.top + graphH / 2}" y2="${pad.top + graphH / 2}" class="chart-mid" />
-      <text x="${pad.left}" y="${pad.top - 14}" class="axis-label">Y: predicted brain response</text>
+      <text x="${pad.left}" y="${pad.top - 14}" class="axis-label">Y: response strength (low to high)</text>
       <text x="${width - pad.right}" y="${height - 10}" text-anchor="end" class="axis-label">X: call time</text>
       ${eventTicks}
       ${paths}
@@ -788,8 +788,8 @@ function renderNetworkGraph() {
           const moment = coordinationMoment(link);
           const transcript = sentenceAtSignalTime(moment.time, 5);
           const isAnti = link.type === "anti";
-          const label = isAnti ? "Weakest Shown" : `Rank ${index + 1}`;
-          const motion = link.r < 0 ? "Moved apart" : isAnti ? "Rarely rose together" : "Rose together";
+          const label = isAnti ? "Anti-coupling" : "Strongest coupling";
+          const motion = isAnti ? "Moved opposite" : "Moved together";
           const read = networkMomentInsight(link, transcript.text);
           return `
           <button class="network-item ${index === 0 ? "is-active" : ""} ${link.type === "anti" ? "is-anti" : ""}" type="button" data-network-index="${index}" data-a="${escAttr(link.a)}" data-b="${escAttr(link.b)}">
@@ -802,6 +802,13 @@ function renderNetworkGraph() {
             </div>
           </button>
         `;}).join("")}
+        ${summary.hasAnti ? "" : `
+          <div class="network-item is-anti is-empty">
+            <span class="network-type">Anti-coupling<small>Not detected</small></span>
+            <b>No strong opposite pair in this call</b>
+            <p>The signals did not show a clear pattern where one reaction rose while another fell. The useful read here is the strongest pair above.</p>
+          </div>
+        `}
       </div>
     </div>
   `;
@@ -821,13 +828,11 @@ function pointBetween(a, b, t) {
 }
 
 function networkSummary(links) {
-  const positive = links.filter((link) => link.r >= 0).sort((a, b) => b.r - a.r).slice(0, 3)
+  const positive = links.filter((link) => link.r >= 0).sort((a, b) => b.r - a.r).slice(0, 1)
     .map((link) => ({ ...link, type: "coupling" }));
-  const weakest = links
-    .filter((link) => !positive.some((item) => item.a === link.a && item.b === link.b))
-    .sort((a, b) => a.r - b.r)[0];
-  const anti = weakest ? { ...weakest, type: "anti" } : null;
-  return { items: [...positive, anti].filter(Boolean) };
+  const negative = links.filter((link) => link.r < 0).sort((a, b) => a.r - b.r)[0];
+  const anti = negative ? { ...negative, type: "anti" } : null;
+  return { items: [...positive, anti].filter(Boolean), hasAnti: Boolean(anti) };
 }
 
 function networkFallbackExplanation(link) {
@@ -960,7 +965,10 @@ function bindInteractions() {
       else activeChartDimensions.add(dim);
       button.classList.toggle("is-active", activeChartDimensions.has(dim));
       const stage = document.querySelector("[data-chart-stage]");
-      if (stage) stage.innerHTML = renderFullCallChart("overlay");
+      if (stage) {
+        stage.innerHTML = `${renderFullCallChart("overlay")}<div class="chart-hover-line" data-chart-hover-line hidden></div><div class="chart-hover-readout" data-chart-hover-readout hidden></div>`;
+      }
+      bindChartHover();
     });
   });
   document.querySelectorAll(".network-item").forEach((button) => {
@@ -973,6 +981,7 @@ function bindInteractions() {
   });
   activateNetworkEdge("0");
   bindSpineReveal();
+  bindChartHover();
 }
 
 function updateHeroActiveCopy(active) {
@@ -1021,6 +1030,7 @@ function stopScrubberPlayback() {
   scrubPlaying = false;
   const button = document.querySelector("#scrubPlay");
   if (button) button.textContent = "Play";
+  if (report) updateBrainScrubber();
 }
 
 function updateBrainScrubber() {
@@ -1054,7 +1064,9 @@ function updateBrainScrubber() {
     lastScrubBarsKey = nextBarsKey;
     bars.innerHTML = renderScrubBars(dim, scrubTime);
   }
-  const transcript = stableTranscriptAtSignalTime(scrubTime);
+  const transcript = scrubPlaying
+    ? { start: scrubTime, end: scrubTime, text: "Pause to see the transcript at this moment." }
+    : stableTranscriptAtSignalTime(scrubTime);
   const transcriptRange = document.querySelector("[data-hero-transcript-range]");
   const transcriptText = document.querySelector("[data-hero-transcript]");
   const transcriptWrap = document.querySelector(".hero-transcript");
@@ -1094,7 +1106,9 @@ function updateDimensionPills() {
 }
 
 function activateNetworkEdge(index) {
+  if (index == null) return;
   const activeEdge = document.querySelector(`.network-edge[data-network-index="${CSS.escape(String(index))}"]`);
+  if (!activeEdge) return;
   const a = activeEdge?.dataset.a;
   const b = activeEdge?.dataset.b;
   document.querySelectorAll(".network-edge").forEach((edge) => edge.classList.toggle("is-active", edge.dataset.networkIndex === String(index)));
@@ -1150,21 +1164,45 @@ function captionAtSignalTime(signalTime) {
 }
 
 function stableTranscriptAtSignalTime(signalTime) {
+  return sentenceWindowAtSignalTime(signalTime, 2);
+}
+
+function sentenceWindowAtSignalTime(signalTime, sentenceTarget = 2) {
   const hrfLag = report.input.alignment.hrfLagSec || 0;
-  const sourceTime = Math.max(0, signalTime - hrfLag);
+  const center = Math.max(0, signalTime - hrfLag);
   const duration = report.input.alignment.generatedAudioDurationSec || report.input.alignment.analysisDurationSec;
-  const segment = (report.input.transcriptSegments || []).find((item) => item.end >= sourceTime && item.start <= sourceTime);
-  if (segment?.text) {
-    return {
-      start: Math.max(0, segment.start),
-      end: Math.min(duration, segment.end),
-      text: truncateWords(segment.text, 54),
-    };
+  const words = report.input.transcriptWords || [];
+  if (!words.length) return transcriptWindowAtSignalTime(signalTime, 9);
+
+  let targetIndex = 0;
+  let bestDistance = Infinity;
+  words.forEach((word, index) => {
+    const wordCenter = ((word.start || 0) + (word.end || 0)) / 2;
+    const distance = Math.abs(wordCenter - center);
+    if (distance < bestDistance) {
+      bestDistance = distance;
+      targetIndex = index;
+    }
+  });
+
+  let startIndex = targetIndex;
+  while (startIndex > 0 && !endsSentence(words[startIndex - 1].word)) startIndex -= 1;
+
+  let endIndex = targetIndex;
+  let sentenceCount = 0;
+  while (endIndex < words.length - 1 && sentenceCount < sentenceTarget) {
+    if (endsSentence(words[endIndex].word)) sentenceCount += 1;
+    if (sentenceCount >= sentenceTarget) break;
+    endIndex += 1;
   }
-  const window = transcriptWindowAtSignalTime(signalTime, 9);
+  while (endIndex < words.length - 1 && !endsSentence(words[endIndex].word)) endIndex += 1;
+
+  const selectedWords = words.slice(startIndex, endIndex + 1);
+  const text = cleanTranscriptText(selectedWords.map((word) => word.word).join(" "));
   return {
-    ...window,
-    text: truncateWords(window.text, 54),
+    start: selectedWords[0]?.start ?? Math.max(0, center - 8),
+    end: selectedWords.at(-1)?.end ?? Math.min(duration, center + 8),
+    text: truncateWords(text, 58),
   };
 }
 
@@ -1282,6 +1320,52 @@ function bindSpineReveal() {
     });
   }, { threshold: 0.22 });
   moments.forEach((moment) => observer.observe(moment));
+}
+
+function bindChartHover() {
+  const stage = document.querySelector("[data-chart-stage]");
+  const svg = stage?.querySelector(".full-call-chart");
+  const readout = document.querySelector("[data-chart-hover-readout]");
+  const hoverLine = document.querySelector("[data-chart-hover-line]");
+  if (!stage || !svg || !readout) return;
+  const duration = Math.max(1, report.input.alignment.analysisDurationSec || 1);
+  const pad = { left: 54, right: 28, top: 58, bottom: 34 };
+  const width = 1100;
+  const height = 380;
+  const graphW = width - pad.left - pad.right;
+  const graphH = height - pad.top - pad.bottom;
+  const selectedDims = () => DIMENSION_ORDER.filter((dim) => activeChartDimensions.has(dim));
+
+  svg.onmousemove = (event) => {
+    const rect = svg.getBoundingClientRect();
+    const svgX = ((event.clientX - rect.left) / rect.width) * width;
+    const svgY = ((event.clientY - rect.top) / rect.height) * height;
+    const clampedX = Math.max(pad.left, Math.min(width - pad.right, svgX));
+    const time = ((clampedX - pad.left) / graphW) * duration;
+    const dims = selectedDims();
+    const values = dims.map((dim) => ({
+      dim,
+      point: nearest(report.normalized.byDimension[dim], time),
+    })).filter((item) => item.point);
+    const nearestValue = values.reduce((best, item) => {
+      const y = pad.top + (1 - item.point.smoothed) * graphH;
+      const distance = Math.abs(y - svgY);
+      return !best || distance < best.distance ? { ...item, y, distance } : best;
+    }, null);
+    if (!nearestValue) return;
+    readout.hidden = false;
+    if (hoverLine) {
+      hoverLine.hidden = false;
+      hoverLine.style.left = `${Math.min(rect.width - 1, Math.max(0, event.clientX - rect.left))}px`;
+    }
+    readout.style.left = `${Math.min(rect.width - 230, Math.max(8, event.clientX - rect.left + 12))}px`;
+    readout.style.top = `${Math.min(rect.height - 74, Math.max(8, event.clientY - rect.top + 12))}px`;
+    readout.innerHTML = `<b>${esc(DIMENSION_LABELS[nearestValue.dim])}</b><span>${formatTime(time)} · ${Math.round(nearestValue.point.smoothed * 100)}% response strength</span>`;
+  };
+  svg.onmouseleave = () => {
+    readout.hidden = true;
+    if (hoverLine) hoverLine.hidden = true;
+  };
 }
 
 function endsSentence(word) {

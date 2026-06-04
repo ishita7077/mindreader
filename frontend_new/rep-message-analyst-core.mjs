@@ -53,6 +53,7 @@ PRODUCT LANGUAGE (auditable update: 2026-06-04)
 - Do not write generic research prose such as "the reader can inspect wording", "model contrast", "signal context", or "response architecture" in reader-facing fields.
 - why_it_matters should answer: "what does this tell me about this call?" It must be an observation, not coaching advice.
 - likely_driver should answer: "what wording probably moved the signal?" Keep it concrete and tied to the transcript.
+- likely_driver and why_it_matters should each be two short sentences in simple English. Sentence 1 names the wording or call behavior. Sentence 2 explains why that wording changed the signal or what that means for the call.
 
 COHERENCE (load-bearing — do not skip)
 - interpretation, likely_driver, and why_it_matters must be consistent with your uncertainty field. If uncertainty says X cannot be concluded, never state X as fact anywhere else.
@@ -107,6 +108,7 @@ SELECTION
 - The final 3 should not be redundant with each other.
 - Prefer moments a salesperson can understand in 30 seconds: what moved, which words drove it, and what that says about the call.
 - Prefer concrete transcript-tied language over abstract neuroscience or model language.
+- Prefer reasons that can be shown as a short product readout: one concrete signal movement, the exact transcript wording nearby, and one simple implication for the call.
 
 REJECT
 - Reject generic answers, repeated points, buyer-intent claims, coaching advice, and weak quote/signal alignment.
