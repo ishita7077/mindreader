@@ -374,8 +374,6 @@ textarea::placeholder{color:var(--ink-mute);opacity:0.7}
   color: var(--ink-dim) !important;
 }
 .example-btn:hover,
-.example-btn.is-selected,
-.example-btn[aria-pressed="true"],
 .mode-pill:hover,
 .mode-pill.active {
   border-color: var(--accent) !important;
@@ -384,8 +382,6 @@ textarea::placeholder{color:var(--ink-mute);opacity:0.7}
   font-weight: 600 !important;
   text-shadow: none !important;
 }
-.example-btn.is-selected,
-.example-btn[aria-pressed="true"],
 .mode-pill.active {
   box-shadow:
     0 0 0 1px rgba(255, 255, 255, 0.22) inset,
@@ -635,15 +631,12 @@ function toggleTheme(){
       }
     }
   };
-  const selectedPreset = { single: null, diff: null };
-
   function renderExamples(){
     if (!examplesList || !examplesLabel) return;
     const set = PRESETS[runType] || PRESETS.single;
     examplesLabel.textContent = runType === 'single' ? 'Single readout presets:' : 'A/B diff presets:';
     examplesList.innerHTML = Object.keys(set).map(function(key){
-      const selected = selectedPreset[runType] === key;
-      return '<button type="button" class="example-btn' + (selected ? ' is-selected' : '') + '" data-example="' + key + '" aria-pressed="' + (selected ? 'true' : 'false') + '">' + set[key].label + '</button>';
+      return '<button type="button" class="example-btn" data-example="' + key + '">' + set[key].label + '</button>';
     }).join('');
   }
 
@@ -653,13 +646,11 @@ function toggleTheme(){
     const set = PRESETS[runType] || PRESETS.single;
     const ex = set[eb.dataset.example];
     if (!ex) return;
-    selectedPreset[runType] = eb.dataset.example;
     a.value = ex.a;
     if (runType === 'diff') b.value = ex.b || '';
     else b.value = '';
     userEditedA = false;
     userEditedB = false;
-    renderExamples();
     refresh();
     refreshAutoNames();
     showToast("Loaded preset: <strong>" + ex.label + "</strong>. Run when ready.", {kind:'info', durationMs:3500, key:'preset'});

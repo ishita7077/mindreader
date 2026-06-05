@@ -382,11 +382,11 @@ export async function mountCortex({
   controls.autoRotate = true;
   controls.autoRotateSpeed = 0.4;
 
-  scene.add(new THREE.HemisphereLight(0x3ccfff, 0x02030a, 0.38));
-  const key = new THREE.DirectionalLight(0x67c6ff, 2.2); key.position.set(1.2, 4.5, 2.2); scene.add(key);
-  const fill = new THREE.DirectionalLight(0x0b2f8f, 0.9); fill.position.set(-3, 0.5, 1.5); scene.add(fill);
-  const rim = new THREE.PointLight(0x1bbcff, 4.6, 7); rim.position.set(-2.4, 0.7, 2.6); scene.add(rim);
-  const hot = new THREE.PointLight(0xffd94a, 2.8, 6); hot.position.set(1.8, -0.9, 2.4); scene.add(hot);
+  scene.add(new THREE.HemisphereLight(0x3ccfff, 0x02030a, 0.34));
+  const key = new THREE.DirectionalLight(0x67c6ff, 1.9); key.position.set(1.2, 4.5, 2.2); scene.add(key);
+  const fill = new THREE.DirectionalLight(0x0b2f8f, 0.82); fill.position.set(-3, 0.5, 1.5); scene.add(fill);
+  const rim = new THREE.PointLight(0x1bbcff, 2.3, 7); rim.position.set(-2.4, 0.7, 2.6); scene.add(rim);
+  const hot = new THREE.PointLight(0xffd94a, 1.4, 6); hot.position.set(1.8, -0.9, 2.4); scene.add(hot);
 
   const glow = { color: { value: new THREE.Color("#4cc9ff") }, intensity: { value: 0.0 } };
   const material = new THREE.MeshStandardMaterial({
@@ -395,7 +395,7 @@ export async function mountCortex({
     metalness: 0.0,
     vertexColors: true,
     emissive: new THREE.Color(0x03113a),
-    emissiveIntensity: 0.34,
+    emissiveIntensity: 0.17,
   });
   material.onBeforeCompile = (shader) => {
     shader.uniforms.uGlow = glow.color;
@@ -404,7 +404,7 @@ export async function mountCortex({
       shader.vertexShader.replace("void main() {", "void main() {\n  vRoi = aRoi;\n  vSulc = sulc;");
     shader.fragmentShader = "uniform vec3 uGlow;\nuniform float uInt;\nvarying float vRoi;\nvarying float vSulc;\n" +
       shader.fragmentShader
-        .replace("#include <emissivemap_fragment>", "#include <emissivemap_fragment>\n  vec3 hotGlow = mix(uGlow, vec3(1.0, 0.94, 0.54), clamp(vRoi * uInt * 0.62, 0.0, 1.0));\n  totalEmissiveRadiance += hotGlow * vRoi * uInt * 2.55;")
+        .replace("#include <emissivemap_fragment>", "#include <emissivemap_fragment>\n  vec3 hotGlow = mix(uGlow, vec3(1.0, 0.94, 0.54), clamp(vRoi * uInt * 0.62, 0.0, 1.0));\n  totalEmissiveRadiance += hotGlow * vRoi * uInt * 1.28;")
         .replace("#include <color_fragment>", "#include <color_fragment>\n  float sulcShade = clamp(-vSulc * 0.8, 0.0, 1.0);\n  diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.005, 0.025, 0.13), sulcShade * 0.48);\n  diffuseColor.rgb += vec3(0.015, 0.075, 0.18);\n  vec3 hotColor = mix(uGlow, vec3(1.0, 0.96, 0.62), clamp(vRoi * uInt * 0.68, 0.0, 1.0));\n  diffuseColor.rgb = mix(diffuseColor.rgb, hotColor, clamp(vRoi * uInt * 0.82, 0.0, 0.92));");
   };
   const mesh = new THREE.Mesh(geometry, material);
@@ -414,7 +414,7 @@ export async function mountCortex({
   const rimMaterial = new THREE.MeshBasicMaterial({
     color: 0x45dfff,
     transparent: true,
-    opacity: 0.10,
+    opacity: 0.05,
     blending: THREE.AdditiveBlending,
     side: THREE.BackSide,
     depthWrite: false,
@@ -439,13 +439,13 @@ export async function mountCortex({
   function repaint(view) {
     updateRoiAttribute();
     paintColors(geometry, VIEW_DELTAS[view], view, roi, true, roiIntensity, roiColorFor(roiKind));
-    glow.intensity.value = 0.53 + Math.max(0, Math.min(1, roiIntensity)) * 1.66;
+    glow.intensity.value = 0.27 + Math.max(0, Math.min(1, roiIntensity)) * 0.83;
   }
   repaint(currentView);
 
   const composer = new EffectComposer(renderer);
   composer.addPass(new RenderPass(scene, camera));
-  const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 1.15, 0.72, 0.58);
+  const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.58, 0.36, 0.58);
   composer.addPass(bloom);
 
   const ro = new ResizeObserver(() => {

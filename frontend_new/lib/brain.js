@@ -90,36 +90,22 @@ function mountBrain(canvas, opts={}){
   const renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:true});
   renderer.setPixelRatio(dpr);
 
-  // Two brain palettes, one per theme. In dark mode the brain is cream on
-  // black with blue highlights; in light mode it inverts — dark slate brain
-  // on cream stage with deep blue highlights. applyBrainTheme() re-colors
-  // everything when the user toggles the theme.
-  // ── BIOLOGY-TEXTBOOK BRAIN PALETTE ──────────────────────────────────────
-  // Replaces the prior "specimen photograph" greys with the warm pink-tan
-  // palette you'd see in an anatomy textbook (think Gray's Anatomy plates
-  // or the Netter atlas). Cortex is a desaturated coral/salmon — the tone
-  // a histology stain produces — rather than a sci-fi blue-grey.
-  // Activation highlights remain vermillion/blue (high-contrast against the
-  // pink base) so the brain reads as a labelled diagram, not a hologram.
+  // Shared neon brain palette. Keep this aligned with the results-page cortex:
+  // deep cobalt cortex, cyan rim light, and amber activation with restrained glow.
   const BRAIN_THEMES = {
     dark: {
-      // On dark backgrounds, lift the brain to a warm parchment-pink so it
-      // glows out of the paper rather than disappearing into shadow.
-      base:[0.82, 0.70, 0.66],         // warm parchment pink
-      ambient:0xd9b9a4, ambI:0.55,     // soft umber ambient
-      key:0xfff2e4,     keyI:1.10,     // warm key light (afternoon sun on paper)
-      fill:0xd6b8a0,    fillI:0.45,    // dusty rose fill
-      rim:0x5e3d2e,     rimI:0.45,     // deep umber rim for silhouette separation
+      base:[0.035, 0.16, 0.62],
+      ambient:0x103b82, ambI:0.32,
+      key:0x65d7ff,     keyI:0.92,
+      fill:0x183b9b,    fillI:0.38,
+      rim:0x45dfff,     rimI:0.28,
     },
     light: {
-      // Cream-paper background: cortex sits as a slightly-saturated
-      // anatomy-textbook coral. Warm tones throughout so it feels printed,
-      // not screen-rendered.
-      base:[0.78, 0.58, 0.52],         // anatomy-plate coral-pink
-      ambient:0xefd8c4, ambI:0.50,     // soft kraft-paper ambient
-      key:0xfff0dc,     keyI:1.10,     // warm yellowish key (printed-page light)
-      fill:0xefcfb8,    fillI:0.45,    // rose-tinted fill
-      rim:0x6b4232,     rimI:0.50,     // sienna rim, no cool blue contamination
+      base:[0.10, 0.24, 0.62],
+      ambient:0x9bdfff, ambI:0.28,
+      key:0x65d7ff,     keyI:0.88,
+      fill:0x2f89ff,    fillI:0.32,
+      rim:0x45dfff,     rimI:0.24,
     },
   };
   function currentTheme(){
@@ -143,10 +129,10 @@ function mountBrain(canvas, opts={}){
   // cortex renders. Flip a switch so we can dispatch accordingly.
   function applyBrainLighting(theme){
     if (!useRealMesh){
-      ambLight.color.setHex(0xe0dccf); ambLight.intensity = 0.32;
-      keyLight.color.setHex(0xffffff); keyLight.intensity = 1.05;
-      fillLight.color.setHex(0xaec3dc); fillLight.intensity = 0.50;
-      rimLight.color.setHex(0x4a78ab); rimLight.intensity = 0.55;
+      ambLight.color.setHex(0x103b82); ambLight.intensity = 0.28;
+      keyLight.color.setHex(0x65d7ff); keyLight.intensity = 0.90;
+      fillLight.color.setHex(0x183b9b); fillLight.intensity = 0.35;
+      rimLight.color.setHex(0x45dfff); rimLight.intensity = 0.28;
       return;
     }
     const t = BRAIN_THEMES[theme] || BRAIN_THEMES.dark;
@@ -178,8 +164,8 @@ function mountBrain(canvas, opts={}){
   })();
 
   // Encoding palette (NEVER change without updating scale-bar gradient)
-  const B_R = 0.88, B_G = 0.29, B_B = 0.18;  // vermillion #e04a2e
-  const A_R = 0.31, A_G = 0.49, A_B = 0.74;  // slate blue #4f7eb9
+  const B_R = 1.00, B_G = 0.72, B_B = 0.22;  // amber #ffb838
+  const A_R = 0.18, A_G = 0.58, A_B = 1.00;  // neon blue #2e94ff
 
   function mixV(a,b,t){return a+(b-a)*t}
 
@@ -230,7 +216,7 @@ function mountBrain(canvas, opts={}){
     sheenColor: new THREE.Color(0xcad3df),
     sheenRoughness: 0.66,
     emissive: 0x0a0e14,
-    emissiveIntensity: 0.2,
+    emissiveIntensity: 0.1,
   });
 
   const root = new THREE.Group();
@@ -450,30 +436,18 @@ function mountBrain(canvas, opts={}){
     brain_effort:       { y:  0.40, x: -0.30 }, // bilateral dlPFC — slight left dorsolateral
   };
 
-  // Activation gradient LUT. Two calibrations:
-  //   - CREAM base (dark theme): cream → periwinkle → royal → deep blue.
-  //     The intermediate stops brighten slightly before darkening, giving a
-  //     "soft paper absorbing ink" feel that reads well on a near-black stage.
-  //   - WARM-GRAY base (light theme): gray → slate → royal → deep navy.
-  //     Monotonic cooling + darkening — no lightening bump — so activation
-  //     reads as "more intense = darker blue" against the cream stage.
+  // Activation gradient LUT: cobalt cortex -> cyan lift -> amber/yellow peak.
   const LUT_SIZE = 128;
   function buildHeatLUT(baseDim){
     const lut = new Float32Array(LUT_SIZE * 3);
     const dimR = baseDim[0], dimG = baseDim[1], dimB = baseDim[2];
-    const isCream = (dimR + dimG + dimB) / 3 > 0.65;
     function lerp(a,b,u){ return a + (b-a)*u; }
     // Stops: [tStart, tEnd, rFrom, gFrom, bFrom, rTo, gTo, bTo]
-    const stops = isCream ? [
-      [0.00, 0.25, dimR, dimG, dimB,  0.72, 0.74, 0.82],   // cream → faint blue
-      [0.25, 0.55, 0.72, 0.74, 0.82,  0.50, 0.60, 0.86],   // faint blue → periwinkle
-      [0.55, 0.78, 0.50, 0.60, 0.86,  0.22, 0.38, 0.78],   // periwinkle → royal
-      [0.78, 1.00, 0.22, 0.38, 0.78,  0.06, 0.18, 0.62],   // royal → deep blue
-    ] : [
-      [0.00, 0.30, dimR, dimG, dimB,  0.42, 0.45, 0.55],   // warm gray → cool gray
-      [0.30, 0.60, 0.42, 0.45, 0.55,  0.26, 0.36, 0.58],   // cool gray → slate blue
-      [0.60, 0.82, 0.26, 0.36, 0.58,  0.13, 0.26, 0.56],   // slate → royal
-      [0.82, 1.00, 0.13, 0.26, 0.56,  0.04, 0.14, 0.50],   // royal → deep navy
+    const stops = [
+      [0.00, 0.32, dimR, dimG, dimB,  0.10, 0.34, 0.95],
+      [0.32, 0.62, 0.10, 0.34, 0.95,  0.32, 0.88, 1.00],
+      [0.62, 0.82, 0.32, 0.88, 1.00,  0.90, 0.86, 0.42],
+      [0.82, 1.00, 0.90, 0.86, 0.42,  1.00, 0.95, 0.55],
     ];
     for (let i = 0; i < LUT_SIZE; i++){
       const t = i / (LUT_SIZE - 1);
@@ -534,7 +508,7 @@ function mountBrain(canvas, opts={}){
     return setHighlight;
   }
 
-  // Paints the real mesh with a diverging blue↔vermillion map based on
+  // Paints the real mesh with a diverging neon-blue/amber map based on
   // per-region signed deltas (positive = B stronger, negative = A stronger).
   // Mock data now — swap in real backend deltas later without code changes.
   function paintMockDiff(geometry, colors, nVerts, regionDeltas){
@@ -552,8 +526,8 @@ function mountBrain(canvas, opts={}){
     }
     for (let i = 0; i < nVerts; i++) if (Math.abs(dPerVert[i]) > maxAbs) maxAbs = Math.abs(dPerVert[i]);
     const scale = maxAbs > 1e-6 ? 1 / maxAbs : 1;
-    const POS  = [0.92, 0.32, 0.20];
-    const NEG  = [0.32, 0.54, 0.80];
+    const POS  = [1.00, 0.72, 0.22];
+    const NEG  = [0.18, 0.58, 1.00];
     function repaint(){
       const NEUT = [baseR, baseG, baseB];
       for (let i = 0; i < nVerts; i++){
@@ -804,7 +778,7 @@ function mountBrain(canvas, opts={}){
           sheenColor: new THREE.Color(0xcad3df),
           sheenRoughness: 0.66,
           emissive: 0x0a0e14,
-          emissiveIntensity: 0.2,
+          emissiveIntensity: 0.1,
           transparent: true,
           opacity: 0,
         });
