@@ -308,11 +308,53 @@ h1 span,
   text-shadow: 0 0 24px rgba(79, 212, 255, 0.30);
 }
 
+.hero-title .feel-cluster,
+.hero-title .w,
+.hero-title .hero-question {
+  color: inherit !important;
+  background: none !important;
+  -webkit-background-clip: initial !important;
+  background-clip: initial !important;
+  -webkit-text-fill-color: currentColor !important;
+  text-shadow: none !important;
+}
+
+.hero-title .feel-cluster {
+  display: inline-block;
+  white-space: nowrap;
+  padding-right: 0.16em;
+  margin-right: -0.08em;
+}
+
+.hero-title .feel-gradient,
+.hero-title .feel-gradient .w {
+  display: inline-block;
+  color: var(--bd-cyan) !important;
+  background: linear-gradient(90deg, #e9fbff 0%, var(--bd-cyan) 42%, var(--bd-blue) 100%) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  text-shadow: 0 0 24px rgba(79, 212, 255, 0.30) !important;
+  overflow: visible;
+}
+
+.hero-title .feel-gradient .w {
+  padding-right: 0.14em;
+  margin-right: -0.06em;
+}
+
+.hero-title .hero-question,
+.hero-title .hero-question .w {
+  display: inline-block;
+  color: var(--bd-ink) !important;
+  -webkit-text-fill-color: var(--bd-ink) !important;
+  padding-right: 0.1em;
+}
+
 p,
 li,
 .page-sub,
 .hero-sub,
-.hero-cta-sub,
 .section-desc,
 .status-sub,
 .tip-text,
@@ -345,7 +387,7 @@ select {
 .nav-cta-new,
 .btn-primary-gold,
 .btn-ghost-gold {
-  border-radius: 8px !important;
+  border-radius: 999px !important;
   border: 1px solid var(--bd-line-strong) !important;
   background: rgba(8, 18, 42, 0.76) !important;
   color: var(--bd-ink) !important;
@@ -577,6 +619,7 @@ input::placeholder {
 .hero-dim-card,
 .hero-stage-foot,
 .hero-pill,
+.lens-pill,
 .eta-pill,
 .pill,
 .chip,
@@ -593,14 +636,35 @@ input::placeholder {
   box-shadow: 0 0 22px rgba(88, 221, 255, 0.12) !important;
 }
 
+.hero-pill[data-key="attention_salience"],
+.lens-pill[data-key="attention_salience"]{--signal:#52dcff}
+.hero-pill[data-key="brain_effort"],
+.lens-pill[data-key="brain_effort"]{--signal:#b37aff}
+.hero-pill[data-key="gut_reaction"],
+.lens-pill[data-key="gut_reaction"]{--signal:#ff5f9f}
+.hero-pill[data-key="language_depth"],
+.lens-pill[data-key="language_depth"]{--signal:#75d1ff}
+.hero-pill[data-key="memory_encoding"],
+.lens-pill[data-key="memory_encoding"]{--signal:#ffdb29}
+.hero-pill[data-key="personal_resonance"],
+.lens-pill[data-key="personal_resonance"]{--signal:#8fffe5}
+.hero-pill[data-key="social_thinking"],
+.lens-pill[data-key="social_thinking"]{--signal:#ff8c38}
+
+.hero-pill[data-key],
+.lens-pill[data-key] {
+  border-color: color-mix(in srgb, var(--signal, var(--bd-cyan)) 42%, rgba(78, 111, 169, 0.38)) !important;
+}
+
 .hero-pill.is-active,
+.lens-pill.active,
 .ds-step.is-active .ds-step-icon,
 .steps li.active .step-dot,
 .input-tag.a,
 .tip-num {
-  background: var(--bd-cyan) !important;
+  background: color-mix(in srgb, var(--signal, var(--bd-cyan)) 92%, white) !important;
   color: #051020 !important;
-  border-color: var(--bd-cyan) !important;
+  border-color: var(--signal, var(--bd-cyan)) !important;
 }
 
 .input-tag.b {
