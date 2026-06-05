@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <meta name="theme-color" content="#f7f4ec" />
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,300;1,9..144,400;1,9..144,500&family=Newsreader:ital,wght@0,300;0,400;0,500;1,300;1,400&family=JetBrains+Mono:wght@300;400;500&family=Inter+Tight:wght@300;400;500;600&display=swap" rel="stylesheet">
-<script>(function(){var r=document.documentElement;try{var t=localStorage.getItem('braindiff-theme');if(t==='dark')r.setAttribute('data-theme','dark');}catch(e){}})();</script>
+<script>(function(){var r=document.documentElement;r.setAttribute('data-theme','dark');try{localStorage.setItem('braindiff-theme','dark');}catch(e){}})();</script>
 <style>
 :root {
   color-scheme: light;
@@ -1768,17 +1768,25 @@ path[stroke="#2a2a3e"] { stroke: var(--line); }
    hero class, so this must load after it and keep !important. */
 .cold-open {
   background:
-    linear-gradient(90deg, rgba(3, 7, 21, 0.99) 0%, rgba(3, 7, 21, 0.94) 46%, rgba(3, 7, 21, 0.54) 78%, rgba(3, 7, 21, 0.34) 100%),
-    linear-gradient(180deg, rgba(3, 7, 21, 0.28) 0%, rgba(3, 7, 21, 0.92) 72%, #030715 100%),
-    url("/assets/research-cover-brain.png") right 52% / auto 250% no-repeat,
+    linear-gradient(90deg, rgba(3, 7, 21, 0.92) 0%, rgba(3, 7, 21, 0.66) 44%, rgba(3, 7, 21, 0.24) 100%),
+    linear-gradient(180deg, rgba(3, 7, 21, 0.08), rgba(3, 7, 21, 0.36)),
+    url("/assets/research-cover-brain.png") center center / cover no-repeat,
     linear-gradient(120deg, #030715 0%, #061737 100%) !important;
+}
+
+.theme-switcher { display: none !important; }
+.topbar-new {
+  max-width: none !important;
+  margin: 0 !important;
+  background: rgba(3, 7, 21, 0.78) !important;
+  border-bottom: 1px solid rgba(110, 205, 255, 0.16) !important;
 }
 
 @media (max-width: 700px) {
   .cold-open {
     background:
-      linear-gradient(180deg, rgba(3, 7, 21, 0.84), rgba(3, 7, 21, 0.96)),
-      url("/assets/research-cover-brain.png") right top / auto 580px no-repeat,
+      linear-gradient(180deg, rgba(3, 7, 21, 0.72), rgba(3, 7, 21, 0.92)),
+      url("/assets/research-cover-brain.png") center top / auto 520px no-repeat,
       linear-gradient(120deg, #030715 0%, #061737 100%) !important;
   }
 }
@@ -1840,9 +1848,6 @@ path[stroke="#2a2a3e"] { stroke: var(--line); }
   <div class="cold-frame">
     <p style="font-size:14px;color:var(--text-soft);font-family:'JetBrains Mono',monospace;letter-spacing:0.04em;line-height:1.7;text-align:left;max-width:600px;margin:0 auto">
       Note: Brain Diff models the <strong style="color:var(--text)">cortex</strong>, not the whole brain. That is the outer surface where attention, memory encoding etc are represented in TRIBE v2.
-    </p>
-    <p style="font-size:12px;color:var(--text-mute);font-family:'JetBrains Mono',monospace;letter-spacing:0.12em;text-transform:uppercase;margin-top:28px">
-      Skim the headlines
     </p>
   </div>
 
@@ -2171,45 +2176,6 @@ path[stroke="#2a2a3e"] { stroke: var(--line); }
     For the technical version of how comparison works, see the <a href="/methodology" style="color:var(--gold-bright);border-bottom:1px solid color-mix(in srgb,var(--gold-bright) 45%,transparent)">methodology</a>.
   </p>
 
-  <!-- Static response comparison — no local MP4 dependency. -->
-  <div class="cortex-respond-wrap">
-    <div class="respond-title">Two messages. Same seven systems. One static cortical readout.</div>
-    <div style="font-size:13.5px;color:var(--text-soft);font-family:'Newsreader',serif;line-height:1.6;max-width:600px;margin:8px 0 24px">
-      This is a fixed example, not synced playback. Open either video if you want context; the bars below show the kind of seven-system comparison Brain Diff returns.
-    </div>
-
-    <div class="respond-videos" id="respond-videos">
-      <div class="respond-video-cell">
-        <div class="respond-video-label">A · Calm &amp; informative</div>
-        <a class="respond-video-frame" href="https://www.youtube.com/watch?v=lBYC4_Lccjw&start=0&end=30" target="_blank" rel="noopener" aria-label="Open video A on YouTube">
-          <img src="https://img.youtube.com/vi/lBYC4_Lccjw/hqdefault.jpg" alt="" loading="lazy">
-          <span class="respond-static-play">Open video →</span>
-        </a>
-      </div>
-      <div class="respond-video-cell">
-        <div class="respond-video-label">B · Sharp &amp; personal</div>
-        <a class="respond-video-frame" href="https://www.youtube.com/watch?v=0e3GPea1Tyg&start=0&end=30" target="_blank" rel="noopener" aria-label="Open video B on YouTube">
-          <img src="https://img.youtube.com/vi/0e3GPea1Tyg/hqdefault.jpg" alt="" loading="lazy">
-          <span class="respond-static-play">Open video →</span>
-        </a>
-      </div>
-    </div>
-
-    <div class="respond-display">
-      <div class="respond-controls">
-        <span>STATIC MOMENT &nbsp;<span class="respond-time" id="respond-time">0:18</span></span>
-        <span style="margin-left:auto;color:var(--text-mute)">A / B scores</span>
-      </div>
-
-      <div class="respond-bars" id="respond-bars">
-        <!-- Generated by JS -->
-      </div>
-    </div>
-  </div>
-
-  <div class="section-bottom">
-    The bars are a static example of the seven cortical systems responding to two different messages. Where the bars rise together, both videos are recruiting the same system. Where they diverge, the cortex is responding differently — and that divergence is where most of the useful content questions live.
-  </div>
 </section>
 
 <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
@@ -2375,6 +2341,9 @@ path[stroke="#2a2a3e"] { stroke: var(--line); }
       <p class="section-lead" style="padding:0;margin-bottom:28px">
         BrainDiff takes two pieces of content and simulates, region by region, how a brain responds to each.
       </p>
+      <p class="section-lead" style="padding:0;margin-bottom:28px">
+        It does not declare a winner. It gives you the response map, so the next edit is based on what changed in the cortex.
+      </p>
       <div class="final-cta" style="margin-top:0;text-align:left">
         <a href="/launch" class="btn-primary-gold">Launch Brain Diff <span class="btn-arrow">→</span></a>
       </div>
@@ -2390,10 +2359,8 @@ path[stroke="#2a2a3e"] { stroke: var(--line); }
 // ── Theme toggle ──────────────────────────────────────────────
 function toggleTheme() {
   var r = document.documentElement;
-  var next = r.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-  if (next === 'dark') r.setAttribute('data-theme', 'dark');
-  else r.removeAttribute('data-theme');
-  try { localStorage.setItem('braindiff-theme', next); } catch(e) {}
+  r.setAttribute('data-theme', 'dark');
+  try { localStorage.setItem('braindiff-theme', 'dark'); } catch(e) {}
 }
 
 // ════════════════════════════════════════════════
@@ -2637,6 +2604,7 @@ function gen(shape, peak) {
 
 function buildRespondBars() {
   const c = document.getElementById('respond-bars');
+  if (!c) return;
   c.innerHTML = '';
   dimensions.forEach((d, i) => {
     const row = document.createElement('div');
@@ -2654,6 +2622,7 @@ function buildRespondBars() {
 }
 
 function updateRespond(t) {
+  if (!document.getElementById('respond-bars')) return;
   const preset = respondPresets[currentPreset];
   const tt = Math.min(29, Math.floor(t));
   preset.a.dataA = preset.a.dataA || preset.a.shapes.map((s, i) => gen(s, preset.a.peaks[i]));
