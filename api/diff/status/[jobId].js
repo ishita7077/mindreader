@@ -115,6 +115,25 @@ function mapRunpodStatus(data, jobId, jobMeta, events) {
 
   if (raw === "COMPLETED") {
     const output = data.output || {};
+    if (output && (output.error_type || output.error_traceback || output.error_message)) {
+      const message = output.error_message || output.error || "RunPod worker returned an error payload.";
+      const code = output.error_code || output.code || output.error_type || "RUNPOD_WORKER_ERROR";
+      return {
+        status: "error",
+        events,
+        error: {
+          code,
+          message,
+          plain: explainFailure(code, message, raw),
+          runpod_status: raw,
+          worker_error: {
+            type: output.error_type || null,
+            stage: output.stage || null,
+            traceback: output.error_traceback || null
+          }
+        }
+      };
+    }
     // Worker can return a clean spend-cap error inside the output payload —
     // surface as a structured error instead of "done" so the frontend can
     // render the daily-limit banner.

@@ -37,6 +37,51 @@ import runpod
 
 def _stub_result(event: dict[str, Any]) -> dict[str, Any]:
     payload = event.get("input") or {}
+    run_type = str(payload.get("run_type") or payload.get("runType") or "diff").strip().lower()
+    if run_type == "single":
+        text = (payload.get("text") or payload.get("text_a") or "Single input").strip()
+        dims = [
+            ("attention_salience", "Attention", 0.73),
+            ("memory_encoding", "Memory Encoding", 0.66),
+            ("language_depth", "Language Depth", 0.69),
+            ("personal_resonance", "Personal Resonance", 0.57),
+            ("brain_effort", "Brain Effort", 0.52),
+            ("gut_reaction", "Gut Reaction", 0.53),
+            ("social_thinking", "Social Thinking", 0.50),
+        ]
+        return {
+            "run_type": "single",
+            "dimensions": [
+                {
+                    "key": name,
+                    "dimension": name,
+                    "label": label,
+                    "score": score,
+                    "timeseries": [max(0.0, score - 0.03), score, min(1.0, score + 0.02)],
+                }
+                for name, label, score in dims
+            ],
+            "vertex_b64": "",
+            "vertex_delta_b64": "",
+            "vertex_a_b64": "",
+            "vertex_b_b64": "",
+            "warnings": ["Emergency fast-boot worker mode is enabled."],
+            "meta": {
+                "run_type": "single",
+                "model_revision": "fast_boot_stub",
+                "atlas": "HCP_MMP1.0",
+                "pipeline": "text_fast_boot",
+                "modality": payload.get("mode") or "text",
+                "text": text,
+                "transcript": text,
+                "text_length": len(text),
+                "transcript_length": len(text),
+                "text_timesteps": 3,
+                "processing_time_ms": 1,
+                "dimensions_count": len(dims),
+                "display_name": payload.get("display_name") or "Text",
+            },
+        }
     text_a = (payload.get("text_a") or "Version A").strip()
     text_b = (payload.get("text_b") or "Version B").strip()
     dims = [
@@ -159,8 +204,8 @@ from backend.heatmap import compute_vertex_delta, generate_heatmap_artifact
 from backend.media_features import audio_envelope, peak_moments, video_keyframes
 from backend.model_service import TribeService
 from backend.narrative import build_headline
-from backend.result_semantics import enrich_dimension_payload, winner_summary
-from backend.scorer import score_predictions
+from backend.result_semantics import UI_LABELS, TOOLTIPS, USER_MEANING, enrich_dimension_payload, winner_summary
+from backend.scorer import reference_scale, score_predictions
 from backend.vertex_codec import f32_b64
 
 # New results-page content generation (uses the same LLaMA TRIBE loaded).
@@ -537,6 +582,352 @@ def _build_response(
                     job_id, type(exc).__name__, exc)
 
     return response
+
+
+def _unit_signal(value: Any, clamp: float = 2.0) -> float:
+    """Map signed TRIBE activation onto the 0..1 UI scale used by single reports."""
+    try:
+        x = float(value)
+    except (TypeError, ValueError):
+        return 0.5
+    if x > clamp:
+        x = clamp
+    if x < -clamp:
+        x = -clamp
+    return round((x + clamp) / (2.0 * clamp), 6)
+
+
+def _single_dimension_rows(scores: dict[str, dict[str, Any]]) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    for key in sorted(scores.keys(), key=lambda name: UI_LABELS.get(name, name)):
+        payload = scores[key]
+        raw_series = payload.get("timeseries", []) or []
+        unit_series = [_unit_signal(v) for v in raw_series]
+        rows.append(
+            {
+                "key": key,
+                "dimension": key,
+                "label": UI_LABELS.get(key, key.replace("_", " ").title()),
+                "tooltip": TOOLTIPS.get(key, ""),
+                "meaning": USER_MEANING.get(key, ""),
+                "score": _unit_signal(payload.get("normalized_signed_mean", 0.0)),
+                "raw_signed_mean": float(payload.get("raw_signed_mean", 0.0) or 0.0),
+                "normalized_signed_mean": float(payload.get("normalized_signed_mean", 0.0) or 0.0),
+                "raw_abs_mean": float(payload.get("raw_abs_mean", 0.0) or 0.0),
+                "timeseries": unit_series,
+                "vertex_count": int(payload.get("vertex_count", 0) or 0),
+            }
+        )
+    return rows
+
+
+def _warnings_for_single_text(text: str) -> list[str]:
+    warnings: list[str] = []
+    words = len([w for w in text.strip().split() if w])
+    if words < 3:
+        warnings.append("Very short text may produce unreliable results")
+    return warnings
+
+
+def _build_single_response(
+    *,
+    transcript: str,
+    transcript_segments: list[dict[str, Any]],
+    modality: str,
+    stage_times: dict[str, int],
+    processing_time_ms: int,
+    preds: np.ndarray,
+    scores: dict[str, dict[str, Any]],
+    median: float,
+    warnings: list[str],
+    media_duration_s: float | None = None,
+    media_filename: str = "",
+    media_features: dict[str, Any] | None = None,
+    job_id: str | None = None,
+    display_name: str = "",
+    gpu_snapshots: list[dict] | None = None,
+) -> dict[str, Any]:
+    request_id = str(uuid.uuid4())
+    if not job_id:
+        job_id = str(uuid.uuid4())
+    label = display_name or media_filename or ("Text" if modality == "text" else modality.title())
+    dimension_rows = _single_dimension_rows(scores)
+    vertex = preds.mean(axis=0) / reference_scale(preds)
+    try:
+        heatmap = generate_heatmap_artifact(vertex)
+    except Exception as exc:
+        log.warning(
+            "single_heatmap_failed job_id=%s modality=%s err=%s: %s",
+            job_id,
+            modality,
+            type(exc).__name__,
+            exc,
+        )
+        heatmap = {"format": "unavailable", "error": f"{type(exc).__name__}: {exc}"}
+    meta: dict[str, Any] = {
+        "run_type": "single",
+        "model_revision": tribe_service.model_revision,
+        "atlas": "HCP_MMP1.0",
+        "method_primary": "signed_roi_activation",
+        "normalization": "within_stimulus_median",
+        "pipeline": _pipeline_label(modality),
+        "modality": modality,
+        "transcript": transcript,
+        "text": transcript if modality == "text" else "",
+        "transcript_length": len(transcript),
+        "transcript_segments": transcript_segments,
+        "text_timesteps": int(preds.shape[0]),
+        "processing_time_ms": processing_time_ms,
+        "request_id": request_id,
+        "job_id": job_id,
+        "stage_times": stage_times,
+        "median": median,
+        "heatmap": heatmap,
+        "atlas_peak": describe_peak_abs_delta(vertex),
+        "dimensions_count": len(dimension_rows),
+        "display_name": label,
+    }
+    if modality != "text":
+        meta["media_duration_s"] = float(media_duration_s or 0.0)
+        meta["media_filename"] = media_filename
+        meta["media_name"] = media_filename
+    if media_features is not None:
+        meta["media_features"] = media_features
+    if gpu_snapshots:
+        meta["gpu_audit"] = {"snapshots": gpu_snapshots, "safe_inprocess_concurrency": 1}
+
+    response: dict[str, Any] = {
+        "run_type": "single",
+        "dimensions": dimension_rows,
+        "vertex_b64": f32_b64(vertex),
+        "vertex_delta_b64": f32_b64(vertex),
+        "vertex_a_b64": "",
+        "vertex_b_b64": "",
+        "warnings": warnings,
+        "meta": meta,
+    }
+    try:
+        from runpod_worker.persistence import store_result
+        ok = store_result(job_id, response)
+        log.info(
+            "[RP-24] single_result_persisted job_id=%s ok=%s modality=%s size_dims=%d",
+            job_id,
+            ok,
+            modality,
+            len(dimension_rows),
+        )
+    except Exception as exc:
+        log.warning(
+            "[RP-24] single_result_persist_failed job_id=%s err=%s: %s",
+            job_id,
+            type(exc).__name__,
+            exc,
+        )
+    return response
+
+
+def _run_text_single(
+    text: str,
+    *,
+    job_id: str | None = None,
+    display_name: str = "",
+) -> dict[str, Any]:
+    with _GPU_JOB_LOCK:
+        return _run_text_single_locked(text, job_id=job_id, display_name=display_name)
+
+
+def _run_text_single_locked(
+    text: str,
+    *,
+    job_id: str | None = None,
+    display_name: str = "",
+) -> dict[str, Any]:
+    started = time.perf_counter()
+    gpu_snapshots: list[dict] = [_gpu_snapshot("before_tribe")]
+    warnings = _warnings_for_single_text(text)
+    progress = emitter_for(job_id)
+    log.info("[RP-21] single_text_started job_id=%s text_len=%d", job_id, len(text))
+
+    progress.emit("predicting_single", "Encoding the input through TRIBE v2...")
+    preds, _, timing = _coerce_prediction_output(
+        tribe_service.text_to_predictions(text, progress=progress)
+    )
+    log.info(
+        "[RP-22] single_prediction_ok job_id=%s modality=text pred_shape=%s timing=%s",
+        job_id,
+        getattr(preds, "shape", None),
+        timing,
+    )
+
+    progress.emit("computing_brain_response", "Computing the brain response...")
+    scores, median = score_predictions(preds, masks)
+    gpu_snapshots.append(_gpu_snapshot("after_single_score"))
+    stage_times = {
+        "events_ms": int(timing.get("events_ms", 0) or 0),
+        "predict_ms": int(timing.get("predict_ms", 0) or 0),
+    }
+    processing_time_ms = int((time.perf_counter() - started) * 1000)
+    runtime = float(max(int(preds.shape[0]), 1))
+    transcript_segments = [{"start": 0.0, "end": runtime, "text": text}]
+    result = _build_single_response(
+        transcript=text,
+        transcript_segments=transcript_segments,
+        modality="text",
+        stage_times=stage_times,
+        processing_time_ms=processing_time_ms,
+        preds=preds,
+        scores=scores,
+        median=median,
+        warnings=warnings,
+        job_id=job_id,
+        display_name=display_name or "Text",
+        gpu_snapshots=gpu_snapshots,
+    )
+    log.info(
+        "[RP-23] single_text_complete job_id=%s processing_ms=%d dimensions=%d",
+        job_id,
+        processing_time_ms,
+        len(result.get("dimensions", [])),
+    )
+    return result
+
+
+def _run_media_single(
+    modality: str,
+    media_url: str,
+    *,
+    job_id: str | None = None,
+    blob_token: str = "",
+    media_name: str = "",
+    display_name: str = "",
+) -> dict[str, Any]:
+    with _GPU_JOB_LOCK:
+        return _run_media_single_locked(
+            modality,
+            media_url,
+            job_id=job_id,
+            blob_token=blob_token,
+            media_name=media_name,
+            display_name=display_name,
+        )
+
+
+def _run_media_single_locked(
+    modality: str,
+    media_url: str,
+    *,
+    job_id: str | None = None,
+    blob_token: str = "",
+    media_name: str = "",
+    display_name: str = "",
+) -> dict[str, Any]:
+    started = time.perf_counter()
+    gpu_snapshots: list[dict] = [_gpu_snapshot("before_tribe")]
+    warnings: list[str] = []
+    progress = emitter_for(job_id)
+    temp_files: set[str] = set()
+
+    def _track(path: str) -> str:
+        if path:
+            temp_files.add(path)
+        return path
+
+    log.info(
+        "[RP-21] single_media_started job_id=%s modality=%s has_blob_token=%s url_host=%s",
+        job_id,
+        modality,
+        bool(blob_token),
+        urlparse(media_url).netloc if media_url else "",
+    )
+    try:
+        progress.emit("downloading_single", f"Downloading {modality}...")
+        path = _track(_download_to_temp(media_url, blob_token))
+        try:
+            duration = float(probe_duration_seconds(path))
+        except DurationProbeError as err:
+            raise RuntimeError(f"MEDIA_DURATION_PROBE_FAILED: {err}") from err
+        filename = media_name or _filename_from_url(media_url)
+        media_features_payload: dict[str, Any] = {}
+        try:
+            if modality == "audio":
+                progress.emit("waveform", "Computing audio waveform...")
+                media_features_payload["waveform"] = audio_envelope(path)
+            else:
+                progress.emit("keyframes", "Extracting video keyframes...")
+                media_features_payload["keyframes"] = video_keyframes(path)
+        except Exception as err:
+            warnings.append(f"Media feature extraction failed: {err}")
+            log.warning(
+                "single_media_features_failed job_id=%s modality=%s err=%s: %s",
+                job_id,
+                modality,
+                type(err).__name__,
+                err,
+            )
+
+        progress.emit("predicting_single", f"Encoding the {modality} through TRIBE v2...")
+        if modality == "audio":
+            preds, _, timing = _coerce_prediction_output(
+                tribe_service.audio_to_predictions(path, progress=progress)
+            )
+        else:
+            preds, _, timing = _coerce_prediction_output(
+                tribe_service.video_to_predictions(path, progress=progress)
+            )
+        log.info(
+            "[RP-22] single_prediction_ok job_id=%s modality=%s pred_shape=%s timing_keys=%s",
+            job_id,
+            modality,
+            getattr(preds, "shape", None),
+            sorted((timing or {}).keys()),
+        )
+
+        progress.emit("computing_brain_response", "Computing the brain response...")
+        scores, median = score_predictions(preds, masks)
+        gpu_snapshots.append(_gpu_snapshot("after_single_score"))
+        stage_times = {
+            "events_ms": int(timing.get("events_ms", 0) or 0),
+            "predict_ms": int(timing.get("predict_ms", 0) or 0),
+        }
+        processing_time_ms = int((time.perf_counter() - started) * 1000)
+        transcript = str(timing.get("transcript_text", "") or "")
+        transcript_segments = list(timing.get("transcript_segments") or [])
+        if not transcript and transcript_segments:
+            transcript = " ".join(str(seg.get("text", "")).strip() for seg in transcript_segments if seg.get("text")).strip()
+        if not transcript:
+            warnings.append("No transcript text was returned for this media input.")
+        result = _build_single_response(
+            transcript=transcript,
+            transcript_segments=transcript_segments,
+            modality=modality,
+            stage_times=stage_times,
+            processing_time_ms=processing_time_ms,
+            preds=preds,
+            scores=scores,
+            median=median,
+            warnings=warnings,
+            media_duration_s=duration,
+            media_filename=filename,
+            media_features=media_features_payload,
+            job_id=job_id,
+            display_name=display_name or filename or modality.title(),
+            gpu_snapshots=gpu_snapshots,
+        )
+        log.info(
+            "[RP-23] single_media_complete job_id=%s modality=%s processing_ms=%d dimensions=%d transcript_len=%d",
+            job_id,
+            modality,
+            processing_time_ms,
+            len(result.get("dimensions", [])),
+            len(transcript),
+        )
+        return result
+    finally:
+        for path in temp_files:
+            try:
+                os.unlink(path)
+            except OSError:
+                pass
 
 
 def _run_text(
@@ -977,60 +1368,109 @@ def handler(event: dict[str, Any]) -> dict[str, Any]:
     else:
         job_id = ""
     progress = emitter_for(job_id)
-    progress.emit("worker_started", "Worker started, preparing the model...")
-    _ensure_warm(progress)  # no-op after first call; blocks until TRIBE + masks ready
-    # [RP-16] Job input arrived at the heavy handler.  We log the shape (mode
-    # + which fields are present) before kicking off any pipeline work so a
-    # malformed request is obvious in the logs.
+    run_type = str(payload.get("run_type") or payload.get("runType") or "diff").strip().lower()
+    if run_type not in {"single", "diff"}:
+        run_type = "diff"
+    mode = (payload.get("mode") or "text").strip().lower()
     _shape = {
-        "mode": (payload.get("mode") or "?"),
+        "run_type": run_type,
+        "mode": mode or "?",
+        "has_text": bool(payload.get("text")),
         "has_text_a": bool(payload.get("text_a")),
         "has_text_b": bool(payload.get("text_b")),
+        "has_media_url": bool(payload.get("media_url")),
         "has_media_url_a": bool(payload.get("media_url_a")),
         "has_media_url_b": bool(payload.get("media_url_b")),
+        "display_name_len": len(str(payload.get("display_name") or "")),
+        "display_name_a_len": len(str(payload.get("display_name_a") or "")),
+        "display_name_b_len": len(str(payload.get("display_name_b") or "")),
     }
-    print(f"[RP-16] job_validated: {_shape}", flush=True)
-    log.info("[RP-16] job_validated: %s", _shape)
-    blob_token = (payload.get("blob_token") or "").strip()
-    trim_to_shorter = bool(payload.get("trim_to_shorter"))
-    progress.emit("inputs_validated", "Inputs validated; loading data...")
+    print(f"[RP-16] job_received_shape: {_shape}", flush=True)
+    log.info("[RP-16] job_received_shape: job_id=%s shape=%s", job_id, _shape)
+    progress.emit("worker_started", "Worker started, preparing the model...")
+    try:
+        _ensure_warm(progress)  # no-op after first call; blocks until TRIBE + masks ready
+        print(f"[RP-17] job_validated_for_route: run_type={run_type} mode={mode}", flush=True)
+        log.info("[RP-17] job_validated_for_route: job_id=%s run_type=%s mode=%s", job_id, run_type, mode)
+        blob_token = (payload.get("blob_token") or "").strip()
+        trim_to_shorter = bool(payload.get("trim_to_shorter"))
+        progress.emit("inputs_validated", "Inputs validated; loading data...")
 
-    mode = (payload.get("mode") or "text").strip().lower()
-    # User-supplied display names (auto-suggested on the launch page, optionally
-    # edited). When present, the worker uses them as titles instead of the raw
-    # input text or filename. Stored on result.meta.display_name_a/b so the
-    # whole UI can read them from one place.
-    display_name_a = (payload.get("display_name_a") or "").strip()
-    display_name_b = (payload.get("display_name_b") or "").strip()
-    if mode == "text":
-        text_a = (payload.get("text_a") or "").strip()
-        text_b = (payload.get("text_b") or "").strip()
-        if not text_a or not text_b:
-            raise ValueError("text_a and text_b are required for mode=text")
-        result = _run_text(
-            text_a=text_a, text_b=text_b, job_id=job_id,
-            display_name_a=display_name_a, display_name_b=display_name_b,
+        if run_type == "single":
+            display_name = (payload.get("display_name") or payload.get("display_name_a") or "").strip()
+            if mode == "text":
+                text = (payload.get("text") or payload.get("text_a") or "").strip()
+                if not text:
+                    raise ValueError("text is required for run_type=single mode=text")
+                result = _run_text_single(text=text, job_id=job_id, display_name=display_name)
+                progress.emit("done", "Done")
+                return result
+            if mode not in {"audio", "video"}:
+                raise ValueError("mode must be one of: text, audio, video")
+            media_url = (payload.get("media_url") or payload.get("media_url_a") or "").strip()
+            if not media_url:
+                raise ValueError("media_url is required for run_type=single audio/video mode")
+            media_name = (payload.get("media_name") or payload.get("media_name_a") or "").strip()
+            result = _run_media_single(
+                mode,
+                media_url=media_url,
+                job_id=job_id,
+                blob_token=blob_token,
+                media_name=media_name,
+                display_name=display_name,
+            )
+            progress.emit("done", "Done")
+            return result
+
+        # User-supplied display names (auto-suggested on the launch page, optionally
+        # edited). When present, the worker uses them as titles instead of the raw
+        # input text or filename. Stored on result.meta.display_name_a/b so the
+        # whole UI can read them from one place.
+        display_name_a = (payload.get("display_name_a") or "").strip()
+        display_name_b = (payload.get("display_name_b") or "").strip()
+        if mode == "text":
+            text_a = (payload.get("text_a") or "").strip()
+            text_b = (payload.get("text_b") or "").strip()
+            if not text_a or not text_b:
+                raise ValueError("text_a and text_b are required for mode=text")
+            result = _run_text(
+                text_a=text_a, text_b=text_b, job_id=job_id,
+                display_name_a=display_name_a, display_name_b=display_name_b,
+            )
+            progress.emit("done", "Done")
+            return result
+        if mode not in {"audio", "video"}:
+            raise ValueError("mode must be one of: text, audio, video")
+        media_url_a = (payload.get("media_url_a") or "").strip()
+        media_url_b = (payload.get("media_url_b") or "").strip()
+        if not media_url_a or not media_url_b:
+            raise ValueError("media_url_a and media_url_b are required for audio/video mode")
+        result = _run_media(
+            mode,
+            media_url_a=media_url_a,
+            media_url_b=media_url_b,
+            job_id=job_id,
+            blob_token=blob_token,
+            trim_to_shorter=trim_to_shorter,
+            display_name_a=display_name_a,
+            display_name_b=display_name_b,
         )
         progress.emit("done", "Done")
         return result
-    if mode not in {"audio", "video"}:
-        raise ValueError("mode must be one of: text, audio, video")
-    media_url_a = (payload.get("media_url_a") or "").strip()
-    media_url_b = (payload.get("media_url_b") or "").strip()
-    if not media_url_a or not media_url_b:
-        raise ValueError("media_url_a and media_url_b are required for audio/video mode")
-    result = _run_media(
-        mode,
-        media_url_a=media_url_a,
-        media_url_b=media_url_b,
-        job_id=job_id,
-        blob_token=blob_token,
-        trim_to_shorter=trim_to_shorter,
-        display_name_a=display_name_a,
-        display_name_b=display_name_b,
-    )
-    progress.emit("done", "Done")
-    return result
+    except Exception as exc:
+        log.exception(
+            "[RP-99] worker_job_failed job_id=%s run_type=%s mode=%s err=%s: %s",
+            job_id,
+            run_type,
+            mode,
+            type(exc).__name__,
+            exc,
+        )
+        try:
+            progress.emit("worker_failed", f"Worker failed: {type(exc).__name__}: {exc}")
+        except Exception:
+            pass
+        raise
 
 
 # Direct execution path for local/manual worker smoke tests. The production
