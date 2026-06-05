@@ -30,100 +30,137 @@ const DIMENSION_MEANING = {
 
 const DEFAULT_HRF_LAG_SEC = 5;
 
-export const ANALYST_AGENT_PROMPT = `You are a BrainDiff analyst interpreting a rep-only sales message.
-You receive a set of detected brain-signal moments and return one interpretation per moment. The signals have already been detected and ranked.
-Do not confirm the signal happened. Explain what the language at each moment appears to be doing.
+export const ANALYST_AGENT_PROMPT = `You are a BrainDiff analyst interpreting one sales-call script through predicted brain-response data.
+You receive candidate moments that have already been detected from the seven BrainDiff signals. Your job is not to praise the signal and not to coach the rep. Your job is to translate the data into plain sales language.
 
 Return strict JSON only, matching the schema. Return exactly one answer per provided moment.
 
-HEDGING (aggressive de-hedge — the whole report should carry at most one hedge)
-- The signal movement is measured. State it flatly everywhere: "attention spiked to near-ceiling (0.99)", never "appears to have spiked".
-- The likely_driver field name already marks its content as inference, so write the driver plainly inside it — you do not need "likely" or "appears" in the body.
-- Across ALL your answers combined, use at most ONE hedge word ("likely" / "appears to"), reserved for the single shakiest causal claim. Everything else is stated directly. (A report is built from 3 of your answers, so one hedge across the set guarantees at most one in the final report.)
-- Never hedge a measured value. Never hedge the same point twice.
+AUDIENCE
+- Write for a salesperson or sales leader reviewing a call in 30 seconds.
+- They do not care about research prose. They care: what wording moved, what brain signal moved, and what that says about the call.
+- Keep the useful product language from the demo: "grabbed attention", "felt relevant", "made them think", "will stick", "raised gut reaction".
 
-NUMBERS
-- Every signal value leads with a plain-English level, number in parentheses: "near-ceiling (0.932)", "near-floor (0.011)", "elevated (0.86)". Never open with a bare decimal.
-- Keep numeric detail in signal_read and uncertainty. title, interpretation, likely_driver, and why_it_matters must still read naturally without the reader needing to understand decimals.
+WHAT TO WRITE
+- title: a short sales-call insight, not a metric label. Bad: "Attention increased here." Good: "Manual review pain point lands."
+- interpretation: 2-3 short sentences. Explain the signal movement and the transcript moment together. Do not repeat the title.
+- insight_type: one label from this set: pain_point, ask_or_next_step, credibility, permissioning, specificity, emotional_trigger, procedural_trough, memory_hook, social_context, explanation_depth, other.
+- why_it_moved: 2 short sentences. Sentence 1 names the exact wording or call behavior. Sentence 2 explains why that wording would move this signal.
+- what_it_means: 2 short sentences. Explain what this reveals about this call. No advice, no coaching, no "you should".
+- signal_read: one measured readout with the primary signal and any important co-moving signals. Numeric detail is allowed here only.
+- quote: copy an exact substring from aligned_quote or nearby_transcript.
+- uncertainty: one boundary sentence. Say what the signal does NOT prove.
 
-PRODUCT LANGUAGE (auditable update: 2026-06-04)
-- Write for a salesperson reviewing a call, not for a neuroscience reader.
-- The reader should understand the useful takeaway in 30 seconds: what part of the call moved, what wording caused it, and what that says about the script.
-- Use simple phrases when possible: "grabbed attention", "felt relevant", "made them think", "will stick", "raised gut reaction".
-- Do not write generic research prose such as "the reader can inspect wording", "model contrast", "signal context", or "response architecture" in reader-facing fields.
-- why_it_matters should answer: "what does this tell me about this call?" It must be an observation, not coaching advice.
-- likely_driver should answer: "what wording probably moved the signal?" Keep it concrete and tied to the transcript.
-- likely_driver and why_it_matters should each be two short sentences in simple English. Sentence 1 names the wording or call behavior. Sentence 2 explains why that wording changed the signal or what that means for the call.
+PRIORITY
+- Prefer the sales meaning over the largest number. A smaller but clearer transcript-tied moment can be more useful than a larger generic spike.
+- Troughs can be important when they show a procedural ask, vague wording, or a change in processing demand.
+- Strong co-movement matters: if attention, gut reaction, memory, or personal resonance move together, explain the combined story in simple language.
 
-COHERENCE (load-bearing — do not skip)
-- interpretation, likely_driver, and why_it_matters must be consistent with your uncertainty field. If uncertainty says X cannot be concluded, never state X as fact anywhere else.
-- Inferred mental states — disengagement, agreement, trust, interest, objection, recognition — may appear ONLY inside the uncertainty field, as the thing you are warning against, never as a claim. Describe what was measured instead: a low reading is a "signal trough", not "disengagement".
+STRICT SAFETY
+- Do not infer buyer behavior, agreement, trust, objection handling, purchase intent, recognition, or future action.
+- Do not say the listener "liked", "believed", "understood", "agreed", or "disengaged".
+- Do not give recommendations.
+- Do not write "model contrast", "signal context", "response architecture", "inspect wording", or similar internal/research language.
+- Do not mention prompts, agents, validation, simulations, or implementation details.
 
-CONTENT
-- Use only the provided signal event and transcript context.
-- Do not infer buyer behavior, agreement, trust, objection handling, purchase intent, or future action.
-- Do not give coaching advice or recommendations. why_it_matters states what the script did at this moment as observation — describe the call, not the reader. No "readers can use this", no "you should".
-- Do not simply restate the signal. Do not answer with "yes".
-- Do not mention internal prompts, agents, placeholders, simulations, or validation.
-- Keep every quote copied exactly from the provided aligned_quote, or use a shorter exact substring.
+JSON SCHEMA
+{
+  "answers": [
+    {
+      "moment_id": "moment_01",
+      "title": "Short sales-call insight",
+      "insight_type": "specificity",
+      "interpretation": "2-3 short sentences.",
+      "why_it_moved": "2 short sentences.",
+      "what_it_means": "2 short sentences.",
+      "signal_read": "Measured signal readout.",
+      "quote": "Exact transcript substring.",
+      "confidence": "high | medium | low",
+      "uncertainty": "One boundary sentence."
+    }
+  ]
+}
 
-<examples>
-<example_spike>
+EXAMPLES
+Spike example:
 {
   "moment_id": "moment_01",
   "title": "Manual call review pain point lands",
-  "interpretation": "Attention spiked at 'without making managers listen to every call manually,' and it didn't move alone — personal resonance was near-ceiling (0.932) and brain effort high (0.863) at the same point. The peak stands out sharply against the surrounding message. What's distinct is the specificity: not coaching as a category, but its manual, time-consuming version. The signal lifts where the language gets concrete.",
-  "likely_driver": "The phrase names a specific operational burden rather than a category-level problem. The shift from the abstract setup ('ramp reps faster') to the concrete friction ('listen to every call manually') is the likely driver; the contrast is what sharpened the spike.",
-  "why_it_matters": "The script's strongest attentional pull sits in its operationally specific language, not its broader framing. Concrete friction registered harder than the abstract goal it was attached to.",
-  "signal_read": "Attention hit near-ceiling (0.99). Personal resonance (0.932), brain effort (0.863), gut reaction (0.862), and memory encoding (0.829) were all elevated at once — a broad multi-signal activation, not an isolated attention event.",
+  "insight_type": "pain_point",
+  "interpretation": "Attention spiked at 'without making managers listen to every call manually,' and it did not move alone. Personal resonance and brain effort were also high at the same point. The useful read is the specificity: not coaching as a category, but the manual work nobody wants.",
+  "why_it_moved": "The phrase names a specific operating burden instead of a broad goal. The shift from 'ramp reps faster' to 'listen to every call manually' is what sharpened the signal.",
+  "what_it_means": "The strongest pull sits in operationally specific language. Concrete friction carried more response than the abstract goal around it.",
+  "signal_read": "Attention hit near-ceiling, with personal resonance, brain effort, gut reaction, and memory also elevated.",
   "quote": "without making managers listen to every call manually.",
   "confidence": "high",
-  "uncertainty": "The signal reflects processing intensity, not comprehension or agreement; it does not show the listener consciously recognized the phrase as relevant to their own situation."
+  "uncertainty": "The signal reflects processing intensity; it does not prove agreement, interest, or conscious recognition."
 }
-</example_spike>
-<example_trough>
+
+Trough example:
 {
   "moment_id": "moment_07",
-  "title": "Working-session proposal produces a broad signal trough",
-  "interpretation": "Attention fell to near-floor (0.011) and stayed there around 'I'd suggest a 25-minute working session.' Every other signal dropped with it — personal resonance low (0.167), gut reaction near-floor (0.012), memory encoding low (0.141). This is a broad trough, not a single-dimension dip, and it lands on the most procedural stretch of the script: the format of the next step rather than the substance of the problem or fix.",
-  "likely_driver": "The phrase shifts the script into logistics. The surrounding language — 'bring one anonymized discovery call,' 'if it feels generic, we stop there' — is conditional and process-oriented, and the signal sits low against the problem-framing earlier in the call.",
-  "why_it_matters": "The procedural framing of the ask carries less processing weight than the problem-and-solution language earlier in the script. The lowest broad signal in the call sits on the next-step proposal, not on any part of the pitch itself.",
-  "signal_read": "Attention held near-floor (0.011) across the window, with personal resonance (0.167), gut reaction (0.012), memory encoding (0.141), brain effort (0.226), and social thinking (0.264) all low at once — the broadest trough in the call.",
+  "title": "Working-session ask drops into logistics",
+  "insight_type": "procedural_trough",
+  "interpretation": "Attention fell around 'I'd suggest a 25-minute working session.' The other signals dropped with it, so this is a broad trough rather than one weak metric. The call moved from problem language into process language.",
+  "why_it_moved": "The phrase shifts the script into logistics. The surrounding setup is conditional and procedural, so the response sits lower than the earlier problem framing.",
+  "what_it_means": "The next-step ask carried less processing weight than the problem-and-solution language before it. The lowest broad read sits on the meeting setup, not the pitch.",
+  "signal_read": "Attention held near-floor, with personal resonance, gut reaction, memory, brain effort, and social thinking also low.",
   "quote": "I'd suggest a 25-minute working session.",
   "confidence": "high",
-  "uncertainty": "A sustained low does not mean the listener stopped listening or found the section unimportant; it can reflect reduced processing demand rather than disengagement."
+  "uncertainty": "A low signal does not mean the listener stopped listening or found the section unimportant; it can reflect lower processing demand."
 }
-</example_trough>
-Note: the spike example spends the single allowed hedge ("is the likely driver"); the trough example uses none. That is the target ratio. The trough deliberately says "trough", never "disengagement" — that word lives only in its uncertainty field.
-</examples>`;
+`;
 
 export const VALIDATOR_AGENT_PROMPT = `You are the final editor for a BrainDiff rep-message impact report.
 You receive a set of analyst interpretations grounded in detected brain-signal moments. Choose the 3 that should appear in the final report.
 
 Return strict JSON only. Select exactly 3.
 
-SELECTION
-- Prefer interpretations that are useful, grounded in the quote, non-redundant, clearly written, and safe.
-- Do not simply choose the highest BrainScore if a lower-scored interpretation is clearer or more useful.
-- The final 3 should not be redundant with each other.
-- Prefer moments a salesperson can understand in 30 seconds: what moved, which words drove it, and what that says about the call.
-- Prefer concrete transcript-tied language over abstract neuroscience or model language.
-- Prefer reasons that can be shown as a short product readout: one concrete signal movement, the exact transcript wording nearby, and one simple implication for the call.
+YOUR JOB
+Choose the 3 moments that make the best product report for a salesperson.
+The final report should feel like: "Here are the three places where the call's wording changed the predicted brain response, and here is what that reveals about the call."
+
+SELECTION RUBRIC, IN ORDER
+1. Sales usefulness: the moment tells a salesperson something concrete about the call.
+2. Transcript grounding: the insight points to actual words, not just a high score.
+3. Distinctness: the three selected moments should teach three different things.
+4. Signal quality: the brain movement is clear enough to defend.
+5. Readability: the title and explanation are simple, sharp, and non-researchy.
+
+IMPORTANT
+- Do not simply choose the highest BrainScore.
+- A lower-scored moment can beat a higher-scored one if it has clearer sales meaning.
+- A trough can be selected if it reveals that a next-step ask, procedural wording, or vague language carried less response than the surrounding call.
+- If multiple candidates sit on the same sentence, choose the one with the clearest combined story and reject the rest as redundant.
+- Force the selected 3 to cover different insight_type values unless the data truly has only one story. If you repeat an insight_type, say why in the reason.
+- Strongly prefer rank 1 to be a peak/high moment: sharp_rise, spike, sustained_high, or dominant_signal. Only put a trough/low first if the whole call is mostly flat/low or the trough is clearly the most truthful story.
 
 REJECT
-- Reject generic answers, repeated points, buyer-intent claims, coaching advice, and weak quote/signal alignment.
-- Reject on tone too: any interpretation that hedges the measured signal itself ("attention appears to have spiked"); writes why_it_matters about the reader instead of the script; or contradicts its own uncertainty field (e.g. calls a trough "disengagement" while its boundary forbids that conclusion).
-- Reject research-sounding output that depends on terms like "model contrast", "signal context", "response architecture", or "inspect wording" instead of plain sales-call language.
+- Reject generic metric-only answers.
+- Reject repeated points, even if the scores are strong.
+- Reject buyer-intent claims, coaching advice, and weak quote/signal alignment.
+- Reject anything that depends on research/internal language instead of plain sales-call language.
 
 REASON FIELD (this ships in the report)
-- The reason you write is shown to the reader. Write it outward: what makes this moment's signal movement notable and distinct. Never describe your own selection process. Never use "high-value finding", "non-redundant", "strong alignment", or similar self-justification.
+- The reason you write is shown to the reader. Write it outward: what makes this moment notable in the call.
+- Never describe your own selection process.
+- Never use "high-value finding", "non-redundant", "strong alignment", "selected because", or similar self-justification.
+- No bare numbers unless they are essential. Prefer plain-English signal levels.
 
 - Do not mention placeholders, simulations, or hidden implementation details.
 
-<example_reason>
-Bad:  "Near-ceiling attention spike with strong multi-signal co-activation. Tightly grounded in the quote. Non-redundant with other selections."
-Good: "A near-ceiling attention spike backed by four co-elevated signals on one concrete phrase — the clearest single-moment activation in the call, and the script's sharpest case of specific language outpulling abstract framing."
-</example_reason>`;
+JSON SCHEMA
+{
+  "selected": [
+    {"moment_id": "moment_01", "rank": 1, "reason": "Why this moment belongs in the final report."}
+  ],
+  "rejected": [
+    {"moment_id": "moment_04", "reason": "Why this moment was not selected."}
+  ]
+}
+
+EXAMPLE REASON
+Bad: "Near-ceiling attention spike with strong multi-signal co-activation. Tightly grounded in the quote. Non-redundant with other selections."
+Good: "A near-ceiling attention spike backed by several co-moving signals on one concrete phrase - the clearest place where specific operational friction outpulls abstract framing."`;
 
 export function buildRepMessageAnalystReport(raw) {
   const input = normalizeRun(raw);
@@ -166,6 +203,83 @@ export function buildRepMessageAnalystReport(raw) {
     },
     agentMode: "local_simulation_ready_for_llm_swap",
   };
+}
+
+export function applyAgentReport(report, agentReport) {
+  if (!report || !agentReport || typeof agentReport !== "object") return report;
+  const answers = Array.isArray(agentReport.analystCandidates)
+    ? agentReport.analystCandidates
+    : Array.isArray(agentReport.answers)
+      ? agentReport.answers
+      : [];
+  if (!answers.length || !agentReport.validation || !Array.isArray(agentReport.validation.selected)) {
+    return report;
+  }
+  const analystById = new Map(answers.map((answer) => [String(answer.moment_id || ""), answer]));
+  const topMoments = report.topMoments.map((item) => {
+    const answer = analystById.get(item.id);
+    if (!answer) return item;
+    return {
+      ...item,
+      analyst: {
+        ...item.analyst,
+        agent_source: "anthropic",
+        title: cleanAgentString(answer.title) || item.analyst.title,
+        insight_type: cleanAgentString(answer.insight_type) || item.analyst.insight_type || "other",
+        interpretation: cleanAgentString(answer.interpretation) || item.analyst.interpretation,
+        likely_driver: cleanAgentString(answer.why_it_moved) || cleanAgentString(answer.likely_driver) || item.analyst.likely_driver,
+        why_it_matters: cleanAgentString(answer.what_it_means) || cleanAgentString(answer.why_it_matters) || item.analyst.why_it_matters,
+        why_it_moved: cleanAgentString(answer.why_it_moved) || cleanAgentString(answer.likely_driver) || item.analyst.why_it_moved || item.analyst.likely_driver,
+        what_it_means: cleanAgentString(answer.what_it_means) || cleanAgentString(answer.why_it_matters) || item.analyst.what_it_means || item.analyst.why_it_matters,
+        signal_read: cleanAgentString(answer.signal_read) || item.analyst.signal_read,
+        quote: cleanAgentString(answer.quote) || item.analyst.quote,
+        confidence: cleanAgentString(answer.confidence) || item.analyst.confidence,
+        uncertainty: cleanAgentString(answer.uncertainty) || item.analyst.uncertainty,
+      },
+    };
+  });
+  const validIds = new Set(topMoments.map((item) => item.id));
+  const selected = preferPeakFirstSelection(enforceDistinctInsightTypes(agentReport.validation.selected
+    .map((selection, index) => ({
+      moment_id: String(selection.moment_id || ""),
+      rank: Number(selection.rank) || index + 1,
+      reason: cleanAgentString(selection.reason) || "",
+    }))
+    .filter((selection, index, arr) =>
+      validIds.has(selection.moment_id) &&
+      arr.findIndex((other) => other.moment_id === selection.moment_id) === index
+    )
+    .slice(0, 3), answers, topMoments), topMoments);
+  if (!selected.length) return report;
+  const rejected = Array.isArray(agentReport.validation.rejected)
+    ? agentReport.validation.rejected.map((item) => ({
+        moment_id: String(item.moment_id || ""),
+        reason: cleanAgentString(item.reason) || "",
+      })).filter((item) => validIds.has(item.moment_id))
+    : report.validation.rejected;
+  const validation = { selected, rejected };
+  const finalInsights = selected
+    .map((selection) => {
+      const moment = topMoments.find((item) => item.id === selection.moment_id);
+      return moment ? { ...moment, selection } : null;
+    })
+    .filter(Boolean);
+  if (!finalInsights.length) return report;
+  return {
+    ...report,
+    topMoments,
+    finalInsights,
+    validation,
+    prompts: agentReport.prompts || report.prompts,
+    agentMode: agentReport.agentMode || "anthropic_server_agent",
+    model: agentReport.model || report.model,
+    agentGeneratedAt: agentReport.generatedAt || report.agentGeneratedAt,
+    agentCache: agentReport.source || report.agentCache,
+  };
+}
+
+function cleanAgentString(value) {
+  return typeof value === "string" ? value.trim() : "";
 }
 
 function normalizeRun(raw) {
@@ -451,14 +565,29 @@ function runAnalystAgent(packet) {
   return {
     moment_id: packet.moment_id,
     title,
+    insight_type: insightTypeFor(packet),
     interpretation: `${title} The ${label} signal ${movement} around this phrase, which suggests this part of the message is doing more than simply continuing the script.`,
     likely_driver: driverSentence(packet, quote),
     why_it_matters: whyItMatters(packet),
+    why_it_moved: driverSentence(packet, quote),
+    what_it_means: whyItMatters(packet),
     signal_read: `${label} ${movement} after the lag-corrected phrase.`,
     quote,
     confidence: packet.brainScore >= 0.75 ? "high" : packet.brainScore >= 0.62 ? "medium" : "low",
     uncertainty: uncertaintyFor(packet),
   };
+}
+
+function insightTypeFor(packet) {
+  const shape = String(packet.event_shape || "");
+  if (shape.includes("trough") || shape.includes("low") || shape.includes("drop")) return "procedural_trough";
+  if (packet.dimension === "gut_reaction") return "emotional_trigger";
+  if (packet.dimension === "memory_encoding") return "memory_hook";
+  if (packet.dimension === "social_thinking") return "social_context";
+  if (packet.dimension === "language_depth") return "explanation_depth";
+  if (packet.dimension === "attention") return "specificity";
+  if (packet.dimension === "personal_resonance") return "pain_point";
+  return "other";
 }
 
 function runValidatorAgent(topMoments) {
@@ -467,6 +596,7 @@ function runValidatorAgent(topMoments) {
   const rejected = new Map();
   const usable = sorted.filter((item) => isUsableAgentAnswer(item));
 
+  choose((item) => !sharesQuote(item, selected, topMoments) && !sharesInsightType(item, selected, topMoments));
   choose((item) => !sharesQuote(item, selected, topMoments) && !sharesDimension(item, selected, topMoments));
   choose((item) => !sharesQuote(item, selected, topMoments));
   choose(() => true);
@@ -480,7 +610,7 @@ function runValidatorAgent(topMoments) {
         : "Weak transcript alignment for a final report item.",
     });
   }
-  return { selected, rejected: [...rejected.values()] };
+  return { selected: preferPeakFirstSelection(selected, topMoments), rejected: [...rejected.values()] };
 
   function choose(predicate) {
     for (const item of usable) {
@@ -494,6 +624,95 @@ function runValidatorAgent(topMoments) {
       });
     }
   }
+}
+
+function enforceDistinctInsightTypes(selected, answers, topMoments) {
+  if (selected.length < 3 || !answers.length) return selected;
+  const answerById = new Map(answers.map((answer) => [String(answer.moment_id || ""), answer]));
+  const availableTypes = new Set(answers.map((answer) => normalizeInsightType(answer.insight_type)));
+  if (availableTypes.size < 3) return selected;
+  const output = [...selected];
+  for (let guard = 0; guard < output.length; guard += 1) {
+    const counts = countTypes(output, answerById);
+    const duplicateIndex = output.findIndex((item, index) =>
+      index > 0 && counts.get(normalizeInsightType(answerById.get(item.moment_id)?.insight_type)) > 1
+    );
+    if (duplicateIndex < 0) break;
+    const usedTypes = new Set(output.map((item) => normalizeInsightType(answerById.get(item.moment_id)?.insight_type)));
+    const replacement = answers.find((answer) => {
+      const id = String(answer.moment_id || "");
+      return id &&
+        !output.some((item) => item.moment_id === id) &&
+        !usedTypes.has(normalizeInsightType(answer.insight_type)) &&
+        topMoments.some((moment) => moment.id === id);
+    });
+    if (!replacement) break;
+    output[duplicateIndex] = {
+      moment_id: String(replacement.moment_id),
+      rank: output[duplicateIndex].rank,
+      reason: `This adds a different read on the call: ${cleanAgentString(replacement.title || replacement.interpretation)}`,
+    };
+  }
+  return output.map((item, index) => ({ ...item, rank: index + 1 }));
+}
+
+function countTypes(selected, answerById) {
+  const counts = new Map();
+  for (const item of selected) {
+    const type = normalizeInsightType(answerById.get(item.moment_id)?.insight_type);
+    counts.set(type, (counts.get(type) || 0) + 1);
+  }
+  return counts;
+}
+
+function normalizeInsightType(value) {
+  const allowed = new Set([
+    "pain_point",
+    "ask_or_next_step",
+    "credibility",
+    "permissioning",
+    "specificity",
+    "emotional_trigger",
+    "procedural_trough",
+    "memory_hook",
+    "social_context",
+    "explanation_depth",
+    "other",
+  ]);
+  const text = String(value || "").toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "");
+  return allowed.has(text) ? text : "other";
+}
+
+function preferPeakFirstSelection(selected, topMoments) {
+  if (selected.length < 2) return selected.map((item, index) => ({ ...item, rank: index + 1 }));
+  const byId = new Map(topMoments.map((item) => [item.id, item]));
+  if (isPeakOrHighMoment(byId.get(selected[0].moment_id))) {
+    return selected.map((item, index) => ({ ...item, rank: index + 1 }));
+  }
+  const peakIndex = selected.findIndex((item) => isPeakOrHighMoment(byId.get(item.moment_id)));
+  if (peakIndex <= 0) {
+    const selectedIds = new Set(selected.map((item) => item.moment_id));
+    const externalPeak = topMoments.find((item) => !selectedIds.has(item.id) && isPeakOrHighMoment(item));
+    if (!externalPeak) return selected.map((item, index) => ({ ...item, rank: index + 1 }));
+    return [{
+      moment_id: externalPeak.id,
+      rank: 1,
+      reason: `This gives the report its clearest high moment: ${externalPeak.analyst.title}`,
+    }, ...selected.slice(1)].map((item, index) => ({ ...item, rank: index + 1 }));
+  }
+  const output = [...selected];
+  const [peak] = output.splice(peakIndex, 1);
+  return [peak, ...output].map((item, index) => ({ ...item, rank: index + 1 }));
+}
+
+function isPeakOrHighMoment(item) {
+  if (!item) return false;
+  const shape = String(item.event?.eventShape || item.packet?.event_shape || "").toLowerCase();
+  return shape.includes("spike") ||
+    shape.includes("rise") ||
+    shape.includes("high") ||
+    shape.includes("dominant") ||
+    Number(item.event?.brainScore || item.packet?.brainScore) >= 0.72 && !shape.includes("low") && !shape.includes("trough") && !shape.includes("drop");
 }
 
 function isUsableAgentAnswer(item) {
@@ -512,6 +731,13 @@ function sharesDimension(item, selected, topMoments) {
   return selected.some((selection) => {
     const picked = topMoments.find((candidate) => candidate.id === selection.moment_id);
     return picked && picked.event.signalName === item.event.signalName;
+  });
+}
+
+function sharesInsightType(item, selected, topMoments) {
+  return selected.some((selection) => {
+    const picked = topMoments.find((candidate) => candidate.id === selection.moment_id);
+    return picked && picked.analyst.insight_type === item.analyst.insight_type;
   });
 }
 

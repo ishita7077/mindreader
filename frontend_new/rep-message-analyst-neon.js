@@ -1,6 +1,7 @@
 import { mountCortex } from "./assets/cortex-viewer-neon.js?v=28";
 import {
   DIMENSION_LABELS,
+  applyAgentReport,
   buildRepMessageAnalystReport,
 } from "./rep-message-analyst-core.mjs";
 
@@ -100,7 +101,61 @@ async function loadJobReport(id, side) {
   if (job.status !== "done") {
     throw new Error("This run is not finished yet. Open the run page and wait for completion.");
   }
-  return buildRepMessageAnalystReport(adaptWorkerJobToSingleRun(job, side));
+  const workerResult = job.result || {};
+  const baseReport = buildRepMessageAnalystReport(adaptWorkerJobToSingleRun(job, side));
+  const embeddedAgentReport = workerResult.single_report || workerResult.meta?.single_report || null;
+  if (embeddedAgentReport) return applyAgentReport(baseReport, embeddedAgentReport);
+  return hydrateAgentReport(baseReport, id, side);
+}
+
+async function hydrateAgentReport(baseReport, id, side) {
+  const payload = {
+    jobId: id,
+    side,
+    input: {
+      id: baseReport.input.id,
+      title: baseReport.input.title,
+      durationSec: baseReport.input.alignment.generatedAudioDurationSec || baseReport.input.alignment.analysisDurationSec || 0,
+    },
+    topMoments: baseReport.topMoments.slice(0, 10).map((item) => ({
+      id: item.id,
+      rank: item.rank,
+      event: item.event,
+      packet: item.packet,
+      transcript: {
+        quote: item.transcript?.quote || "",
+        contextText: item.transcript?.contextText || "",
+        stimulusStart: item.transcript?.stimulusStart,
+        stimulusEnd: item.transcript?.stimulusEnd,
+        stimulusPeak: item.transcript?.stimulusPeak,
+      },
+      localAnalyst: item.analyst,
+    })),
+  };
+  let timeout = null;
+  try {
+    const controller = new AbortController();
+    timeout = setTimeout(() => controller.abort(), 55_000);
+    const response = await fetch("/api/report/rep-message-analyst", {
+      method: "POST",
+      cache: "no-store",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(payload),
+      signal: controller.signal,
+    });
+    clearTimeout(timeout);
+    if (!response.ok) {
+      console.warn("BrainDiff agent report unavailable", response.status, await response.text().catch(() => ""));
+      return { ...baseReport, agentError: `agent_http_${response.status}` };
+    }
+    const data = await response.json();
+    return applyAgentReport(baseReport, data.report || data);
+  } catch (error) {
+    console.warn("BrainDiff agent report failed", error);
+    return { ...baseReport, agentError: error?.message || String(error) };
+  } finally {
+    if (timeout) clearTimeout(timeout);
+  }
 }
 
 function adaptWorkerJobToSingleRun(job, side) {
@@ -318,6 +373,11 @@ function trimTerminalPunctuation(text) {
   return String(text || "").trim().replace(/[.!?]+$/, "");
 }
 
+function trimToSentences(text, maxSentences = 2) {
+  const sentences = splitSentences(text);
+  return sentences.slice(0, maxSentences).join(" ").trim();
+}
+
 async function mountBrain() {
   const canvas = document.querySelector("#reportBrain");
   if (!canvas) return;
@@ -463,8 +523,8 @@ function renderInsight(item, index) {
           ${evidence.hasMore ? `<details><summary>Show full transcript context</summary><p>${esc(evidence.fullText)}</p></details>` : ""}
         </div>
         <div class="note-grid">
-          <div class="note"><b>What likely caused it</b><span>${esc(simpleDriver(item, evidence.fullText))}</span></div>
-          <div class="note"><b>What this tells you</b><span>${esc(simpleWhy(item))}</span></div>
+          <div class="note"><b>Why it moved</b><span>${esc(simpleDriver(item, evidence.fullText))}</span></div>
+          <div class="note"><b>What it means</b><span>${esc(simpleWhy(item))}</span></div>
         </div>
       </div>
       <div class="trace-card">
@@ -670,6 +730,9 @@ function renderScrubBars(dim, time) {
 }
 
 function plainInsightLead(item) {
+  if (item.analyst.agent_source === "anthropic" && item.analyst.interpretation) {
+    return trimToSentences(item.analyst.interpretation, 2);
+  }
   const title = item.analyst.title.toLowerCase();
   const dim = DIMENSION_LABELS[item.event.signalName];
   const low = isLowEvent(item);
@@ -704,6 +767,9 @@ function plainInsightLead(item) {
 }
 
 function simpleDriver(item, sentenceText) {
+  if (item.analyst.agent_source === "anthropic" && (item.analyst.why_it_moved || item.analyst.likely_driver)) {
+    return item.analyst.why_it_moved || item.analyst.likely_driver;
+  }
   const title = item.analyst.title.toLowerCase();
   const quote = sentenceText || item.analyst.quote;
   const low = isLowEvent(item);
@@ -751,6 +817,9 @@ function simpleDriver(item, sentenceText) {
 }
 
 function simpleWhy(item) {
+  if (item.analyst.agent_source === "anthropic" && (item.analyst.what_it_means || item.analyst.why_it_matters)) {
+    return item.analyst.what_it_means || item.analyst.why_it_matters;
+  }
   const title = item.analyst.title.toLowerCase();
   const low = isLowEvent(item);
   if (title.includes("manual call review")) {
