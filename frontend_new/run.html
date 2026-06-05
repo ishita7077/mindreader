@@ -328,15 +328,72 @@
   }
   .edu-brain-wrap {
     position: relative;
-    background: radial-gradient(ellipse at 50% 40%, color-mix(in srgb, var(--good) 6%, transparent), transparent 60%), var(--brain-stage);
-    display: grid; place-items: center; padding: 20px;
+    background:
+      linear-gradient(180deg, rgba(2, 6, 16, 0.98), rgba(0, 0, 0, 0.98)),
+      #000;
+    display: grid; place-items: center; padding: 0;
     border-right: 1px solid var(--line);
+    overflow: hidden;
   }
-  .edu-brain-canvas { width: 100%; height: 100%; max-height: 440px; display: block; }
+  .education .edu-brain-wrap {
+    background:
+      linear-gradient(180deg, rgba(2, 6, 16, 0.98), rgba(0, 0, 0, 0.98)),
+      #000 !important;
+    border-color: rgba(86, 125, 183, 0.18) !important;
+  }
+  .edu-brain-wrap::before {
+    content: "";
+    position: absolute;
+    width: min(34vw, 430px);
+    aspect-ratio: 1;
+    left: 50%;
+    top: 48%;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background:
+      radial-gradient(closest-side at 48% 42%, rgba(88, 221, 255, 0.24), transparent 62%),
+      radial-gradient(closest-side at 44% 58%, rgba(255, 118, 157, 0.14), transparent 70%);
+    opacity: 0.82;
+    mix-blend-mode: screen;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .edu-brain-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    z-index: 2;
+  }
+  .mesh-badge {
+    position: absolute;
+    z-index: 4;
+    top: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 1px solid rgba(88, 221, 255, 0.68);
+    border-radius: 999px;
+    background: rgba(3, 7, 15, 0.78);
+    padding: 7px 13px;
+    color: #b9d4f4;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    box-shadow: 0 0 18px rgba(79, 212, 255, 0.14);
+  }
   .brain-caption {
     position: absolute; bottom: 14px; left: 16px;
     font-family: 'JetBrains Mono', monospace; font-size: 10.5px;
-    color: #a8a29e; letter-spacing: 0.08em; text-transform: uppercase;
+    color: #b9d4f4; letter-spacing: 0.08em; text-transform: uppercase;
+    z-index: 4;
+    border: 1px solid rgba(88, 221, 255, 0.42);
+    border-radius: 999px;
+    background: rgba(3, 7, 15, 0.70);
+    padding: 7px 11px;
+    box-shadow: 0 0 18px rgba(79, 212, 255, 0.10);
   }
 
   .edu-card {
@@ -683,9 +740,9 @@
 <main>
   <!-- LEFT: Status column -->
   <aside class="status-card">
-    <div class="eyebrow" id="statusEyebrow">Analysis in progress</div>
-    <h1 class="status-headline" id="statusHeadline">Running your brain-response <em>contrast.</em></h1>
-    <p class="status-sub" id="statusSub">Your two texts are being encoded and compared across seven cortical systems.</p>
+    <div class="eyebrow" id="statusEyebrow">Run status</div>
+    <h1 class="status-headline" id="statusHeadline">Analysis is in <em>progress.</em></h1>
+    <p class="status-sub" id="statusSub">We are processing your input and preparing the result page.</p>
 
     <div class="eta-pill hide" id="etaPill"><span class="dot"></span></div>
 
@@ -699,19 +756,15 @@
       </div>
       <div class="ds-history-note hide" id="dsHistoryNote"></div>
       <div class="ds-steps" id="dsSteps"></div>
-      <details class="ds-log-wrap">
-        <summary class="ds-log-summary">Event log</summary>
-        <div class="ds-log" id="dsLog" role="log" aria-live="polite"></div>
-      </details>
     </section>
 
     <p class="honest-eta" id="honestEta">
-      <strong>Most runs finish in 6 to 12 minutes.</strong>
-      Encoding through TRIBE v2 is the slowest step — that's expected. If anything goes sideways past 15 minutes, we'll say so right here.
+      <strong>Most runs complete in 6 to 12 minutes.</strong>
+      TRIBE v2 encoding usually takes the longest. If this run passes 15 minutes, this panel will show the issue and the next step.
     </p>
 
     <div class="done-cta" id="doneCta" aria-hidden="true">
-      <p class="done-cta-label">Your contrast map is ready.</p>
+      <p class="done-cta-label">Your BrainDiff result is ready.</p>
       <a class="done-cta-btn" id="viewResultsBtn" href="#">View results <span aria-hidden="true">→</span></a>
     </div>
   </aside>
@@ -722,8 +775,9 @@
     <div class="watch-state" id="watchState">
       <div class="edu-hero">
         <div class="edu-brain-wrap">
+          <div class="mesh-badge">Real fsaverage5 · 20,484 vertices</div>
           <canvas class="edu-brain-canvas" id="eduBrain"></canvas>
-          <div class="brain-caption" id="brainCaption">Highlighted system · dorsal attention network</div>
+          <div class="brain-caption" id="brainCaption">Attention · did this pull focus?</div>
         </div>
         <div class="edu-card">
           <div class="edu-number" id="eduNum">System spotlight</div>
@@ -804,7 +858,7 @@ function toggleTheme(){
     const s = Math.max(0, Math.round(ms / 1000));
     const m = Math.floor(s / 60);
     const r = s % 60;
-    return m + ':' + (r < 10 ? '0' : '') + r;
+    return String(m).padStart(2, '0') + ':' + String(r).padStart(2, '0');
   }
 
   function setTimeText(index, text){
@@ -867,7 +921,7 @@ function toggleTheme(){
       const eyebrow = document.getElementById('statusEyebrow');
       const sub = document.getElementById('statusSub');
       if (eyebrow) eyebrow.textContent = 'Complete';
-      if (sub) sub.textContent = 'Your cortical readout is ready. Open the results page to inspect the map and system-level takeaways.';
+      if (sub) sub.textContent = 'Your result is ready. Open the results page to inspect the map and takeaways.';
       if (h1 && !REDUCE){
         h1.classList.add('fade-out');
         setTimeout(function(){
@@ -900,7 +954,7 @@ function toggleTheme(){
   })().toLowerCase() === 'single' ? 'single' : 'diff';
   const IS_SINGLE_RUN = RUN_TYPE === 'single';
   const RUN_KIND = RUN_MODE === 'video' ? (IS_SINGLE_RUN ? 'video' : 'videos') : (RUN_MODE === 'audio' ? (IS_SINGLE_RUN ? 'audio file' : 'audio files') : (IS_SINGLE_RUN ? 'text' : 'texts'));
-  const RUN_DONE_COPY = IS_SINGLE_RUN ? 'One input, full brain response.' : (RUN_MODE === 'text' ? 'Two texts, one cortex.' : 'Two media samples, one cortex.');
+  const RUN_DONE_COPY = IS_SINGLE_RUN ? 'Your analysis is ready.' : (RUN_MODE === 'text' ? 'Your comparison is ready.' : 'Your media comparison is ready.');
   function resultsPageForMode(){
     // Text and audio share the same page — both come down to a TTS-derived
     // waveform + the same TRIBE-driven cortical timeseries. Video keeps the
@@ -924,8 +978,8 @@ function toggleTheme(){
   const statusSub = document.getElementById('statusSub');
   if (statusSub) {
     statusSub.textContent = IS_SINGLE_RUN
-      ? 'Your ' + RUN_KIND + ' is being encoded across seven cortical systems.'
-      : 'Your two ' + RUN_KIND + ' are being encoded and compared across seven cortical systems.';
+      ? 'We are analyzing this ' + RUN_KIND + ' and preparing the result page.'
+      : 'We are analyzing both ' + RUN_KIND + ' and preparing the comparison page.';
   }
 
   // ===== Deep Scope ======================================================
@@ -957,7 +1011,7 @@ function toggleTheme(){
       stageKeys: ['predict_a_ms','predict_b_ms','events_a_ms','events_b_ms'],
       expectedMs: 600_000 },
     { id:'surface', label:'Mapping to brain surface',
-      backend: ['computing_brain_contrast'],
+      backend: ['computing_brain_response','computing_brain_contrast'],
       stageKeys: ['heatmap_ms'],
       expectedMs: 12_000 },
     { id:'score',   label:'Writing the insights',
@@ -977,7 +1031,7 @@ function toggleTheme(){
     if (s < 60) return s.toFixed(1) + ' s';
     const m = Math.floor(s / 60);
     const r = Math.round(s - m*60);
-    return m + ':' + String(r).padStart(2, '0');
+    return String(m).padStart(2, '0') + ':' + String(r).padStart(2, '0');
   }
   function fmtClock(ms){
     const s = Math.max(0, Math.floor(ms / 1000));
@@ -1007,9 +1061,13 @@ function toggleTheme(){
       arr.push(entry);
       save(arr);
     }
-    function statsForStep(history, stageKeys){
+    function statsForStep(history, stepIndex, stageKeys){
       const vals = [];
       for (const h of history){
+        if (Array.isArray(h.step_ms) && typeof h.step_ms[stepIndex] === 'number' && isFinite(h.step_ms[stepIndex])){
+          vals.push(h.step_ms[stepIndex]);
+          continue;
+        }
         const t = h.stage_times || {};
         let sum = 0, ok = false;
         for (const k of stageKeys){ if (typeof t[k] === 'number'){ sum += t[k]; ok = true; } }
@@ -1039,7 +1097,7 @@ function toggleTheme(){
 
     const history = RunHistory.load();
     const showHistory = history.length >= HISTORY_SHOW_AT;
-    const stepStats = DS_STEPS.map(s => RunHistory.statsForStep(history, s.stageKeys));
+    const stepStats = DS_STEPS.map((s, i) => RunHistory.statsForStep(history, i, s.stageKeys));
     const totalStats = RunHistory.totalStats(history);
 
     // Per-step state machine
@@ -1092,9 +1150,9 @@ function toggleTheme(){
       // Honest-eta paragraph: replace static copy with measured median once enough data.
       if (honestEta && totalStats && totalStats.n >= HISTORY_SHOW_AT){
         honestEta.innerHTML =
-          '<strong>Your runs average ' + fmtMs(totalStats.avgMs) + '.</strong> ' +
-          'Encoding through TRIBE v2 is the slowest step. ' +
-          'If anything goes sideways past 15 minutes, we\'ll say so right here.';
+          '<strong>Average run time: ' + fmtMs(totalStats.avgMs) + '.</strong> ' +
+          'TRIBE v2 encoding usually takes the longest. ' +
+          'If this run passes 15 minutes, this panel will show the issue and the next step.';
       }
       if (logEl) logEl.innerHTML = '<span class="ds-log-empty">waiting for backend events…</span>';
     }
@@ -1190,8 +1248,7 @@ function toggleTheme(){
           honestEta.classList.add('is-slow');
           honestEta.innerHTML =
             '<strong>This run has crossed 15 minutes.</strong> ' +
-            'That\'s longer than usual. The pipeline is still going — leaving the tab open is fine. ' +
-            'If it has stalled completely, the event log below will stop ticking.';
+            'Processing is still active. If the worker stops or returns an error, this panel will show the reason and the next step.';
         }
       }
 
@@ -1230,24 +1287,31 @@ function toggleTheme(){
       }
     }
     function complete(stageTimes, totalMs){
-      // Finalize all step timings using authoritative backend stage_times.
+      // Finalize step timings from the same event-derived clock the user saw
+      // during the run. Backend stage summaries are kept for audit/history
+      // fallback, but they no longer overwrite the displayed step durations.
       const now = Date.now();
       DS_STEPS.forEach(function(s, i){
-        let sum = 0;
-        for (const k of s.stageKeys){
-          if (stageTimes && typeof stageTimes[k] === 'number') sum += stageTimes[k];
+        if (state[i].startMs == null) {
+          const previousDone = i > 0 ? state[i - 1].doneMs : null;
+          state[i].startMs = previousDone || runStartMs || now;
         }
-        if (sum > 0){
-          state[i].startMs = state[i].startMs || (now - sum);
-          state[i].doneMs  = state[i].startMs + sum;
+        if (state[i].doneMs == null) {
+          const nextStart = i < state.length - 1 ? state[i + 1].startMs : null;
+          state[i].doneMs = nextStart || now;
         }
         setStatus(i, 'done');
+      });
+      const derivedTotal = runStartMs ? Math.max(0, now - runStartMs) : totalMs;
+      const stepMs = state.map(function(s){
+        return s.startMs != null && s.doneMs != null ? Math.max(0, s.doneMs - s.startMs) : null;
       });
       // Persist run for history.
       RunHistory.push({
         finished_at: new Date().toISOString(),
-        total_ms: totalMs,
+        total_ms: derivedTotal,
         stage_times: stageTimes || {},
+        step_ms: stepMs,
       });
       tick();
     }
@@ -1361,10 +1425,10 @@ function toggleTheme(){
   }
 
   const statusSubEl = document.getElementById('statusSub');
-  const defaultSub = statusSubEl ? statusSubEl.innerHTML : '';
   function setProgressMessage(msg){
-    if (!statusSubEl || !msg) return;
-    statusSubEl.innerHTML = defaultSub + ' <span style="color:var(--ink-mute)">· ' + String(msg).replace(/[<>&]/g, function(c){ return ({'<':'&lt;','>':'&gt;','&':'&amp;'})[c]; }) + '</span>';
+    // Keep backend event messages available to telemetry, but do not paste
+    // technical worker logs into the customer-facing status sentence.
+    return;
   }
 
   // Keep in sync with KNOWN_FAILURE_MODES.md §2.
@@ -1523,7 +1587,7 @@ function toggleTheme(){
     if (typeof Notification === 'undefined' || Notification.permission !== 'granted') return;
     try {
       new Notification('BrainDiff is ready', {
-        body: 'Your brain contrast is ready to view.',
+        body: 'Your BrainDiff result is ready to view.',
         icon: '/assets/braindiff-logo.png',
         tag: 'braindiff-complete',
       });
@@ -1569,28 +1633,35 @@ function toggleTheme(){
 <script type="importmap">
 {
   "imports": {
-    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
+    "three": "https://unpkg.com/three@0.164.1/build/three.module.js"
   }
 }
 </script>
 <script type="module">
-import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js";
+import { mountCortex } from "./assets/cortex-viewer-neon.js?v=28";
 
 const DIMENSIONS = [
-  { key:"attention_salience",  num:"System spotlight", title:'Where does it hold <em>attention?</em>',             region:"Dorsal attention network",
-    body:"This system tracks what the viewer selects and keeps in focus. In a comparison run, the results page shows which input pulls this network harder. In a single run, it shows how strongly the content holds attention on its own." },
-  { key:"brain_effort",        num:"System spotlight", title:'How much <em>work</em> does it ask for?',            region:"Dorsolateral prefrontal cortex",
-    body:"This system indexes cognitive load. Higher effort can mean useful depth, or it can mean friction. The result readout separates effort from impact so hard-to-read content does not get mistaken for strong content." },
-  { key:"gut_reaction",        num:"System spotlight", title:'Does it land in the <em>body?</em>',                 region:"Anterior insula",
-    body:"This system tracks felt salience: urgency, risk, moral weight, and bodily response. It helps distinguish a message people understand from a message people feel." },
-  { key:"language_depth",      num:"System spotlight", title:'How much meaning is carried by the <em>words?</em>', region:"Broca's and Wernicke's networks",
-    body:"The language network tracks semantic and structural richness. A stronger signal here usually means the wording is doing more of the explanatory work." },
-  { key:"memory_encoding",     num:"System spotlight", title:'What is likely to <em>stick?</em>',                  region:"Left ventrolateral prefrontal cortex",
-    body:"This cortical region is tied to the subsequent-memory effect. It helps identify moments that are more likely to be encoded for later recall." },
-  { key:"personal_resonance",  num:"System spotlight", title:'Does it feel like it is <em>about me?</em>',         region:"Medial prefrontal cortex",
-    body:"This system tracks self-relevance. If one version pulls harder here, it is more likely to feel personally meaningful rather than merely understandable." },
-  { key:"social_thinking",     num:"System spotlight", title:'Am I modeling <em>another mind?</em>',               region:"Temporoparietal junction",
-    body:"This system lights up when the brain infers another person's intent, feeling, or point of view. It matters for story, characters, and human stakes." },
+  { key:"attention",           label:"Attention",           question:"Did this pull focus?",          score:0.82,
+    title:'Attention',          region:"Dorsal attention network",
+    body:"Shows when the input is likely to pull the listener into focus. On the result page, this becomes the attention signal over the call." },
+  { key:"brain_effort",        label:"Brain Effort",        question:"Did this make them think?",     score:0.78,
+    title:'Brain Effort',       region:"Dorsolateral prefrontal cortex",
+    body:"Shows when the input asks for more mental work. Effort can be useful depth, or it can be friction." },
+  { key:"gut_reaction",        label:"Gut Reaction",        question:"Did this feel urgent?",         score:0.80,
+    title:'Gut Reaction',       region:"Anterior insula",
+    body:"Shows when the input is likely to feel immediate, risky, or emotionally charged." },
+  { key:"language_depth",      label:"Language Depth",      question:"Did the words carry meaning?",  score:0.76,
+    title:'Language Depth',     region:"Language network",
+    body:"Shows when the wording is doing real explanatory work instead of just filling space." },
+  { key:"memory_encoding",     label:"Memory Encoding",     question:"Will it stick in memory?",      score:0.81,
+    title:'Memory Encoding',    region:"Left ventrolateral prefrontal cortex",
+    body:"Shows moments the listener is more likely to hold onto after the call." },
+  { key:"personal_resonance",  label:"Personal Resonance",  question:"Did this feel personal?",       score:0.79,
+    title:'Personal Resonance', region:"Medial prefrontal cortex",
+    body:"Shows when the input is likely to feel connected to the listener's own situation." },
+  { key:"social_thinking",     label:"Social Thinking",     question:"Did intent matter here?",       score:0.77,
+    title:'Social Thinking',    region:"Temporoparietal junction",
+    body:"Shows when the listener may be reading people, intent, trust, or relationship stakes." },
 ];
 // 3D centroids (in the post-scaled real-mesh space, radius ~1.4) per region.
 // Same numbers as the landing page so the same anatomy lights up everywhere.
@@ -1655,6 +1726,59 @@ function buildRealMeshGeometry(payload, targetRadius){
 function mountEdu() {
   const canvas = document.getElementById("eduBrain");
   if (!canvas){ console.warn('[run] eduBrain canvas missing'); return; }
+  let cortex = null;
+
+  function updateDimension(i) {
+    currentIdx = (i + DIMENSIONS.length) % DIMENSIONS.length;
+    const d = DIMENSIONS[currentIdx];
+    if (cortex && typeof cortex.setRoi === "function") cortex.setRoi(d.key);
+    if (cortex && typeof cortex.setRoiIntensity === "function") cortex.setRoiIntensity(d.score || 0.82);
+    const num = document.getElementById("eduNum");
+    const title = document.getElementById("eduTitle");
+    const region = document.getElementById("eduRegion");
+    const body = document.getElementById("eduBody");
+    const caption = document.getElementById("brainCaption");
+    if (num) num.textContent = "System spotlight";
+    if (title) title.textContent = d.title;
+    if (region) region.textContent = d.question;
+    if (body) body.textContent = d.body;
+    if (caption) caption.textContent = d.label + " · " + d.question.toLowerCase();
+    document.querySelectorAll(".edu-dot").forEach((el, idx) => el.classList.toggle("active", idx === currentIdx));
+  }
+
+  function startSharedCycle() {
+    if (cycleTimer) clearInterval(cycleTimer);
+    cycleTimer = setInterval(() => updateDimension(currentIdx + 1), 6000);
+  }
+  function bindSharedNav() {
+    const prev = document.getElementById("eduPrev");
+    const next = document.getElementById("eduNext");
+    if (prev) prev.addEventListener("click", () => { updateDimension(currentIdx - 1); startSharedCycle(); });
+    if (next) next.addEventListener("click", () => { updateDimension(currentIdx + 1); startSharedCycle(); });
+    document.querySelectorAll(".edu-dot").forEach((el, idx) => {
+      el.addEventListener("click", () => { updateDimension(idx); startSharedCycle(); });
+    });
+  }
+
+  updateDimension(0);
+  bindSharedNav();
+  requestAnimationFrame(async () => {
+    try {
+      cortex = await mountCortex({
+        canvas,
+        roiHighlight: DIMENSIONS[currentIdx].key,
+        cameraDistance: 5.3,
+      });
+      updateDimension(currentIdx);
+      console.log('[run] shared cortex viewer mounted', { isReal: cortex && cortex.isReal, format: cortex && cortex.format });
+    } catch (err) {
+      console.error('[run] shared cortex viewer failed:', err);
+      const caption = document.getElementById("brainCaption");
+      if (caption) caption.textContent = "Brain preview unavailable · analysis continues";
+    }
+  });
+  startSharedCycle();
+  return;
   const parent = canvas.parentElement;
   // Fallback dimensions if layout hasn't settled by the time we mount.
   // ResizeObserver below corrects on the next layout pass.
