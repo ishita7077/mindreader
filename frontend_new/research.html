@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <meta name="theme-color" content="#f7f4ec" />
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,300;1,9..144,400;1,9..144,500&family=Newsreader:ital,wght@0,300;0,400;0,500;1,300;1,400&family=JetBrains+Mono:wght@300;400;500&family=Inter+Tight:wght@300;400;500;600&display=swap" rel="stylesheet">
-<script>(function(){var r=document.documentElement;try{var t=localStorage.getItem('braindiff-theme');if(t==='dark')r.setAttribute('data-theme','dark');}catch(e){}})();</script>
+<script>(function(){var r=document.documentElement;r.setAttribute('data-theme','dark');try{localStorage.setItem('braindiff-theme','dark');}catch(e){}})();</script>
 <style>
 :root {
   color-scheme: light;
@@ -140,14 +140,16 @@ body {
   padding: 120px 6% 100px;
   border-bottom: 1px solid var(--rule);
   background:
+    linear-gradient(90deg, rgba(3,7,21,0.90) 0%, rgba(3,7,21,0.68) 48%, rgba(3,7,21,0.32) 100%),
+    url("./assets/research-cover-brain.png") 70% center / auto 135% no-repeat,
     radial-gradient(ellipse 60% 80% at 50% 30%, var(--accent-dim) 0%, transparent 60%);
-  text-align: center;
+  text-align: left;
   position: relative;
   min-height: 90vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   overflow: hidden;
 }
 
@@ -191,6 +193,7 @@ body {
 @keyframes hero-brain-rot { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
 @keyframes hero-brain-pulse { 0%,100% { opacity: 0.20; } 50% { opacity: 0.65; } }
 .cold-open > * { position: relative; z-index: 1; }
+.cold-open .hero-brain-bg { display: none; }
 
 .cold-eyebrow {
   font-family: 'JetBrains Mono', monospace;
@@ -899,6 +902,15 @@ body {
   background: color-mix(in srgb, var(--accent) 12%, transparent);
   border-color: var(--gold-bright);
   color: var(--gold-bright);
+}
+
+.eq-test-wrap.locked .eq-option:not(.selected) {
+  opacity: 0.42;
+  cursor: not-allowed;
+}
+
+.eq-test-wrap.locked .eq-option.selected {
+  cursor: default;
 }
 
 .eq-reveal {
@@ -1610,6 +1622,35 @@ body {
   color: var(--bg);
 }
 
+.section-end-grid {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 210px;
+  gap: 28px;
+  align-items: start;
+}
+
+.wip-aside {
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--surface) 72%, transparent);
+  padding: 14px 16px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  line-height: 1.6;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-mute);
+}
+
+.wip-aside strong {
+  display: block;
+  color: var(--gold-bright);
+  margin-bottom: 6px;
+}
+
 /* Footer */
 .research-footer {
   padding: 64px 8%;
@@ -1643,6 +1684,7 @@ body {
 
 @media (max-width: 1100px) {
   .cortex-grid, .montage-grid { grid-template-columns: 1fr; gap: 40px; }
+  .section-end-grid { grid-template-columns: 1fr; }
   .respond-presets { grid-template-columns: 1fr; }
   .research-footer { grid-template-columns: 1fr; gap: 40px; }
 }
@@ -1721,6 +1763,34 @@ path[stroke="#2a2a3e"] { stroke: var(--line); }
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Crimson+Pro:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Caveat:wght@400;500;700&family=Kalam:wght@300;400;700&family=Inter+Tight:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/theme.css">
 <link rel="stylesheet" href="/assets/neon-site.css?v=1">
+<style>
+/* Research-only cover override. The shared neon stylesheet defines the same
+   hero class, so this must load after it and keep !important. */
+.cold-open {
+  background:
+    linear-gradient(90deg, rgba(3, 7, 21, 0.92) 0%, rgba(3, 7, 21, 0.66) 44%, rgba(3, 7, 21, 0.24) 100%),
+    linear-gradient(180deg, rgba(3, 7, 21, 0.08), rgba(3, 7, 21, 0.36)),
+    url("/assets/research-cover-brain.png") center center / cover no-repeat,
+    linear-gradient(120deg, #030715 0%, #061737 100%) !important;
+}
+
+.theme-switcher { display: none !important; }
+.topbar-new {
+  max-width: none !important;
+  margin: 0 !important;
+  background: rgba(3, 7, 21, 0.78) !important;
+  border-bottom: 1px solid rgba(110, 205, 255, 0.16) !important;
+}
+
+@media (max-width: 700px) {
+  .cold-open {
+    background:
+      linear-gradient(180deg, rgba(3, 7, 21, 0.72), rgba(3, 7, 21, 0.92)),
+      url("/assets/research-cover-brain.png") center top / auto 520px no-repeat,
+      linear-gradient(120deg, #030715 0%, #061737 100%) !important;
+  }
+}
+</style>
 </head>
 <body>
 
@@ -1773,17 +1843,11 @@ path[stroke="#2a2a3e"] { stroke: var(--line); }
 
   <div class="cold-eyebrow">A Brain Diff Research Note</div>
 
-  <h1 class="cold-question">
-    What if the part that knows what <em>matters</em><br>
-    isn't the part you can <em>ask</em>?
-  </h1>
+  <h1 class="cold-question">Mind reading 101</h1>
 
   <div class="cold-frame">
     <p style="font-size:14px;color:var(--text-soft);font-family:'JetBrains Mono',monospace;letter-spacing:0.04em;line-height:1.7;text-align:left;max-width:600px;margin:0 auto">
-      One clarification before you read further: Brain Diff models the <strong style="color:var(--text)">cortex</strong>, not the whole brain. That is the outer surface where language, attention, memory encoding, and social reasoning are represented in TRIBE v2.
-    </p>
-    <p style="font-size:12px;color:var(--text-mute);font-family:'JetBrains Mono',monospace;letter-spacing:0.12em;text-transform:uppercase;margin-top:28px">
-      Skim the headlines · expand any section to read deeper
+      Note: Brain Diff models the <strong style="color:var(--text)">cortex</strong>, not the whole brain. That is the outer surface where attention, memory encoding etc are represented in TRIBE v2.
     </p>
   </div>
 
@@ -1797,149 +1861,30 @@ path[stroke="#2a2a3e"] { stroke: var(--line); }
   <div class="section-header">
     <div class="section-num">SECTION <strong>01</strong> · THEREFORE</div>
     <span class="therefore-tag">→ THEREFORE</span>
-    <h2 class="section-h2">We'd need to know what <em>"the brain"</em> actually is.</h2>
+    <h2 class="section-h2">Defining our <em>'brain'</em></h2>
   </div>
 
   <p class="section-lead">
-    The cortex is the outer sheet of the brain — two to four millimeters thick, folded densely enough that, unfurled, it covers about the area of a dinner napkin. It has internal structure: groupings of regions that fire together, found by listening to the cortex at rest rather than by giving it tasks.
+    The cortex is the outer sheet of the brain — two to four millimeters thick, folded densely enough that, unfurled, it covers about the area of a dinner napkin. It has internal structure: groupings of regions that fire together, studied by neurologists for decades.
   </p>
 
   <details class="section-deeper">
-    <summary>How the cortex is mapped, and where the seven networks come from</summary>
+    <summary>How the cortex is mapped</summary>
     <div class="prose">
       <p>
         For research purposes, the cortex is mapped onto a standardized surface called <strong>fsaverage5</strong>: a reference template with 20,484 vertices, each one a point on the cortical sheet that can be tracked across subjects. When neuroscientists talk about &ldquo;a region of the brain doing X,&rdquo; they usually mean the average activity at some collection of these vertices, across many people, doing X.
       </p>
       <p>
-        In 2011, Yeo and colleagues at Harvard published a parcellation of this surface into <strong>seven networks</strong><span class="cite">[1]</span> — visual, somatomotor, dorsal attention, ventral attention, limbic, frontoparietal, default. They didn't decide what the cortex should look like; they let the cortex's resting activity reveal its own organization. The seven-network map is now one of the most reproduced findings in cognitive neuroscience.
+        In 2011, Yeo and colleagues at Harvard published a reproducible parcellation of this surface<span class="cite">[1]</span>. They didn't decide what the cortex should look like; they let the cortex's resting activity reveal its own organization. That map is now one of the most reproduced findings in cognitive neuroscience.
       </p>
     </div>
   </details>
 
   <div class="section-bottom">
-    You don't have to memorize the names. The point: the cortex has internal structure that's the same across people, and that structure was found by listening — not designed. Everything later in this page is built on top of these seven groupings.
+    You don't have to memorize the names. The point: the cortex has internal structure that's the same across people, and that structure has been studied by neurologists for decades. Everything later in this page is built on top of that cortical structure.
   </div>
 
-  <!-- INTERACTIVE 1: The Cortex -->
-  <div class="cortex-wrap">
-    <div class="cortex-grid">
-      <div class="cortex-svg-wrap">
-        <svg class="cortex-svg" viewBox="0 0 600 480" id="cortex-svg" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <radialGradient id="cortex-glow"><stop offset="0%" stop-color="#1a1a2a" stop-opacity="0.4"/><stop offset="100%" stop-color="#1a1a2a" stop-opacity="0"/></radialGradient>
-            <filter id="region-glow"><feGaussianBlur stdDeviation="3"/></filter>
-          </defs>
 
-          <ellipse cx="300" cy="240" rx="240" ry="200" fill="url(#cortex-glow)"/>
-
-          <!-- Brain top-down outline -->
-          <path d="M 300 60
-                   C 180 60, 100 150, 95 240
-                   C 90 340, 140 430, 220 460
-                   C 260 472, 290 472, 300 472
-                   C 310 472, 340 472, 380 460
-                   C 460 430, 510 340, 505 240
-                   C 500 150, 420 60, 300 60 Z"
-                fill="#0a0a14"
-                stroke="#3a3a52"
-                stroke-width="1"/>
-
-          <!-- Central sulcus -->
-          <path d="M 300 70 Q 298 240, 302 380 Q 300 460, 300 470" fill="none" stroke="#2a2a3e" stroke-width="0.6" stroke-dasharray="3 4"/>
-
-          <!-- 7 Yeo regions (simplified, top-down) -->
-          <!-- Default (medial frontal + parietal) -->
-          <path id="region-default"
-                class="brain-region" data-system="default"
-                d="M 300 90 Q 270 95, 250 120 Q 240 150, 250 180 Q 280 175, 300 175 Q 320 175, 350 180 Q 360 150, 350 120 Q 330 95, 300 90 Z
-                   M 280 380 Q 300 385, 320 380 Q 320 410, 300 425 Q 280 410, 280 380 Z"
-                fill="#B89BC9" fill-opacity="0.15" stroke="#B89BC9" stroke-width="0.8" stroke-opacity="0.5"/>
-
-          <!-- Dorsal attention (parietal lateral) -->
-          <path id="region-dorsal"
-                class="brain-region" data-system="dorsal"
-                d="M 165 200 Q 195 210, 220 230 Q 215 270, 195 285 Q 165 280, 145 250 Q 145 220, 165 200 Z
-                   M 435 200 Q 405 210, 380 230 Q 385 270, 405 285 Q 435 280, 455 250 Q 455 220, 435 200 Z"
-                fill="#D4A857" fill-opacity="0.15" stroke="#D4A857" stroke-width="0.8" stroke-opacity="0.5"/>
-
-          <!-- Frontoparietal -->
-          <path id="region-fronto"
-                class="brain-region" data-system="frontoparietal"
-                d="M 165 130 Q 195 140, 215 160 Q 210 195, 195 205 Q 165 200, 150 180 Q 145 150, 165 130 Z
-                   M 435 130 Q 405 140, 385 160 Q 390 195, 405 205 Q 435 200, 450 180 Q 455 150, 435 130 Z"
-                fill="#7FB3C6" fill-opacity="0.15" stroke="#7FB3C6" stroke-width="0.8" stroke-opacity="0.5"/>
-
-          <!-- Limbic (medial inferior) -->
-          <path id="region-limbic"
-                class="brain-region" data-system="limbic"
-                d="M 240 270 Q 270 280, 300 280 Q 330 280, 360 270 Q 365 300, 350 320 Q 320 325, 300 325 Q 280 325, 250 320 Q 235 300, 240 270 Z"
-                fill="#E25B43" fill-opacity="0.15" stroke="#E25B43" stroke-width="0.8" stroke-opacity="0.5"/>
-
-          <!-- Ventral attention (insular/cingulate) -->
-          <path id="region-ventral"
-                class="brain-region" data-system="ventral"
-                d="M 175 295 Q 200 305, 225 315 Q 220 350, 195 360 Q 170 350, 160 325 Q 160 305, 175 295 Z
-                   M 425 295 Q 400 305, 375 315 Q 380 350, 405 360 Q 430 350, 440 325 Q 440 305, 425 295 Z"
-                fill="#FFB89E" fill-opacity="0.15" stroke="#FFB89E" stroke-width="0.8" stroke-opacity="0.5"/>
-
-          <!-- Visual (occipital, back) -->
-          <path id="region-visual"
-                class="brain-region" data-system="visual"
-                d="M 220 410 Q 260 420, 300 425 Q 340 420, 380 410 Q 380 440, 350 460 Q 320 470, 300 470 Q 280 470, 250 460 Q 220 440, 220 410 Z"
-                fill="#8AA876" fill-opacity="0.15" stroke="#8AA876" stroke-width="0.8" stroke-opacity="0.5"/>
-
-          <!-- Somatomotor (central strip) -->
-          <path id="region-somato"
-                class="brain-region" data-system="somatomotor"
-                d="M 200 215 Q 250 220, 300 215 Q 350 220, 400 215 Q 405 245, 400 270 Q 350 275, 300 270 Q 250 275, 200 270 Q 195 245, 200 215 Z"
-                fill="#E8C788" fill-opacity="0.12" stroke="#E8C788" stroke-width="0.8" stroke-opacity="0.5"/>
-
-          <!-- Anatomical labels -->
-          <text x="300" y="50" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#5A5A6A" letter-spacing="2">FRONTAL</text>
-          <text x="60" y="240" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#5A5A6A" letter-spacing="2" transform="rotate(-90 60 240)">LEFT</text>
-          <text x="540" y="240" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#5A5A6A" letter-spacing="2" transform="rotate(90 540 240)">RIGHT</text>
-          <text x="300" y="478" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#5A5A6A" letter-spacing="2">OCCIPITAL</text>
-        </svg>
-      </div>
-
-      <div class="cortex-side">
-        <div class="iact-tag">Hover a name &middot; brain lights up</div>
-        <h3>The cortex's seven networks.</h3>
-        <p>Each network is a real grouping the cortex makes for itself — visible whenever it's left to its own activity, with no task imposed. Hover any name to see where it lives. You don't have to memorize them.</p>
-
-        <div class="cortex-legend" id="cortex-legend">
-          <div class="cortex-legend-item" data-system="default">
-            <div class="cortex-legend-dot" style="background:#B89BC9"></div>
-            <span>Default mode</span>
-          </div>
-          <div class="cortex-legend-item" data-system="dorsal">
-            <div class="cortex-legend-dot" style="background:#D4A857"></div>
-            <span>Dorsal attention</span>
-          </div>
-          <div class="cortex-legend-item" data-system="frontoparietal">
-            <div class="cortex-legend-dot" style="background:#7FB3C6"></div>
-            <span>Frontoparietal</span>
-          </div>
-          <div class="cortex-legend-item" data-system="limbic">
-            <div class="cortex-legend-dot" style="background:#E25B43"></div>
-            <span>Limbic</span>
-          </div>
-          <div class="cortex-legend-item" data-system="ventral">
-            <div class="cortex-legend-dot" style="background:#FFB89E"></div>
-            <span>Ventral attention</span>
-          </div>
-          <div class="cortex-legend-item" data-system="visual">
-            <div class="cortex-legend-dot" style="background:#8AA876"></div>
-            <span>Visual</span>
-          </div>
-          <div class="cortex-legend-item" data-system="somatomotor">
-            <div class="cortex-legend-dot" style="background:#E8C788"></div>
-            <span>Somatomotor</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
 </section>
 
 <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
@@ -2170,7 +2115,7 @@ path[stroke="#2a2a3e"] { stroke: var(--line); }
     <div class="timeline-card" id="timeline-card">
       <div class="timeline-card-year">HOVER OR TAP A DATAPOINT</div>
       <div class="timeline-card-title">The encoding-model arc</div>
-      <div class="timeline-card-meta">2021 — 2025</div>
+      <div class="timeline-card-meta">2021 — 2026</div>
       <div class="timeline-card-desc">Five papers, four labs, one direction. Each one made the next inevitable.</div>
     </div>
   </div>
@@ -2187,7 +2132,7 @@ path[stroke="#2a2a3e"] { stroke: var(--line); }
   </div>
 
   <p class="section-lead">
-    In late 2025, Meta FAIR published <strong>TRIBEv2</strong> — the integration the previous five years had been pointing at. It handles audio, video, and language together (the &ldquo;hard case&rdquo;), trained on 720+ subjects watching naturalistic content, released CC BY-NC. Brain Diff is built on it.
+    On March 26, 2026, Meta FAIR officially released <strong>TRIBEv2</strong> (Trimodal Brain Encoder) — the integration the previous five years had been pointing at. It handles audio, video, and language together (the &ldquo;hard case&rdquo;), trained on 720+ subjects watching naturalistic content, released CC BY-NC. Brain Diff is built on it.
   </p>
 
   <details class="section-deeper">
@@ -2227,55 +2172,10 @@ path[stroke="#2a2a3e"] { stroke: var(--line); }
     We have the cortex. We have a way to simulate its response. So we can ask any video, any audio clip, any combination of the two: <em>what did the cortex do, second by second?</em> Take two pieces of content, run each through TRIBE, surface the seven cortical systems' response — and compare, system by system, moment by moment.
   </p>
 
-  <details class="section-deeper">
-    <summary>How a comparison works under the hood</summary>
-    <div class="prose">
-      <p>
-        Each video is processed through TRIBEv2 separately. The model outputs a 20,484-vertex × 1Hz prediction. We project those vertices onto the seven Yeo networks, producing one time-series per system per video — fourteen series total for a pair. Comparison is then a series of operations on those: signature shape, divergence at each second, named co-activation patterns, system-to-system connectivity within each video.
-      </p>
-    </div>
-  </details>
+  <p class="section-lead" style="margin-top:-8px">
+    For the technical version of how comparison works, see the <a href="/methodology" style="color:var(--gold-bright);border-bottom:1px solid color-mix(in srgb,var(--gold-bright) 45%,transparent)">methodology</a>.
+  </p>
 
-  <!-- Static response comparison — no local MP4 dependency. -->
-  <div class="cortex-respond-wrap">
-    <div class="iact-tag">Static readout &middot; two public videos</div>
-    <div class="respond-title">Two messages. Same seven systems. One static cortical readout.</div>
-    <div style="font-size:13.5px;color:var(--text-soft);font-family:'Newsreader',serif;line-height:1.6;max-width:600px;margin:8px 0 24px">
-      This is a fixed example, not synced playback. Open either video if you want context; the bars below show the kind of seven-system comparison Brain Diff returns.
-    </div>
-
-    <div class="respond-videos" id="respond-videos">
-      <div class="respond-video-cell">
-        <div class="respond-video-label">A · Calm &amp; informative</div>
-        <a class="respond-video-frame" href="https://www.youtube.com/watch?v=lBYC4_Lccjw&start=0&end=30" target="_blank" rel="noopener" aria-label="Open video A on YouTube">
-          <img src="https://img.youtube.com/vi/lBYC4_Lccjw/hqdefault.jpg" alt="" loading="lazy">
-          <span class="respond-static-play">Open video →</span>
-        </a>
-      </div>
-      <div class="respond-video-cell">
-        <div class="respond-video-label">B · Sharp &amp; personal</div>
-        <a class="respond-video-frame" href="https://www.youtube.com/watch?v=0e3GPea1Tyg&start=0&end=30" target="_blank" rel="noopener" aria-label="Open video B on YouTube">
-          <img src="https://img.youtube.com/vi/0e3GPea1Tyg/hqdefault.jpg" alt="" loading="lazy">
-          <span class="respond-static-play">Open video →</span>
-        </a>
-      </div>
-    </div>
-
-    <div class="respond-display">
-      <div class="respond-controls">
-        <span>STATIC MOMENT &nbsp;<span class="respond-time" id="respond-time">0:18</span></span>
-        <span style="margin-left:auto;color:var(--text-mute)">A / B scores</span>
-      </div>
-
-      <div class="respond-bars" id="respond-bars">
-        <!-- Generated by JS -->
-      </div>
-    </div>
-  </div>
-
-  <div class="section-bottom">
-    The bars are a static example of the seven cortical systems responding to two different messages. Where the bars rise together, both videos are recruiting the same system. Where they diverge, the cortex is responding differently — and that divergence is where most of the useful content questions live.
-  </div>
 </section>
 
 <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
@@ -2287,9 +2187,9 @@ path[stroke="#2a2a3e"] { stroke: var(--line); }
       <div class="section-num" style="margin-bottom:24px">SECTION <strong>08</strong> &middot; THE CENTERPIECE</div>
       <h2 class="montage-title">Thirty years of cognitive neuroscience,<br>mapped onto <em>one brain</em>.</h2>
       <p class="montage-sub">
-        The seven systems Brain Diff exposes are real groupings the cortex makes for itself — each one isolated by a specific lab, in a specific year, asking a specific question. <strong style="color:var(--gold-bright)">Drag the slider below ↓</strong> to walk forward through time and watch them appear in the order they were first reported.
+        Brain Diff's dimensions are grounded in decades of cognitive neuroscience: specific labs, specific questions, and specific cortical regions.
       </p>
-      <div class="iact-tag" style="margin-top:18px">Drag the year slider &middot; brain regions light up in order</div>
+      <div class="iact-tag" style="margin-top:18px">Year slider &middot; brain regions light up in order</div>
     </div>
 
     <div class="montage-stage">
@@ -2397,11 +2297,11 @@ path[stroke="#2a2a3e"] { stroke: var(--line); }
 
         <div class="montage-side">
           <div class="montage-current-year" id="montage-year">1995</div>
-          <div class="montage-current-system" id="montage-system">— Drag the slider —</div>
+          <div class="montage-current-system" id="montage-system">— Timeline —</div>
 
           <div class="montage-current-card" id="montage-card">
             <div class="montage-card-lab">PRE-DISCOVERY</div>
-            <div class="montage-card-question">Drag the slider forward and watch each system appear in the year it was published.</div>
+            <div class="montage-card-question">Move through the timeline to see when each system entered the literature.</div>
             <div class="montage-card-found">By 2012, all seven systems Brain Diff exposes had been mapped onto the cortex by separate labs over thirty years of cognitive neuroscience.</div>
             <div class="montage-card-region">SEVEN SYSTEMS · 1995 — 2012</div>
             <div class="montage-falk-callout" id="falk-callout">
@@ -2427,14 +2327,6 @@ path[stroke="#2a2a3e"] { stroke: var(--line); }
   </div>
 </section>
 
-<!-- Pull quote 3 -->
-<div class="pullquote">
-  <div class="pullquote-text">
-    Seven systems. Thirty years of work.<br>
-    Now visible <em>in one place</em>.
-  </div>
-</div>
-
 <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
 <!-- SECTION 9 — SO WE BUILT BRAIN DIFF -->
 <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
@@ -2444,233 +2336,50 @@ path[stroke="#2a2a3e"] { stroke: var(--line); }
     <h2 class="section-h2">So we built <em>Brain Diff</em>.</h2>
   </div>
 
-  <p class="section-lead">
-    Two cuts of the same ad. Two scripts for the same talk. Two product videos. Two anything. Brain Diff lays them side by side, runs each through TRIBEv2, and shows you — second by second, system by system — exactly where the cortex responds differently. The output is a description of the difference, not a winner.
-  </p>
-
-  <details class="section-deeper">
-    <summary>What Brain Diff returns, what it doesn't, and why we built it</summary>
-    <div class="prose">
-      <p>
-        For each pair, Brain Diff surfaces: the <em>signature shape</em> of each video across the seven systems, where the two responses overlap, where they diverge, named co-activation patterns, and the connectivity between systems within each video. Plus seven per-system time-series so you can see exactly when divergences happen.
+  <div class="section-end-grid">
+    <div>
+      <p class="section-lead" style="padding:0;margin-bottom:28px">
+        BrainDiff takes two pieces of content and simulates, region by region, how a brain responds to each.
       </p>
-      <p>
-        It does not rank. It does not judge. It does not predict virality. The category — encoding-model-based content evaluation — has no other current entrant. We built Brain Diff because the tool we wanted to use to evaluate content didn't exist, and the science said it should.
+      <p class="section-lead" style="padding:0;margin-bottom:28px">
+        It does not declare a winner. It gives you the response map, so the next edit is based on what changed in the cortex.
       </p>
+      <div class="final-cta" style="margin-top:0;text-align:left">
+        <a href="/launch" class="btn-primary-gold">Launch Brain Diff <span class="btn-arrow">→</span></a>
+      </div>
     </div>
-  </details>
-
-  <div class="section-bottom">
-    Brain Diff is a comparator, not a critic. It shows you the cortical shape of each video and the gap between them. The interesting questions — which one to ship, which one to fix, which one to throw out — are still yours. We just give you a thicker description to make the call with.
+    <aside class="wip-aside">
+      <strong>WIP</strong>
+      Limits and open questions are still being written up. Short version: cortex only, population average, predicted response, not measured response.
+    </aside>
   </div>
 </section>
-
-<!-- Pull quote 4 -->
-<div class="pullquote">
-  <div class="pullquote-text">
-    The verdict is yours.<br>
-    Brain Diff just shows you<br>
-    <em>the difference</em>.
-  </div>
-</div>
-
-<!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
-<!-- SECTION 10 — OPEN FRONT (combined Limits + Open Questions) -->
-<!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
-<section class="section openq-section">
-  <div class="section-header">
-    <div class="section-num">SECTION <strong>10</strong></div>
-    <h2 class="section-h2">The open research front<br>— and what's <em>permanently outside the scope</em>.</h2>
-  </div>
-
-  <p class="section-lead">
-    Two honest things at the close: what Brain Diff structurally <em>cannot</em> do (and never will), and the research questions it newly makes <em>askable</em>. Both are open. Both are yours, if you want them.
-  </p>
-
-  <details class="section-deeper">
-    <summary>The full list — limits, then open questions</summary>
-
-    <h3 style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--gold);margin:18px 0 14px;font-weight:400">Permanently outside the scope</h3>
-    <div class="prose">
-      <p>
-        <strong>No subcortical structures.</strong> TRIBE outputs cortical surface only. The nucleus accumbens, amygdala, and thalamus — reward, threat, arousal — are not visible to us. We use cortical proxies where we can (mPFC for value, anterior insula for visceral response). Knutson's NAcc-purchase work<span class="cite">[11]</span> is precedent, not inheritance.
-      </p>
-      <p>
-        <strong>No individual brains.</strong> Population-average across 720+ subjects. We can tell you what humans on average do — not what <em>you</em> do.
-      </p>
-      <p>
-        <strong>No sub-second resolution.</strong> 1Hz. Micro-expressions and 200ms audio cuts smear together.
-      </p>
-      <p>
-        <strong>Limited out-of-distribution generalization.</strong> Pure music, abstract animation, anything unlike the naturalistic-film training set — predictions get noisier. We label this when it applies.
-      </p>
-      <p>
-        <strong>Live calibration.</strong> We don't yet have ground-truth fMRI vs. Brain Diff predictions on identical content. We're building it. Until then, pattern thresholds are open-source defaults, not measured precision values. They will be revised as data accumulates.
-      </p>
-    </div>
-
-    <h3 style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--gold);margin:36px 0 14px;font-weight:400">Open research front</h3>
-    <div class="prose">
-      <p>
-        Questions Brain Diff makes newly tractable. Not a roadmap — a research agenda. If you're a researcher, builder, journalist, or critic, these are yours to take.
-      </p>
-    </div>
-
-    <div class="openq-list" style="margin-top:24px">
-      <div class="openq-item">
-        <div class="openq-num">Q1</div>
-        <div class="openq-text">Does narrative structure produce predictable cortical signatures across cultures?</div>
-      </div>
-      <div class="openq-item">
-        <div class="openq-num">Q2</div>
-        <div class="openq-text">Can we identify when a piece of content is "memorable" before any audience has seen it?</div>
-      </div>
-      <div class="openq-item">
-        <div class="openq-num">Q3</div>
-        <div class="openq-text">What does it mean when two pieces of content produce near-identical cortical responses despite being completely different on the surface?</div>
-      </div>
-      <div class="openq-item">
-        <div class="openq-num">Q4</div>
-        <div class="openq-text">Is there a "minimum viable signature" — the shortest content that still produces a complete cortical response pattern?</div>
-      </div>
-      <div class="openq-item">
-        <div class="openq-num">Q5</div>
-        <div class="openq-text">Do creators with track records of resonant work share a cortical-response fingerprint?</div>
-      </div>
-      <div class="openq-item">
-        <div class="openq-num">Q6</div>
-        <div class="openq-text">How does the cortex respond to AI-generated content differently from human-generated content, if at all?</div>
-      </div>
-      <div class="openq-item">
-        <div class="openq-num">Q7</div>
-        <div class="openq-text">Can we identify cortical signatures of manipulation versus genuine resonance — or are they indistinguishable at this resolution?</div>
-      </div>
-    </div>
-  </details>
-
-  <div class="section-bottom">
-    Brain Diff is a tool with sharp edges and real holes. It can show you the seven-system shape of any video, second by second; it cannot tell you about subcortex, individual variance, or sub-second moments. The seven open questions above are where the next year of work goes.
-  </div>
-</section>
-
-<!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
-<!-- FINAL CLOSE + single CTA -->
-<!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
-<section class="final-close">
-  <p class="final-close-thesis">
-    The part that knows what matters<br>
-    isn't the part you can ask.<br>
-    <em>So we asked the cortex instead.</em>
-  </p>
-
-  <div class="final-cta">
-    <a href="/launch" class="btn-primary-gold">Try Brain Diff <span class="btn-arrow">→</span></a>
-  </div>
-</section>
-
-<!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
-<!-- SLIM FOOTER — builder note + collapsed references -->
-<!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
-<footer class="footer-slim">
-  <div class="footer-slim-inner">
-    <div class="footer-builder">
-      Built carefully. Probably wrong about something. For corrections, comments, feedback, chit-chat reach out to <a href="mailto:ishita@polkafoundation.com">ishita@polkafoundation.com</a>.
-    </div>
-
-    <details class="footer-refs">
-      <summary>References &amp; related ↓</summary>
-      <div class="footer-refs-grid">
-        <div>
-          <h4>Citations</h4>
-          <p>
-            [1] Yeo et al., <em>J. Neurophysiology</em>, 2011<br>
-            [2] Mayer-Salovey-Caruso (MSCEIT), 2002<br>
-            [3] Petrides (TEIQue), 2009<br>
-            [4] Paech, EQ-Bench, 2023<br>
-            [5] Meta FAIR TRIBEv2, ICLR 2026<br>
-            [6] Hasson lab, Princeton, 2004 onwards<br>
-            [7] Schrimpf et al., <em>PNAS</em>, 2021<br>
-            [8] Goldstein et al., <em>Nature Neuroscience</em>, 2022<br>
-            [9] Caucheteux &amp; King, <em>Communications Biology</em>, 2022<br>
-            [10] Tang, Huth et al., <em>Nature Neuroscience</em>, 2023<br>
-            [11] Knutson et al., <em>Neuron</em>, 2007
-          </p>
-        </div>
-        <div>
-          <h4>Related</h4>
-          <p>
-            <a href="/methodology">Methodology — how we compute</a><br>
-            <a href="/methodology/patterns">Pattern definitions (open source)</a><br>
-            <a href="https://huggingface.co/facebook/tribev2" target="_blank" rel="noopener">TRIBE v2 · Meta FAIR</a><br>
-            <a href="https://github.com/ishita7077/runpod_braindiff_test" target="_blank" rel="noopener">GitHub — open a PR</a>
-          </p>
-        </div>
-      </div>
-    </details>
-
-    <div class="footer-meta">
-      <span>Brain Diff</span>
-      <span>·</span>
-      <span>Made with <span class="footer-heart">♥</span> by <a href="https://polka.foundation" target="_blank" rel="noopener">Polka Foundation</a></span>
-    </div>
-  </div>
-</footer>
 
 <script>
 // ── Theme toggle ──────────────────────────────────────────────
 function toggleTheme() {
   var r = document.documentElement;
-  var next = r.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-  if (next === 'dark') r.setAttribute('data-theme', 'dark');
-  else r.removeAttribute('data-theme');
-  try { localStorage.setItem('braindiff-theme', next); } catch(e) {}
+  r.setAttribute('data-theme', 'dark');
+  try { localStorage.setItem('braindiff-theme', 'dark'); } catch(e) {}
 }
 
 // ════════════════════════════════════════════════
-// INTERACTIVE 1: The Cortex (legend hover)
-// ════════════════════════════════════════════════
-const cortexLegend = document.querySelectorAll('#cortex-legend .cortex-legend-item');
-const cortexRegions = document.querySelectorAll('.brain-region');
-
-cortexLegend.forEach(item => {
-  item.addEventListener('mouseenter', () => {
-    const sys = item.dataset.system;
-    cortexLegend.forEach(l => l.classList.remove('active'));
-    item.classList.add('active');
-    cortexRegions.forEach(r => {
-      if (r.dataset.system === sys) {
-        r.style.fillOpacity = '0.6';
-        r.style.strokeOpacity = '1';
-      } else {
-        r.style.fillOpacity = '0.05';
-        r.style.strokeOpacity = '0.2';
-      }
-    });
-  });
-});
-
-const cortexWrap = document.querySelector('.cortex-wrap');
-cortexWrap.addEventListener('mouseleave', () => {
-  cortexLegend.forEach(l => l.classList.remove('active'));
-  cortexRegions.forEach(r => {
-    r.style.fillOpacity = '';
-    r.style.strokeOpacity = '';
-  });
-});
-
-// ════════════════════════════════════════════════
-// INTERACTIVE 2: EQ Self-Report
+// INTERACTIVE 1: EQ Self-Report
 // ════════════════════════════════════════════════
 const eqAnswers = {};
+const eqWrap = document.querySelector('.eq-test-wrap');
 document.querySelectorAll('.eq-item').forEach(item => {
   const itemNum = item.dataset.item;
   item.querySelectorAll('.eq-option').forEach(btn => {
     btn.addEventListener('click', () => {
+      if (eqWrap?.classList.contains('locked')) return;
       item.querySelectorAll('.eq-option').forEach(b => b.classList.remove('selected'));
       btn.classList.add('selected');
       eqAnswers[itemNum] = btn.dataset.val;
       // Show reveal once all 3 answered
       if (Object.keys(eqAnswers).length === 3) {
+        eqWrap?.classList.add('locked');
+        document.querySelectorAll('.eq-option').forEach(option => option.disabled = true);
         document.getElementById('eq-reveal').classList.add('shown');
         if (!document.getElementById('eq-reveal').dataset.seen) {
           document.getElementById('eq-reveal').dataset.seen = 'true';
@@ -2682,6 +2391,8 @@ document.querySelectorAll('.eq-item').forEach(item => {
 });
 document.getElementById('eq-reset')?.addEventListener('click', () => {
   Object.keys(eqAnswers).forEach(key => delete eqAnswers[key]);
+  eqWrap?.classList.remove('locked');
+  document.querySelectorAll('.eq-option').forEach(btn => btn.disabled = false);
   document.querySelectorAll('.eq-option.selected').forEach(btn => btn.classList.remove('selected'));
   const reveal = document.getElementById('eq-reveal');
   if (reveal) {
@@ -2699,7 +2410,7 @@ const timelineData = [
   { year: 2022, label: 'Shared computational principles', lab: 'Goldstein et al. · Princeton', score: 0.50, desc: 'Showed that **LLMs and human brains share computational principles** for language — predictive processing, contextual integration, meaning over time.', meta: 'Nature Neuroscience · 2022' },
   { year: 2022, label: 'Brain scores formalized', lab: 'Caucheteux & King · ENS', score: 0.58, desc: 'Formalized **"brain scores"** as a metric for how brain-like a model\'s representations are. Made the question benchmarkable.', meta: 'Communications Biology · 2022' },
   { year: 2023, label: 'Semantic decoding from fMRI', lab: 'Tang, Huth et al. · UT Austin', score: 0.68, desc: 'Demonstrated **continuous reconstruction of language** from brain activity, using LLMs as the decoding bridge. The cortex-to-model mapping became bidirectional.', meta: 'Nature Neuroscience · 2023' },
-  { year: 2025, label: 'TRIBEv2 — multimodal integration', lab: 'Meta FAIR', score: 0.92, desc: '**Three foundation models, one temporal transformer, 720+ subjects.** Predicts cortical response to video, audio, and language simultaneously. The integration this whole arc was pointing at.', meta: 'Algonauts 2025 winner · ICLR 2026' }
+  { year: 2026, label: 'TRIBEv2 — multimodal integration', lab: 'Meta FAIR', score: 0.92, desc: '**Officially released March 26, 2026. Three foundation models, one temporal transformer, 720+ subjects.** Predicts cortical response to video, audio, and language simultaneously.', meta: 'TRImodal Brain Encoder · ICLR 2026' }
 ];
 
 function renderTimeline() {
@@ -2712,7 +2423,7 @@ function renderTimeline() {
   const plotW = W - padL - padR;
   const plotH = H - padT - padB;
 
-  const xMin = 2019.5, xMax = 2025.5;
+  const xMin = 2019.5, xMax = 2026.5;
   const yMin = 0, yMax = 1.0;
 
   function xC(year) { return padL + ((year - xMin) / (xMax - xMin)) * plotW; }
@@ -2747,7 +2458,7 @@ function renderTimeline() {
   svg.appendChild(yTitle);
 
   // X axis labels
-  for (let yr = 2020; yr <= 2025; yr++) {
+  for (let yr = 2020; yr <= 2026; yr++) {
     const x = xC(yr);
     const lbl = document.createElementNS('http://www.w3.org/2000/svg', 'text');
     lbl.setAttribute('x', x); lbl.setAttribute('y', H - padB + 24);
@@ -2893,6 +2604,7 @@ function gen(shape, peak) {
 
 function buildRespondBars() {
   const c = document.getElementById('respond-bars');
+  if (!c) return;
   c.innerHTML = '';
   dimensions.forEach((d, i) => {
     const row = document.createElement('div');
@@ -2910,6 +2622,7 @@ function buildRespondBars() {
 }
 
 function updateRespond(t) {
+  if (!document.getElementById('respond-bars')) return;
   const preset = respondPresets[currentPreset];
   const tt = Math.min(29, Math.floor(t));
   preset.a.dataA = preset.a.dataA || preset.a.shapes.map((s, i) => gen(s, preset.a.peaks[i]));

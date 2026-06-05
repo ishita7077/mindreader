@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
-<script>(function(){var r=document.documentElement;try{var t=localStorage.getItem('braindiff-theme');if(t==='light')r.removeAttribute('data-theme');else r.setAttribute('data-theme','dark');}catch(e){r.setAttribute('data-theme','dark');}})();</script>
+<script>(function(){var r=document.documentElement;r.setAttribute('data-theme','dark');try{localStorage.setItem('braindiff-theme','dark');}catch(e){}})();</script>
 <style>
 /* ============================================================
    BrainDiff · tokens (shared with index / run / results)
@@ -328,6 +328,72 @@ textarea::placeholder{color:var(--ink-mute);opacity:0.7}
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Crimson+Pro:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Caveat:wght@400;500;700&family=Kalam:wght@300;400;700&family=Inter+Tight:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/theme.css">
 <link rel="stylesheet" href="/assets/neon-site.css?v=1">
+<style>
+:root,
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #030715;
+  --bg-2: #061229;
+  --bg-3: #091b38;
+  --surface: rgba(8, 18, 42, 0.72);
+  --panel: rgba(8, 18, 42, 0.68);
+  --panel-2: rgba(14, 26, 58, 0.76);
+  --line: rgba(110, 205, 255, 0.22);
+  --line-2: rgba(110, 205, 255, 0.34);
+  --ink: #f2f8ff;
+  --ink-dim: #a7badc;
+  --ink-mute: #8fa5c9;
+  --accent: #58ddff;
+  --accent-2: #2f89ff;
+  --accent-3: rgba(88, 221, 255, 0.13);
+  --good: #7af4de;
+  --good-2: #91f6e8;
+  --good-3: rgba(122, 244, 222, 0.12);
+}
+.theme-switcher { display: none !important; }
+.topbar {
+  max-width: none !important;
+  margin: 0 !important;
+  background: rgba(3, 7, 21, 0.78) !important;
+  border-bottom: 1px solid rgba(110, 205, 255, 0.16) !important;
+}
+.kicker,
+.examples-row,
+.tip,
+.input-card,
+.name-row {
+  border-color: var(--line) !important;
+  background: var(--panel) !important;
+  box-shadow: 0 20px 70px rgba(0, 0, 0, 0.22) !important;
+}
+.example-btn,
+.mode-pill,
+.btn-ghost {
+  background: rgba(8, 18, 42, 0.78) !important;
+  border-color: var(--line-2) !important;
+  color: var(--ink-dim) !important;
+}
+.example-btn:hover,
+.mode-pill:hover,
+.mode-pill.active {
+  border-color: var(--accent) !important;
+  color: #031229 !important;
+  background: linear-gradient(180deg, #58ddff, #2f89ff) !important;
+  font-weight: 600 !important;
+  text-shadow: none !important;
+}
+.mode-pill.active {
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.22) inset,
+    0 0 18px rgba(88, 221, 255, 0.28) !important;
+}
+.btn-primary {
+  color: #031229 !important;
+  background: linear-gradient(180deg, #58ddff, #2f89ff) !important;
+  border: 1px solid rgba(110, 205, 255, 0.54) !important;
+}
+.examples-list { display: contents; }
+</style>
 </head>
 <body>
 <div class="theme-switcher">
@@ -356,11 +422,9 @@ textarea::placeholder{color:var(--ink-mute);opacity:0.7}
     <p class="page-sub" style="font-size:13px;color:var(--accent);margin-top:8px;">Experimental v1. Do not upload sensitive content.</p>
   </div>
 
-  <div class="examples-row" aria-label="Load an example comparison">
-    <span class="examples-label">Or load a pre-set:</span>
-    <button type="button" class="example-btn" data-example="wsj-fox">WSJ vs. Fox News</button>
-    <button type="button" class="example-btn" data-example="elon-pope">Elon vs. Pope on AI</button>
-    <button type="button" class="example-btn" data-example="click-inform">Clickbait vs. informative</button>
+  <div class="examples-row" id="examplesRow" aria-label="Load an example preset">
+    <span class="examples-label" id="examplesLabel">Single readout presets:</span>
+    <span class="examples-list" id="examplesList"></span>
   </div>
 
   <div class="tips">
@@ -465,10 +529,8 @@ textarea::placeholder{color:var(--ink-mute);opacity:0.7}
 <script>
 function toggleTheme(){
   var r=document.documentElement;
-  var next=r.getAttribute('data-theme')==='dark'?'light':'dark';
-  if(next==='dark') r.setAttribute('data-theme','dark');
-  else r.removeAttribute('data-theme');
-  try{localStorage.setItem('braindiff-theme',next);}catch(e){}
+  r.setAttribute('data-theme','dark');
+  try{localStorage.setItem('braindiff-theme','dark');}catch(e){}
 }
 
 (function(){
@@ -484,6 +546,8 @@ function toggleTheme(){
   const modePills = Array.from(document.querySelectorAll('.mode-pill[data-mode]'));
   const runTypePills = Array.from(document.querySelectorAll('.run-type-pill'));
   const examplesRow = document.querySelector('.examples-row');
+  const examplesLabel = document.getElementById('examplesLabel');
+  const examplesList = document.getElementById('examplesList');
   const inputGrid = document.getElementById('inputGrid');
   const cardB = document.getElementById('cardB');
   const labelA = document.getElementById('labelA');
@@ -533,31 +597,63 @@ function toggleTheme(){
     if (existing) existing.remove();
   }
 
-  // ---------- Pre-loaded example pairs — contrasting takes on the same topic.
-  const EXAMPLES = {
-    'wsj-fox': {
-      a: "The Federal Reserve held its benchmark interest rate steady on Wednesday, signaling a measured approach as policymakers weigh persistent inflation against softening labor-market data. Analysts surveyed by the Journal expect the central bank to begin easing later this year, though the pace remains uncertain as core prices continue to moderate unevenly across sectors.",
-      b: "The Fed is STUCK. They can't lower rates — they can't raise them. Meanwhile, working families are getting crushed at the pump, at the grocery store, at the gas station. This is the economy Biden built, and Americans are paying the price every single day. How much longer will Washington pretend this is fine?"
+  // ---------- Pre-loaded examples. The visible set follows the run type.
+  const PRESETS = {
+    single: {
+      'sales-call': {
+        label: 'Sales call',
+        a: "Thanks for taking the time today. The problem we keep hearing is not that teams lack data, it's that they cannot see which moments actually change a buyer's mind. BrainDiff gives your team a second-by-second readout of attention, memory encoding, and personal relevance so you can improve the message before it goes live."
+      },
+      'founder-update': {
+        label: 'Founder update',
+        a: "This quarter was about focus. We shipped the core workflow, cut the features that were slowing us down, and moved our reliability numbers in the right direction. The next milestone is simple: make the product feel faster, clearer, and easier to trust for every team using it daily."
+      },
+      'public-health': {
+        label: 'Public health PSA',
+        a: "A short walk after dinner can lower blood sugar, improve sleep, and reduce stress. You do not need a perfect routine to start. Ten minutes tonight is enough to give your body a signal that tomorrow can be easier."
+      }
     },
-    'elon-pope': {
-      a: "We must approach artificial intelligence with wisdom and humility. These instruments can serve the common good — relieving suffering, expanding knowledge, lifting the poor — but they also risk widening the chasm between the powerful and the vulnerable. Our responsibility, as a human family, is to ensure they uplift the dignity of every person, never replace it.",
-      b: "AI is the most transformative tech in human history. Either we get radical abundance — everyone's life gets 10x better — or we get the Terminator. No middle ground. We need to move fast, build the infrastructure, and make sure the good guys stay ahead. The stakes couldn't be higher. This is literally civilizational."
-    },
-    'click-inform': {
-      a: "Regular aerobic exercise has been shown to reduce the risk of cardiovascular disease by approximately 30 percent. The American Heart Association recommends 150 minutes of moderate-intensity activity each week, distributed across at least three days, to maintain long-term cardiac health and support healthy blood-pressure regulation.",
-      b: "Doctors HATE this ONE simple trick that SLASHES your heart attack risk by a THIRD. You won't believe how easy it is — and it's totally FREE. Number 3 will shock you. Cardiologists are FURIOUS this is getting out. Keep reading to find out what they've been hiding."
-    },
+    diff: {
+      'wsj-fox': {
+        label: 'WSJ vs. Fox News',
+        a: "The Federal Reserve held its benchmark interest rate steady on Wednesday, signaling a measured approach as policymakers weigh persistent inflation against softening labor-market data. Analysts surveyed by the Journal expect the central bank to begin easing later this year, though the pace remains uncertain as core prices continue to moderate unevenly across sectors.",
+        b: "The Fed is STUCK. They can't lower rates — they can't raise them. Meanwhile, working families are getting crushed at the pump, at the grocery store, at the gas station. This is the economy Biden built, and Americans are paying the price every single day. How much longer will Washington pretend this is fine?"
+      },
+      'elon-pope': {
+        label: 'Elon vs. Pope on AI',
+        a: "We must approach artificial intelligence with wisdom and humility. These instruments can serve the common good — relieving suffering, expanding knowledge, lifting the poor — but they also risk widening the chasm between the powerful and the vulnerable. Our responsibility, as a human family, is to ensure they uplift the dignity of every person, never replace it.",
+        b: "AI is the most transformative tech in human history. Either we get radical abundance — everyone's life gets 10x better — or we get the Terminator. No middle ground. We need to move fast, build the infrastructure, and make sure the good guys stay ahead. The stakes couldn't be higher. This is literally civilizational."
+      },
+      'click-inform': {
+        label: 'Clickbait vs. informative',
+        a: "Regular aerobic exercise has been shown to reduce the risk of cardiovascular disease by approximately 30 percent. The American Heart Association recommends 150 minutes of moderate-intensity activity each week, distributed across at least three days, to maintain long-term cardiac health and support healthy blood-pressure regulation.",
+        b: "Doctors HATE this ONE simple trick that SLASHES your heart attack risk by a THIRD. You won't believe how easy it is — and it's totally FREE. Number 3 will shock you. Cardiologists are FURIOUS this is getting out. Keep reading to find out what they've been hiding."
+      }
+    }
   };
+  function renderExamples(){
+    if (!examplesList || !examplesLabel) return;
+    const set = PRESETS[runType] || PRESETS.single;
+    examplesLabel.textContent = runType === 'single' ? 'Single readout presets:' : 'A/B diff presets:';
+    examplesList.innerHTML = Object.keys(set).map(function(key){
+      return '<button type="button" class="example-btn" data-example="' + key + '">' + set[key].label + '</button>';
+    }).join('');
+  }
 
-  document.querySelectorAll('.example-btn').forEach(eb => {
-    eb.addEventListener('click', () => {
-      const ex = EXAMPLES[eb.dataset.example];
-      if (!ex) return;
-      a.value = ex.a;
-      if (runType === 'diff') b.value = ex.b;
-      refresh();
-      showToast("Loaded preset: <strong>" + eb.textContent + "</strong>. Run when ready.", {kind:'info', durationMs:3500, key:'preset'});
-    });
+  if (examplesRow) examplesRow.addEventListener('click', function(e){
+    const eb = e.target.closest('.example-btn');
+    if (!eb) return;
+    const set = PRESETS[runType] || PRESETS.single;
+    const ex = set[eb.dataset.example];
+    if (!ex) return;
+    a.value = ex.a;
+    if (runType === 'diff') b.value = ex.b || '';
+    else b.value = '';
+    userEditedA = false;
+    userEditedB = false;
+    refresh();
+    refreshAutoNames();
+    showToast("Loaded preset: <strong>" + ex.label + "</strong>. Run when ready.", {kind:'info', durationMs:3500, key:'preset'});
   });
 
   function updateCount(ta, out){
@@ -843,15 +939,6 @@ function toggleTheme(){
   b.addEventListener('input', refreshAutoNames);
   fileA.addEventListener('change', refreshAutoNames);
   fileB.addEventListener('change', refreshAutoNames);
-  // When a preset example is loaded, the .value of textareas changes
-  // programmatically — manually re-run auto-naming for that path.
-  document.querySelectorAll('.example-btn').forEach(eb => {
-    eb.addEventListener('click', () => {
-      // Reset edit flags so auto-name overrides stale user input.
-      userEditedA = false; userEditedB = false;
-      refreshAutoNames();
-    });
-  });
 
   // Toast-wrapped versions of the old banner helpers. Never permanent.
   function toastIssues(hits, opts){
@@ -1237,6 +1324,7 @@ function toggleTheme(){
         other.setAttribute('aria-selected', active ? 'true' : 'false');
       });
       clearToast('upload-missing');
+      renderExamples();
       refresh();
       refreshAutoNames();
     });
@@ -1322,6 +1410,9 @@ function toggleTheme(){
   }
   window.addEventListener('pageshow', resetInkBlot);
   resetInkBlot();
+  renderExamples();
+  refresh();
+  refreshAutoNames();
 })();
 </script>
 </body>
