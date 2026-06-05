@@ -9,7 +9,12 @@ function sameDisplayName(a, b) {
   return String(a || "").trim().toLowerCase() === String(b || "").trim().toLowerCase();
 }
 
-function defaultDisplayName(modality, side) {
+function defaultDisplayName(modality, side, runType = "diff") {
+  if (runType === "single") {
+    if (modality === "video") return "Video";
+    if (modality === "audio") return "Audio";
+    return "Text";
+  }
   const suffix = side === "a" ? "A" : "B";
   if (modality === "video") return `Video ${suffix}`;
   if (modality === "audio") return `Audio ${suffix}`;
@@ -38,6 +43,15 @@ function addSideSuffix(label, side) {
 
 function finalizeDisplayNames(input) {
   if (!input) return input;
+  if (input.runType === "single") {
+    input.displayNameA = (
+      input.displayNameA ||
+      labelFromMediaName(input.mediaNameA) ||
+      defaultDisplayName(input.modality, "a", "single")
+    ).slice(0, 60);
+    input.displayNameB = "";
+    return input;
+  }
   input.displayNameA = (
     input.displayNameA ||
     labelFromMediaName(input.mediaNameA) ||
@@ -55,29 +69,76 @@ function finalizeDisplayNames(input) {
   return input;
 }
 
+function optionalNumber(value) {
+  const n = Number(value);
+  return Number.isFinite(n) ? n : null;
+}
+
 function normalizeInput(body) {
   const payload = jsonOrEmpty(body);
   const modality = String(payload.modality || "text").toLowerCase();
+  const explicitRunType = String(payload.run_type || payload.runType || "").toLowerCase();
+  const hasSingleFields =
+    typeof payload.text === "string" ||
+    typeof payload.media_url === "string" ||
+    typeof payload.display_name === "string" ||
+    typeof payload.media_name === "string";
+  const runType = explicitRunType === "single" || (explicitRunType !== "diff" && hasSingleFields)
+    ? "single"
+    : "diff";
   // Display names: short, human-readable labels for each input. Auto-suggested
   // on the launch page (extracted from text or filename) and editable by the
   // user. Capped at 60 chars defensively. Stored in job metadata and forwarded
   // to the worker so the entire UI uses the same labels everywhere.
   const cap = (s, n) => (typeof s === "string" ? s.trim().slice(0, n) : "");
+  const singleText = typeof payload.text === "string" ? payload.text : payload.text_a;
+  const singleMediaUrl = typeof payload.media_url === "string" ? payload.media_url : payload.media_url_a;
+  const singleMediaName = typeof payload.media_name === "string" ? payload.media_name : payload.media_name_a;
+  const singleMediaDuration = payload.media_duration_s ?? payload.media_duration_a_s;
   return finalizeDisplayNames({
+    runType,
     modality,
-    textA: typeof payload.text_a === "string" ? payload.text_a.trim() : "",
+    textA: typeof (runType === "single" ? singleText : payload.text_a) === "string"
+      ? String(runType === "single" ? singleText : payload.text_a).trim()
+      : "",
     textB: typeof payload.text_b === "string" ? payload.text_b.trim() : "",
-    mediaUrlA: typeof payload.media_url_a === "string" ? payload.media_url_a.trim() : "",
+    mediaUrlA: typeof (runType === "single" ? singleMediaUrl : payload.media_url_a) === "string"
+      ? String(runType === "single" ? singleMediaUrl : payload.media_url_a).trim()
+      : "",
     mediaUrlB: typeof payload.media_url_b === "string" ? payload.media_url_b.trim() : "",
-    mediaNameA: typeof payload.media_name_a === "string" ? payload.media_name_a.trim() : "",
+    mediaNameA: typeof (runType === "single" ? singleMediaName : payload.media_name_a) === "string"
+      ? String(runType === "single" ? singleMediaName : payload.media_name_a).trim()
+      : "",
     mediaNameB: typeof payload.media_name_b === "string" ? payload.media_name_b.trim() : "",
-    mediaDurationA: Number.isFinite(Number(payload.media_duration_a_s)) ? Number(payload.media_duration_a_s) : null,
+    mediaDurationA: runType === "single" ? optionalNumber(singleMediaDuration) : optionalNumber(payload.media_duration_a_s),
     mediaDurationB: Number.isFinite(Number(payload.media_duration_b_s)) ? Number(payload.media_duration_b_s) : null,
-    displayNameA: cap(payload.display_name_a, 60),
-    displayNameB: cap(payload.display_name_b, 60),
+    displayNameA: runType === "single" ? cap(payload.display_name || payload.display_name_a, 60) : cap(payload.display_name_a, 60),
+    displayNameB: runType === "single" ? "" : cap(payload.display_name_b, 60),
     trimToShorter: payload.trim_to_shorter === true,
     turnstileToken: payload.turnstileToken || payload.turnstile_token || ""
   });
+}
+
+function validateStartInput(input) {
+  if (!["text", "audio", "video"].includes(input.modality)) {
+    return { ok: false, message: "modality must be one of: text, audio, video" };
+  }
+  if (input.runType === "single") {
+    if (input.modality === "text" && !input.textA) {
+      return { ok: false, message: "Text is required for single-content jobs" };
+    }
+    if (input.modality !== "text" && !input.mediaUrlA) {
+      return { ok: false, message: "media_url is required for audio/video single-content jobs" };
+    }
+    return { ok: true };
+  }
+  if (input.modality === "text" && (!input.textA || !input.textB)) {
+    return { ok: false, message: "Both text_a and text_b are required for text jobs" };
+  }
+  if ((input.modality === "audio" || input.modality === "video") && (!input.mediaUrlA || !input.mediaUrlB)) {
+    return { ok: false, message: "media_url_a and media_url_b are required for audio/video jobs" };
+  }
+  return { ok: true };
 }
 
 module.exports = async function handler(req, res) {
@@ -90,6 +151,7 @@ module.exports = async function handler(req, res) {
     const started = Date.now();
     console.info(JSON.stringify({
       event: "diff_start_received",
+      run_type: input.runType,
       modality: input.modality,
       ip_suffix: ip ? String(ip).slice(-6) : "",
       text_a_len: input.textA.length,
@@ -101,14 +163,9 @@ module.exports = async function handler(req, res) {
     if (cfg.turnstileEnabled && !String(input.turnstileToken || "").trim()) {
       return badRequest(res, "Missing bot protection token", "TURNSTILE_MISSING");
     }
-    if (input.modality === "text" && (!input.textA || !input.textB)) {
-      return badRequest(res, "Both text_a and text_b are required for text jobs");
-    }
-    if ((input.modality === "audio" || input.modality === "video") && (!input.mediaUrlA || !input.mediaUrlB)) {
-      return badRequest(
-        res,
-        "media_url_a and media_url_b are required for audio/video jobs"
-      );
+    const validation = validateStartInput(input);
+    if (!validation.ok) {
+      return badRequest(res, validation.message);
     }
 
     const rateType = input.modality === "text" ? "text" : "media";
@@ -137,8 +194,10 @@ module.exports = async function handler(req, res) {
         ip,
         type: rateType,
         modality: input.modality,
+        runType: input.runType,
         displayNameA: input.displayNameA || null,
         displayNameB: input.displayNameB || null,
+        displayName: input.runType === "single" ? input.displayNameA || null : null,
         fastResult: buildFastResult(input, jobId)
       });
       return res.status(200).json({
@@ -148,17 +207,28 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    const runpodInput = {
-      mode: input.modality,
-      text_a: input.textA || undefined,
-      text_b: input.textB || undefined,
-      media_url_a: input.mediaUrlA || undefined,
-      media_url_b: input.mediaUrlB || undefined,
-      display_name_a: input.displayNameA || undefined,
-      display_name_b: input.displayNameB || undefined,
-      trim_to_shorter: input.trimToShorter || undefined,
-      blob_token: input.modality === "audio" || input.modality === "video" ? cfg.blobReadWriteToken : undefined
-    };
+    const runpodInput = input.runType === "single"
+      ? {
+          run_type: "single",
+          mode: input.modality,
+          text: input.modality === "text" ? input.textA || undefined : undefined,
+          media_url: input.modality !== "text" ? input.mediaUrlA || undefined : undefined,
+          media_name: input.modality !== "text" ? input.mediaNameA || undefined : undefined,
+          display_name: input.displayNameA || undefined,
+          blob_token: input.modality === "audio" || input.modality === "video" ? cfg.blobReadWriteToken : undefined
+        }
+      : {
+          run_type: "diff",
+          mode: input.modality,
+          text_a: input.textA || undefined,
+          text_b: input.textB || undefined,
+          media_url_a: input.mediaUrlA || undefined,
+          media_url_b: input.mediaUrlB || undefined,
+          display_name_a: input.displayNameA || undefined,
+          display_name_b: input.displayNameB || undefined,
+          trim_to_shorter: input.trimToShorter || undefined,
+          blob_token: input.modality === "audio" || input.modality === "video" ? cfg.blobReadWriteToken : undefined
+        };
     const submitted = await submitJob(runpodInput);
     const jobId = submitted.id || submitted.jobId;
     if (!jobId) {
@@ -167,6 +237,7 @@ module.exports = async function handler(req, res) {
     console.info(JSON.stringify({
       event: "diff_start_runpod_submitted",
       job_id: jobId,
+      run_type: input.runType,
       modality: input.modality,
       elapsed_ms: Date.now() - started
     }));
@@ -175,14 +246,19 @@ module.exports = async function handler(req, res) {
       createdAt: new Date().toISOString(),
       ip,
       type: rateType,
+      runType: input.runType,
       modality: input.modality,
+      mediaName: input.runType === "single" ? input.mediaNameA || null : null,
       mediaNameA: input.mediaNameA || null,
       mediaNameB: input.mediaNameB || null,
+      displayName: input.runType === "single" ? input.displayNameA || null : null,
       displayNameA: input.displayNameA || null,
       displayNameB: input.displayNameB || null,
+      mediaDuration: input.runType === "single" ? input.mediaDurationA : null,
       mediaDurationA: input.mediaDurationA,
       mediaDurationB: input.mediaDurationB,
       trimToShorter: input.trimToShorter,
+      blobUrl: input.runType === "single" ? input.mediaUrlA || null : null,
       blobUrlA: input.mediaUrlA || null,
       blobUrlB: input.mediaUrlB || null,
       blobDeleted: false

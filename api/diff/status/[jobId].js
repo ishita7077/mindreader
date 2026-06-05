@@ -19,7 +19,16 @@ function resultWithJobMetadata(result, jobMeta) {
   const merged = { ...result };
   const meta = { ...(result.meta || {}) };
   const modality = jobMeta.modality || (jobMeta.type === "media" ? "media" : "");
+  const runType = jobMeta.runType || meta.run_type || result.run_type || "";
   if (modality && !meta.modality) meta.modality = modality;
+  if (runType && !meta.run_type) meta.run_type = runType;
+  if (runType === "single") {
+    if (!meta.media_name) meta.media_name = jobMeta.mediaName || filenameFromUrl(jobMeta.blobUrl);
+    if (!meta.display_name) meta.display_name = jobMeta.displayName || meta.media_name || "";
+    if (meta.media_duration_s == null && jobMeta.mediaDuration != null) {
+      meta.media_duration_s = jobMeta.mediaDuration;
+    }
+  }
   if (!meta.media_name_a) meta.media_name_a = jobMeta.mediaNameA || filenameFromUrl(jobMeta.blobUrlA);
   if (!meta.media_name_b) meta.media_name_b = jobMeta.mediaNameB || filenameFromUrl(jobMeta.blobUrlB);
   merged.meta = meta;

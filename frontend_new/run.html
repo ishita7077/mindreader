@@ -891,8 +891,16 @@ function toggleTheme(){
     } catch(_){}
     return params.get('mode') || 'text';
   })().toLowerCase();
-  const RUN_KIND = RUN_MODE === 'video' ? 'videos' : (RUN_MODE === 'audio' ? 'audio files' : 'texts');
-  const RUN_DONE_COPY = RUN_MODE === 'text' ? 'Two texts, one cortex.' : 'Two media samples, one cortex.';
+  const RUN_TYPE = (function(){
+    try {
+      const stored = sessionStorage.getItem('braindiff:run-type:' + JOB_ID);
+      if (stored) return stored;
+    } catch(_){}
+    return params.get('run_type') || params.get('runType') || 'diff';
+  })().toLowerCase() === 'single' ? 'single' : 'diff';
+  const IS_SINGLE_RUN = RUN_TYPE === 'single';
+  const RUN_KIND = RUN_MODE === 'video' ? (IS_SINGLE_RUN ? 'video' : 'videos') : (RUN_MODE === 'audio' ? (IS_SINGLE_RUN ? 'audio file' : 'audio files') : (IS_SINGLE_RUN ? 'text' : 'texts'));
+  const RUN_DONE_COPY = IS_SINGLE_RUN ? 'One input, full brain response.' : (RUN_MODE === 'text' ? 'Two texts, one cortex.' : 'Two media samples, one cortex.');
   function resultsPageForMode(){
     // Text and audio share the same page — both come down to a TTS-derived
     // waveform + the same TRIBE-driven cortical timeseries. Video keeps the
@@ -902,6 +910,9 @@ function toggleTheme(){
   }
   function resultsHrefForRun(){
     const page = resultsPageForMode();
+    if (IS_SINGLE_RUN) {
+      return page + '?jobId=' + encodeURIComponent(JOB_ID) + '&reveal=1';
+    }
     const side = params.get('side') || 'a';
     return page + '?jobId=' + encodeURIComponent(JOB_ID) + '&side=' + encodeURIComponent(side) + '&reveal=1';
   }
@@ -912,7 +923,9 @@ function toggleTheme(){
   if (viewResultsBtn) viewResultsBtn.setAttribute('href', resultsHrefForRun());
   const statusSub = document.getElementById('statusSub');
   if (statusSub) {
-    statusSub.textContent = 'Your two ' + RUN_KIND + ' are being encoded and compared across seven cortical systems.';
+    statusSub.textContent = IS_SINGLE_RUN
+      ? 'Your ' + RUN_KIND + ' is being encoded across seven cortical systems.'
+      : 'Your two ' + RUN_KIND + ' are being encoded and compared across seven cortical systems.';
   }
 
   // ===== Deep Scope ======================================================
@@ -922,22 +935,22 @@ function toggleTheme(){
   // so it can show avg ± stdev next to each step once the user has 20+ runs.
   // -----------------------------------------------------------------------
   const DS_STEPS = [
-    { id:'read',    label: RUN_MODE === 'video' ? 'Reading both videos' : (RUN_MODE === 'audio' ? 'Reading both audio files' : 'Preparing both texts'),
+    { id:'read',    label: RUN_MODE === 'video' ? (IS_SINGLE_RUN ? 'Reading video' : 'Reading both videos') : (RUN_MODE === 'audio' ? (IS_SINGLE_RUN ? 'Reading audio file' : 'Reading both audio files') : (IS_SINGLE_RUN ? 'Preparing text' : 'Preparing both texts')),
       backend: [
         'submitted','queued','worker_booting','worker_received',
         'worker_impl_import_started','worker_impl_import_ready','worker_started',
         'warmup_started','content_model_warmup_started','atlas_lookup','gpu_detected',
         'tribe_load_started','tribe_loaded','warmup_complete','inputs_validated',
         'converting_text_to_speech','synthesizing_speech',
-        'downloading_a','downloading_b','decoding_audio','decoding_video',
-        'transcribing','waveform_a','waveform_b','keyframes_a','keyframes_b',
+        'downloading_single','downloading_a','downloading_b','decoding_audio','decoding_video',
+        'transcribing','waveform','waveform_a','waveform_b','keyframes','keyframes_a','keyframes_b',
         'trimming_a','trimming_b'
       ],
       stageKeys: ['events_a_ms','events_b_ms'],
       expectedMs: 50_000 },
     { id:'tribe',   label:'Encoding through TRIBE v2',
       backend: [
-        'transcribing_version_a','predicting_version_a',
+        'transcribing_version_a','predicting_single','predicting_version_a',
         'transcribing_version_b','predicting_version_b','predicting',
         'slow_processing',
       ],
@@ -1284,21 +1297,26 @@ function toggleTheme(){
     inputs_validated: 0,
     converting_text_to_speech: 0,
     synthesizing_speech: 0,
+    downloading_single: 0,
     downloading_a: 0,
     downloading_b: 0,
     decoding_audio: 0,
     decoding_video: 0,
     transcribing: 0,
+    waveform: 0,
     waveform_a: 0,
     waveform_b: 0,
+    keyframes: 0,
     keyframes_a: 0,
     keyframes_b: 0,
     trimming_a: 0,
     trimming_b: 0,
     predicting: 1,
+    predicting_single: 1,
     predicting_version_a: 1,
     predicting_version_b: 1,
     slow_processing: 2,
+    computing_brain_response: 2,
     computing_brain_contrast: 2,
     generating_content: 3,
   };
@@ -1431,12 +1449,22 @@ function toggleTheme(){
         const metaRow = document.querySelector('.meta-row');
         if (metaRow && !metaRow.dataset.fromApi){
           metaRow.dataset.fromApi = '1';
-          metaRow.innerHTML =
-            '<span>Text A · ' + (m.text_a_length || 0) + ' chars</span>' +
-            '<span>·</span>' +
-            '<span>Text B · ' + (m.text_b_length || 0) + ' chars</span>' +
-            '<span>·</span>' +
-            '<span>fsaverage5 · 20,484 verts</span>';
+          if ((m.run_type || RUN_TYPE) === 'single'){
+            const label = m.modality === 'text'
+              ? 'Text · ' + (m.text_length || m.transcript_length || 0) + ' chars'
+              : ((m.media_name || m.media_filename || RUN_KIND) + (m.media_duration_s ? ' · ' + Number(m.media_duration_s).toFixed(1).replace(/\.0$/, '') + 's' : ''));
+            metaRow.innerHTML =
+              '<span>' + label + '</span>' +
+              '<span>·</span>' +
+              '<span>fsaverage5 · 20,484 verts</span>';
+          } else {
+            metaRow.innerHTML =
+              '<span>Text A · ' + (m.text_a_length || 0) + ' chars</span>' +
+              '<span>·</span>' +
+              '<span>Text B · ' + (m.text_b_length || 0) + ' chars</span>' +
+              '<span>·</span>' +
+              '<span>fsaverage5 · 20,484 verts</span>';
+          }
         }
       }
       schedule();

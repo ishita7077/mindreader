@@ -106,6 +106,50 @@ async function loadJobReport(id, side) {
 function adaptWorkerJobToSingleRun(job, side) {
   const result = job.result || {};
   const meta = result.meta || {};
+  const runType = String(meta.run_type || result.run_type || "").toLowerCase();
+  if (runType === "single" || hasSingleDimensionSeries(result.dimensions || [])) {
+    const transcript =
+      meta.transcript ||
+      meta.text ||
+      result.transcript ||
+      "";
+    if (!String(transcript).trim()) {
+      throw new Error("This completed job does not include transcript data.");
+    }
+    const displayName =
+      meta.display_name ||
+      meta.media_name ||
+      meta.media_filename ||
+      meta.modality ||
+      "Completed BrainDiff run";
+    const seriesLength = singleWorkerSeriesLength(result.dimensions || []);
+    const duration = Math.max(
+      Number(meta.text_timesteps || meta.media_duration_s || 0),
+      seriesLength - 1,
+      1
+    );
+    const dimensions = adaptSingleDimensionSeries(result.dimensions || [], duration);
+    if (!dimensions.length) {
+      throw new Error("This completed job does not include the seven brain-signal timelines needed for the neon report.");
+    }
+    const transcriptSegments = adaptTranscriptSegments(meta.transcript_segments, transcript, duration);
+    const transcriptWords = buildWordTimings(transcriptSegments, transcript, duration);
+    return {
+      id: String(job.job_id || jobId || "job"),
+      title: String(displayName || "Completed BrainDiff run"),
+      transcriptText: transcript,
+      transcriptWords,
+      transcriptSegments,
+      dimensions,
+      alignment: {
+        alignmentSource: meta.pipeline || meta.modality || "worker_result",
+        hrfLagSec: 5,
+        generatedAudioDurationSec: duration,
+        analysisDurationSec: duration,
+        trailingAudioPaddingSec: 0,
+      },
+    };
+  }
   const prefix = side === "b" ? "b" : "a";
   const transcript =
     meta[`transcript_${prefix}`] ||
@@ -151,9 +195,39 @@ function adaptWorkerJobToSingleRun(job, side) {
   };
 }
 
+function hasSingleDimensionSeries(workerDimensions) {
+  return Array.isArray(workerDimensions) && workerDimensions.some((item) => Array.isArray(item?.timeseries));
+}
+
+function singleWorkerSeriesLength(workerDimensions) {
+  return Math.max(0, ...workerDimensions.map((item) => Array.isArray(item?.timeseries) ? item.timeseries.length : 0));
+}
+
 function workerSeriesLength(workerDimensions, side) {
   const seriesKey = side === "b" ? "timeseries_b" : "timeseries_a";
   return Math.max(0, ...workerDimensions.map((item) => Array.isArray(item?.[seriesKey]) ? item[seriesKey].length : 0));
+}
+
+function adaptSingleDimensionSeries(workerDimensions, duration) {
+  const byDim = new Map();
+  let maxLen = 0;
+  for (const item of workerDimensions) {
+    const key = normalizeWorkerDimensionKey(item?.key || item?.dimension);
+    if (!DIMENSION_LABELS[key]) continue;
+    const values = Array.isArray(item?.timeseries) ? item.timeseries.map(Number).filter(Number.isFinite) : [];
+    if (!values.length) continue;
+    byDim.set(key, values);
+    maxLen = Math.max(maxLen, values.length);
+  }
+  if (!maxLen) return [];
+  return Array.from({ length: maxLen }, (_, index) => {
+    const t = maxLen === 1 ? 0 : (index / (maxLen - 1)) * duration;
+    const values = Object.fromEntries(Object.keys(DIMENSION_LABELS).map((dim) => {
+      const arr = byDim.get(dim) || [];
+      return [dim, Number.isFinite(arr[index]) ? arr[index] : Number.isFinite(arr.at(-1)) ? arr.at(-1) : 0];
+    }));
+    return { t, values };
+  });
 }
 
 function adaptDimensionSeries(workerDimensions, side, duration) {
@@ -182,6 +256,8 @@ function adaptDimensionSeries(workerDimensions, side, duration) {
 function normalizeWorkerDimensionKey(key) {
   const value = String(key || "").trim();
   if (value === "attention_salience") return "attention";
+  if (value === "cognitive_control") return "brain_effort";
+  if (value === "visceral_response") return "gut_reaction";
   return value;
 }
 

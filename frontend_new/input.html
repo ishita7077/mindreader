@@ -152,12 +152,14 @@ h1.page-title em{font-style:italic;color:var(--accent);font-variation-settings:"
   display:grid;grid-template-columns:1fr 1fr;gap:20px;
   margin-bottom:28px;
 }
+.input-grid.is-single{grid-template-columns:minmax(0,1fr)}
 .input-card{
   background:var(--panel);border:1px solid var(--line);border-radius:14px;
   padding:18px 18px 12px;display:flex;flex-direction:column;gap:10px;
   backdrop-filter:blur(8px);box-shadow:var(--shadow-sm);
   transition:border-color .15s ease, box-shadow .15s ease;
 }
+.input-card.is-hidden{display:none}
 .input-card:focus-within{border-color:color-mix(in srgb, var(--accent) 50%, var(--line-2));box-shadow:0 0 0 3px color-mix(in srgb, var(--accent) 15%, transparent), var(--shadow-sm)}
 .input-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .input-tag{
@@ -349,8 +351,8 @@ textarea::placeholder{color:var(--ink-mute);opacity:0.7}
 <main class="shell">
   <div class="page-head">
     <div class="kicker">Trial setup</div>
-    <h1 class="page-title">Prepare your <em>stimuli.</em></h1>
-    <p class="page-sub">Load two pieces of content. Watch where the cortex diverges across seven systems.</p>
+    <h1 class="page-title">Prepare your <em>content.</em></h1>
+    <p class="page-sub">Read one script deeply, or compare two versions. BrainDiff maps the response across seven systems.</p>
     <p class="page-sub" style="font-size:13px;color:var(--accent);margin-top:8px;">Experimental v1. Do not upload sensitive content.</p>
   </div>
 
@@ -364,7 +366,7 @@ textarea::placeholder{color:var(--ink-mute);opacity:0.7}
   <div class="tips">
     <div class="tip">
       <span class="tip-num">01</span>
-      <span class="tip-text"><strong>Same topic, different take.</strong> Best contrasts come from samples solving the same communication problem.</span>
+      <span class="tip-text"><strong>Single or diff.</strong> Read one script deeply, or compare two versions of the same message.</span>
     </div>
     <div class="tip">
       <span class="tip-num">02</span>
@@ -377,18 +379,23 @@ textarea::placeholder{color:var(--ink-mute);opacity:0.7}
   </div>
 
   <form id="compareForm" autocomplete="off">
+    <div class="mode-row" role="tablist" aria-label="Select run type">
+      <span class="mode-label">Run type</span>
+      <button type="button" class="run-type-pill mode-pill active" data-run-type="single" role="tab" aria-selected="true">Single Readout</button>
+      <button type="button" class="run-type-pill mode-pill" data-run-type="diff" role="tab" aria-selected="false">A/B Diff</button>
+    </div>
     <div class="mode-row" role="tablist" aria-label="Select modality">
       <span class="mode-label">Modality</span>
       <button type="button" class="mode-pill active" data-mode="text" role="tab" aria-selected="true">Text</button>
       <button type="button" class="mode-pill" data-mode="audio" role="tab" aria-selected="false">Audio</button>
       <button type="button" class="mode-pill" data-mode="video" role="tab" aria-selected="false">Video</button>
     </div>
-    <div class="input-grid">
-      <div class="input-card">
+    <div class="input-grid is-single" id="inputGrid">
+      <div class="input-card" id="cardA">
         <div class="input-head">
           <div style="display:flex;align-items:center;gap:10px">
             <span class="input-tag a">A</span>
-            <span class="input-label">Stimulus A</span>
+            <span class="input-label" id="labelA">Content</span>
           </div>
           <span class="input-hint" id="countA">0 chars</span>
         </div>
@@ -400,18 +407,18 @@ textarea::placeholder{color:var(--ink-mute);opacity:0.7}
           <span class="name-row-hint" id="nameHintA">edit if needed</span>
         </div>
         <textarea id="textA" name="text_a" spellcheck="true"
-          placeholder="Paste the first sample — the baseline, the control, the calmer take."></textarea>
+          placeholder="Paste the script, call transcript, or message you want BrainDiff to read."></textarea>
         <input id="fileA" name="file_a" type="file" hidden />
         <div class="dropzone" id="dropA" tabindex="0" role="button" aria-label="Upload stimulus A file">
-          <div><strong>Drop Stimulus A here</strong> or click to browse</div>
+          <div><strong>Drop content here</strong> or click to browse</div>
           <div class="dropzone-meta">Full-length upload · Longer media takes longer · Trim is optional if lengths differ</div>
         </div>
       </div>
-      <div class="input-card">
+      <div class="input-card is-hidden" id="cardB">
         <div class="input-head">
           <div style="display:flex;align-items:center;gap:10px">
             <span class="input-tag b">B</span>
-            <span class="input-label">Stimulus B</span>
+            <span class="input-label" id="labelB">Stimulus B</span>
           </div>
           <span class="input-hint" id="countB">0 chars</span>
         </div>
@@ -437,7 +444,7 @@ textarea::placeholder{color:var(--ink-mute);opacity:0.7}
       <div class="action-btns">
         <a href="/" class="btn btn-ghost">Cancel</a>
         <button id="submitBtn" type="submit" class="btn btn-primary" disabled>
-          Begin trial <span aria-hidden="true">→</span>
+          Begin run <span aria-hidden="true">→</span>
         </button>
       </div>
     </div>
@@ -474,14 +481,20 @@ function toggleTheme(){
   const toastLayer = document.getElementById('toastLayer');
   const tsContainer = document.getElementById('turnstileContainer');
   const REDUCE = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const modePills = Array.from(document.querySelectorAll('.mode-pill'));
+  const modePills = Array.from(document.querySelectorAll('.mode-pill[data-mode]'));
+  const runTypePills = Array.from(document.querySelectorAll('.run-type-pill'));
   const examplesRow = document.querySelector('.examples-row');
+  const inputGrid = document.getElementById('inputGrid');
+  const cardB = document.getElementById('cardB');
+  const labelA = document.getElementById('labelA');
+  const labelB = document.getElementById('labelB');
   const dropA = document.getElementById('dropA');
   const dropB = document.getElementById('dropB');
   const fileA = document.getElementById('fileA');
   const fileB = document.getElementById('fileB');
   const MEDIA_DURATION_NOTICE_SECONDS = 5;
   let mode = 'text';
+  let runType = 'single';
   let turnstileWidgetId = null;
   let turnstileToken = '';
   let turnstileRequired = false;
@@ -541,7 +554,7 @@ function toggleTheme(){
       const ex = EXAMPLES[eb.dataset.example];
       if (!ex) return;
       a.value = ex.a;
-      b.value = ex.b;
+      if (runType === 'diff') b.value = ex.b;
       refresh();
       showToast("Loaded preset: <strong>" + eb.textContent + "</strong>. Run when ready.", {kind:'info', durationMs:3500, key:'preset'});
     });
@@ -628,11 +641,32 @@ function toggleTheme(){
       },
       copy:  'Long text with no sentence breaks may throw off word alignment.' },
   ];
+  const SINGLE_RULES = [
+    { code: 'EMPTY', sev: 'hard',
+      check: function(A){ return A.trim().length === 0; },
+      copy: 'Add some text before starting.' },
+    { code: 'LIGHT_TEXT', sev: 'soft',
+      check: function(A){ return words(A).length < 8; },
+      copy: 'Short samples can be noisy — more context gives a cleaner reading.' },
+    { code: 'NON_ENGLISH', sev: 'hard',
+      check: function(A){ return A.trim().length >= 20 && latinRatio(A) < 0.6; },
+      copy: 'BrainDiff currently supports English text only.' },
+    { code: 'LINK_HEAVY', sev: 'soft',
+      check: function(A){ return A.trim().length ? urlChars(A) / A.trim().length > 0.25 : false; },
+      copy: 'URLs get read aloud letter-by-letter, so the reading may not mean much.' },
+    { code: 'NO_LETTERS', sev: 'soft',
+      check: function(A){ return A.trim().length >= 5 && letters(A) === 0; },
+      copy: 'No words to speak — the TTS step will produce silence.' },
+    { code: 'NO_SENTENCES', sev: 'soft',
+      check: function(A){ return words(A).length > 40 && !/[.!?]/.test(A); },
+      copy: 'Long text with no sentence breaks may throw off word alignment.' },
+  ];
 
   function evaluate(){
     const A = a.value, B = b.value;
     const hits = [];
-    for (const r of RULES){
+    const rules = runType === 'single' ? SINGLE_RULES : RULES;
+    for (const r of rules){
       try { if (r.check(A, B)) hits.push(r); } catch(_){}
     }
     return hits;
@@ -640,9 +674,14 @@ function toggleTheme(){
 
   function canSubmit(){
     if (mode !== 'text'){
+      if (runType === 'single') return Boolean(fileA.files && fileA.files[0]);
       return Boolean(fileA.files && fileA.files[0] && fileB.files && fileB.files[0]);
     }
     const la = a.value.trim().length;
+    if (runType === 'single') {
+      if (la === 0) return false;
+      return !evaluate().some(function(h){ return h.sev === 'hard'; });
+    }
     const lb = b.value.trim().length;
     if (la === 0 || lb === 0) return false;
     return !evaluate().some(function(h){ return h.sev === 'hard'; });
@@ -657,12 +696,16 @@ function toggleTheme(){
     ca.style.display = inTextMode ? '' : 'none';
     cb.style.display = inTextMode ? '' : 'none';
     dropA.classList.toggle('show', !inTextMode);
-    dropB.classList.toggle('show', !inTextMode);
+    dropB.classList.toggle('show', !inTextMode && runType === 'diff');
     if (examplesRow) examplesRow.style.display = inTextMode ? '' : 'none';
+    inputGrid.classList.toggle('is-single', runType === 'single');
+    cardB.classList.toggle('is-hidden', runType === 'single');
+    labelA.textContent = runType === 'single' ? 'Content' : 'Stimulus A';
+    labelB.textContent = 'Stimulus B';
     if (!inTextMode){
       const fa = fileA.files && fileA.files[0];
       const fb = fileB.files && fileB.files[0];
-      dropA.querySelector('strong').textContent = fa ? fa.name : 'Drop Stimulus A here';
+      dropA.querySelector('strong').textContent = fa ? fa.name : (runType === 'single' ? 'Drop content here' : 'Drop Stimulus A here');
       dropB.querySelector('strong').textContent = fb ? fb.name : 'Drop Stimulus B here';
     }
     btn.disabled = !canSubmit();
@@ -751,6 +794,11 @@ function toggleTheme(){
   }
 
   function defaultDisplayName(side){
+    if (runType === 'single'){
+      if (mode === 'video') return 'Video';
+      if (mode === 'audio') return 'Audio';
+      return 'Text';
+    }
     const suffix = side === 'a' ? 'A' : 'B';
     if (mode === 'video') return 'Video ' + suffix;
     if (mode === 'audio') return 'Audio ' + suffix;
@@ -763,6 +811,10 @@ function toggleTheme(){
   }
 
   function repairDuplicateAutoNames(){
+    if (runType === 'single'){
+      if (!(nameA.value || '').trim() && !userEditedA) nameA.value = defaultDisplayName('a');
+      return;
+    }
     const currentA = (nameA.value || '').trim();
     const currentB = (nameB.value || '').trim();
     if (!currentA && !userEditedA) nameA.value = defaultDisplayName('a');
@@ -777,12 +829,12 @@ function toggleTheme(){
   function refreshAutoNames(){
     if (mode === 'text'){
       applyAutoName(nameA, nameRowA, suggestNameFromText(a.value), userEditedA);
-      applyAutoName(nameB, nameRowB, suggestNameFromText(b.value), userEditedB);
+      if (runType === 'diff') applyAutoName(nameB, nameRowB, suggestNameFromText(b.value), userEditedB);
     } else {
       const fa = fileA.files && fileA.files[0];
       const fb = fileB.files && fileB.files[0];
       applyAutoName(nameA, nameRowA, fa ? suggestNameFromFile(fa.name) : '', userEditedA);
-      applyAutoName(nameB, nameRowB, fb ? suggestNameFromFile(fb.name) : '', userEditedB);
+      if (runType === 'diff') applyAutoName(nameB, nameRowB, fb ? suggestNameFromFile(fb.name) : '', userEditedB);
     }
     repairDuplicateAutoNames();
   }
@@ -848,6 +900,17 @@ function toggleTheme(){
   }
   async function inspectMediaBeforeUpload(fileAObj, fileBObj){
     const durations = { a: null, b: null, trimToShorter: false };
+    if (runType === 'single'){
+      try {
+        durations.a = await probeMediaDuration(fileAObj);
+      } catch (err) {
+        showToast(
+          'I could not read the file length in the browser. BrainDiff will still check it before running.',
+          {kind:'warn', durationMs:7000, key:'media-duration-probe'}
+        );
+      }
+      return durations;
+    }
     try {
       const values = await Promise.all([
         probeMediaDuration(fileAObj),
@@ -1007,8 +1070,8 @@ function toggleTheme(){
     if (mode !== 'text'){
       const fa = fileA.files && fileA.files[0];
       const fb = fileB.files && fileB.files[0];
-      if (!fa || !fb){
-        showToast('Please upload both files before starting.', {kind:'err', durationMs:5000, key:'upload-missing'});
+      if (!fa || (runType === 'diff' && !fb)){
+        showToast(runType === 'single' ? 'Please upload a file before starting.' : 'Please upload both files before starting.', {kind:'err', durationMs:5000, key:'upload-missing'});
         return;
       }
       clearToast('upload-missing');
@@ -1036,19 +1099,27 @@ function toggleTheme(){
       // back to "Stimulus A/B" if all else fails. The worker uses these
       // everywhere instead of "Version A" / raw input text.
       let finalNameA = (nameA.value || '').trim() || defaultDisplayName('a');
-      let finalNameB = (nameB.value || '').trim() || defaultDisplayName('b');
-      if (sameDisplayName(finalNameA, finalNameB)){
+      let finalNameB = runType === 'diff' ? ((nameB.value || '').trim() || defaultDisplayName('b')) : '';
+      if (runType === 'diff' && sameDisplayName(finalNameA, finalNameB)){
         finalNameA = addSideSuffix(finalNameA, 'a');
         finalNameB = addSideSuffix(finalNameB, 'b');
       }
       if (mode === 'text'){
-        const payload = {
-          text_a: a.value,
-          text_b: b.value,
-          modality: 'text',
-          display_name_a: finalNameA,
-          display_name_b: finalNameB,
-        };
+        const payload = runType === 'single'
+          ? {
+              run_type: 'single',
+              text: a.value,
+              modality: 'text',
+              display_name: finalNameA,
+            }
+          : {
+              run_type: 'diff',
+              text_a: a.value,
+              text_b: b.value,
+              modality: 'text',
+              display_name_a: finalNameA,
+              display_name_b: finalNameB,
+            };
         if (turnstileRequired) payload.turnstileToken = turnstileToken;
         res = await fetch('/api/diff/start', {
           method:'POST',
@@ -1057,22 +1128,35 @@ function toggleTheme(){
         });
       } else {
         const fa = fileA.files[0];
-        const fb = fileB.files[0];
+        const fb = fileB.files && fileB.files[0];
         const mediaPlan = await inspectMediaBeforeUpload(fa, fb);
         const uploadA = await uploadBlobWithClientToken(fa, 'a');
-        const uploadB = await uploadBlobWithClientToken(fb, 'b');
-        const payload = {
-          modality: mode,
-          media_url_a: uploadA.url,
-          media_url_b: uploadB.url,
-          media_name_a: fa.name,
-          media_name_b: fb.name,
-          display_name_a: finalNameA,
-          display_name_b: finalNameB,
-          media_duration_a_s: mediaPlan.a,
-          media_duration_b_s: mediaPlan.b,
-          trim_to_shorter: mediaPlan.trimToShorter
-        };
+        let payload;
+        if (runType === 'single') {
+          payload = {
+            run_type: 'single',
+            modality: mode,
+            media_url: uploadA.url,
+            media_name: fa.name,
+            display_name: finalNameA,
+            media_duration_s: mediaPlan.a
+          };
+        } else {
+          const uploadB = await uploadBlobWithClientToken(fb, 'b');
+          payload = {
+            run_type: 'diff',
+            modality: mode,
+            media_url_a: uploadA.url,
+            media_url_b: uploadB.url,
+            media_name_a: fa.name,
+            media_name_b: fb.name,
+            display_name_a: finalNameA,
+            display_name_b: finalNameB,
+            media_duration_a_s: mediaPlan.a,
+            media_duration_b_s: mediaPlan.b,
+            trim_to_shorter: mediaPlan.trimToShorter
+          };
+        }
         if (turnstileRequired) payload.turnstileToken = turnstileToken;
         res = await fetch('/api/diff/start', {
           method:'POST',
@@ -1083,7 +1167,7 @@ function toggleTheme(){
       if (!res.ok){
         let detail = '';
         try { detail = JSON.stringify((await res.json()).detail || ''); } catch(_){}
-        showError('Could not start the comparison. ' + detail, 'HTTP ' + res.status);
+        showError('Could not start the run. ' + detail, 'HTTP ' + res.status);
         btn.innerHTML = originalLabel;
         btn.disabled = false;
         return;
@@ -1102,14 +1186,15 @@ function toggleTheme(){
     // Stash the two texts so the results page can render the A/B recall card
     try {
       sessionStorage.setItem('braindiff:modality:' + job.job_id, mode);
+      sessionStorage.setItem('braindiff:run-type:' + job.job_id, runType);
       if (mode === 'text'){
-        sessionStorage.setItem('braindiff:texts:' + job.job_id, JSON.stringify({
-          a: a.value, b: b.value,
-        }));
+        sessionStorage.setItem('braindiff:texts:' + job.job_id, JSON.stringify(
+          runType === 'single' ? { text: a.value } : { a: a.value, b: b.value }
+        ));
       }
     } catch(_){}
 
-    const go = '/run.html?job=' + encodeURIComponent(job.job_id);
+    const go = '/run.html?job=' + encodeURIComponent(job.job_id) + '&mode=' + encodeURIComponent(mode) + '&run_type=' + encodeURIComponent(runType);
     if (REDUCE){ window.location.href = go; return; }
     const r = btn.getBoundingClientRect();
     const cx = r.left + r.width/2;
@@ -1140,6 +1225,20 @@ function toggleTheme(){
       fileB.setAttribute('accept', accept);
       clearToast('upload-missing');
       refresh();
+      refreshAutoNames();
+    });
+  });
+  runTypePills.forEach(function(pill){
+    pill.addEventListener('click', function(){
+      runType = pill.dataset.runType || 'single';
+      runTypePills.forEach(function(other){
+        const active = other === pill;
+        other.classList.toggle('active', active);
+        other.setAttribute('aria-selected', active ? 'true' : 'false');
+      });
+      clearToast('upload-missing');
+      refresh();
+      refreshAutoNames();
     });
   });
   bindDropzone(dropA, fileA, 'a');
