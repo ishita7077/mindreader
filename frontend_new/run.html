@@ -995,7 +995,7 @@ function toggleTheme(){
         'worker_impl_import_started','worker_impl_import_ready','worker_started',
         'warmup_started','content_model_warmup_started','atlas_lookup','gpu_detected',
         'tribe_load_started','tribe_loaded','warmup_complete','inputs_validated',
-        'converting_text_to_speech','synthesizing_speech',
+        'converting_text_to_speech','synthesizing_speech','predicting_single',
         'downloading_single','downloading_a','downloading_b','decoding_audio','decoding_video',
         'transcribing','waveform','waveform_a','waveform_b','keyframes','keyframes_a','keyframes_b',
         'trimming_a','trimming_b'
@@ -1004,7 +1004,7 @@ function toggleTheme(){
       expectedMs: 50_000 },
     { id:'tribe',   label:'Encoding through TRIBE v2',
       backend: [
-        'transcribing_version_a','predicting_single','predicting_version_a',
+        'transcribing_version_a','predicting_version_a',
         'transcribing_version_b','predicting_version_b','predicting',
         'slow_processing',
       ],
@@ -1026,6 +1026,7 @@ function toggleTheme(){
 
   function fmtMs(ms){
     if (ms == null || !isFinite(ms)) return '—';
+    if (ms < 0) ms = 0;
     if (ms < 1000) return Math.round(ms) + ' ms';
     const s = ms / 1000;
     if (s < 60) return s.toFixed(1) + ' s';
@@ -1103,6 +1104,7 @@ function toggleTheme(){
     // Per-step state machine
     const state = DS_STEPS.map(() => ({ status: 'pending', startMs: null, doneMs: null }));
     let runStartMs = null;
+    let runDoneMs = null;
     let lastSeenLogIds = new Set();
     let slowWarned = false;
 
@@ -1168,6 +1170,7 @@ function toggleTheme(){
     }
     function startStep(i, ms){
       if (i < 0 || i >= state.length) return;
+      if (state[i].status === 'done') return;
       // Mark all previous steps done
       for (let p = 0; p < i; p++){
         if (state[p].status !== 'done'){
@@ -1176,7 +1179,7 @@ function toggleTheme(){
           setStatus(p, 'done');
         }
       }
-      if (state[i].startMs == null) state[i].startMs = ms;
+      if (state[i].startMs == null || ms < state[i].startMs) state[i].startMs = ms;
       setStatus(i, 'active');
     }
     function completeStep(i, ms){
@@ -1241,7 +1244,7 @@ function toggleTheme(){
       const now = Date.now();
       // Total elapsed clock
       if (elapsedEl){
-        const elapsed = runStartMs ? (now - runStartMs) : 0;
+        const elapsed = runStartMs ? ((runDoneMs || now) - runStartMs) : 0;
         elapsedEl.textContent = fmtClock(elapsed);
         if (!slowWarned && elapsed > SLOW_AT_MS && honestEta){
           slowWarned = true;
@@ -1286,11 +1289,12 @@ function toggleTheme(){
         }
       }
     }
-    function complete(stageTimes, totalMs){
+    function complete(stageTimes, totalMs, completedAtMs){
       // Finalize step timings from the same event-derived clock the user saw
       // during the run. Backend stage summaries are kept for audit/history
       // fallback, but they no longer overwrite the displayed step durations.
-      const now = Date.now();
+      const now = isFiniteNumber(completedAtMs) ? completedAtMs : Date.now();
+      runDoneMs = now;
       DS_STEPS.forEach(function(s, i){
         if (state[i].startMs == null) {
           const previousDone = i > 0 ? state[i - 1].doneMs : null;
@@ -1376,7 +1380,7 @@ function toggleTheme(){
     trimming_a: 0,
     trimming_b: 0,
     predicting: 1,
-    predicting_single: 1,
+    predicting_single: 0,
     predicting_version_a: 1,
     predicting_version_b: 1,
     slow_processing: 2,
@@ -1495,8 +1499,10 @@ function toggleTheme(){
         const meta = (job.result && job.result.meta) || {};
         const stageTimes = meta.stage_times || {};
         const totalMs = Object.values(stageTimes).reduce(function(a,b){ return a + (typeof b === 'number' ? b : 0); }, 0) || null;
-        DS.complete(stageTimes, totalMs);
-        DS.appendLog(Date.now(), 'done · result delivered');
+        const doneEvent = (job.events || []).slice().reverse().find(function(ev){ return ev && ev.status === 'done'; });
+        const doneMs = doneEvent ? eventTimeMs(doneEvent, null) : null;
+        DS.complete(stageTimes, totalMs, doneMs);
+        DS.appendLog(doneMs || Date.now(), 'done · result delivered');
         stopDsTick();
         completionSequence();
         return;
