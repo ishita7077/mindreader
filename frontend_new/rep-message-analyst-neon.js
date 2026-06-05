@@ -136,7 +136,7 @@ async function hydrateAgentReport(baseReport, id, side) {
   try {
     const controller = new AbortController();
     timeout = setTimeout(() => controller.abort(), 55_000);
-    const response = await fetch("/api/report/rep-message-analyst", {
+    const response = await fetch("/api/diff/status/report-agent?report_agent=1", {
       method: "POST",
       cache: "no-store",
       headers: { "content-type": "application/json" },

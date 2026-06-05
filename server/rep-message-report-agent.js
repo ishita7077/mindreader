@@ -1,6 +1,6 @@
 const crypto = require("crypto");
-const { badRequest, methodNotAllowed, noStore } = require("../lib/http");
-const { redis } = require("../lib/security");
+const { badRequest, methodNotAllowed, noStore } = require("../api/lib/http");
+const { redis } = require("../api/lib/security");
 
 const REPORT_CACHE_TTL_SECONDS = 30 * 24 * 60 * 60;
 const DEFAULT_MODEL = process.env.BRAIN_DIFF_REPORT_MODEL || "claude-sonnet-4-6";
@@ -137,7 +137,7 @@ EXAMPLE REASON
 Bad: "Near-ceiling attention spike with strong multi-signal co-activation. Tightly grounded in the quote. Non-redundant with other selections."
 Good: "A near-ceiling attention spike backed by several co-moving signals on one concrete phrase - the clearest place where specific operational friction outpulls abstract framing."`;
 
-module.exports = async function handler(req, res) {
+async function handleRepMessageAnalystReport(req, res) {
   noStore(res);
   if (req.method !== "POST") return methodNotAllowed(res, ["POST"]);
 
@@ -231,7 +231,7 @@ module.exports = async function handler(req, res) {
       detail: error instanceof Error ? error.message : String(error)
     });
   }
-};
+}
 
 function renderAnalystPrompt(candidates, input) {
   return `${ANALYST_AGENT_PROMPT}
@@ -552,3 +552,9 @@ function normalizeConfidence(value) {
   if (text.includes("low")) return "low";
   return "medium";
 }
+
+module.exports = {
+  handleRepMessageAnalystReport,
+  ANALYST_AGENT_PROMPT,
+  VALIDATOR_AGENT_PROMPT
+};

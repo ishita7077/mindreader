@@ -2,6 +2,7 @@ const { methodNotAllowed, badRequest, serverError, noStore } = require("../../li
 const { getJobStatus } = require("../../lib/runpod");
 const { redis } = require("../../lib/security");
 const { maybeDeleteBlobsForJob, getJobMetadata } = require("../../lib/jobs");
+const { handleRepMessageAnalystReport } = require("../../../server/rep-message-report-agent");
 
 function filenameFromUrl(value) {
   try {
@@ -234,6 +235,9 @@ async function readPersistedResult(jobId) {
 
 module.exports = async function handler(req, res) {
   noStore(res);
+  if (req.method === "POST" && (req.query.report_agent === "1" || req.query.jobId === "report-agent")) {
+    return handleRepMessageAnalystReport(req, res);
+  }
   if (req.method !== "GET") return methodNotAllowed(res, ["GET"]);
   const jobId = req.query.jobId;
   if (!jobId || typeof jobId !== "string") {
