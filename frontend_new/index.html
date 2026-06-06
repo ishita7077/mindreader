@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="theme-color" content="#050914" />
 <title>BrainDiff — EQ in AI</title>
-<meta name="description" content="EQ in AI. BrainDiff takes two pieces of content and simulates, region by region, how a brain responds to each — built on Meta FAIR's TRIBE v2." />
+<meta name="description" content="EQ in AI. BrainDiff takes your content and simulates, region by region, how a brain responds to it — built on Meta FAIR's TRIBE v2." />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
@@ -351,6 +351,23 @@ h2.section-title em{font-style:italic;color:var(--accent);font-variation-setting
 .readout-insight strong{color:var(--ink)}
 .citation-badge-header{display:flex;align-items:center;gap:8px;margin-bottom:4px}
 .citation-logo{flex-shrink:0;display:block}
+.meta-logo,
+.citation-logo,
+.lab-chip svg{display:none !important}
+.hero-pill.is-active[data-key="personal_resonance"],
+.lens-pill.active[data-key="personal_resonance"]{background:#7af4de !important;border-color:#7af4de !important;color:#031020 !important;box-shadow:0 0 28px rgba(122,244,222,0.35) !important}
+.hero-pill.is-active[data-key="attention_salience"],
+.lens-pill.active[data-key="attention_salience"]{background:#5aa2ff !important;border-color:#5aa2ff !important;color:#031020 !important;box-shadow:0 0 28px rgba(90,162,255,0.35) !important}
+.hero-pill.is-active[data-key="brain_effort"],
+.lens-pill.active[data-key="brain_effort"]{background:#a994ff !important;border-color:#a994ff !important;color:#031020 !important;box-shadow:0 0 28px rgba(169,148,255,0.35) !important}
+.hero-pill.is-active[data-key="gut_reaction"],
+.lens-pill.active[data-key="gut_reaction"]{background:#ff6f8e !important;border-color:#ff6f8e !important;color:#031020 !important;box-shadow:0 0 28px rgba(255,111,142,0.34) !important}
+.hero-pill.is-active[data-key="memory_encoding"],
+.lens-pill.active[data-key="memory_encoding"]{background:#ffd94a !important;border-color:#ffd94a !important;color:#031020 !important;box-shadow:0 0 30px rgba(255,217,74,0.38) !important}
+.hero-pill.is-active[data-key="social_thinking"],
+.lens-pill.active[data-key="social_thinking"]{background:#ff914d !important;border-color:#ff914d !important;color:#031020 !important;box-shadow:0 0 28px rgba(255,145,77,0.34) !important}
+.hero-pill.is-active[data-key="language_depth"],
+.lens-pill.active[data-key="language_depth"]{background:#84d6ff !important;border-color:#84d6ff !important;color:#031020 !important;box-shadow:0 0 28px rgba(132,214,255,0.34) !important}
 .readout-summary em{font-style:italic;font-family:'Fraunces', serif;font-variation-settings:"opsz" 48, "SOFT" 0, "WONK" 0;font-size:14.5px;color:var(--ink)}
 
 /* CASE STUDY — single Falk 2012 anchor piece, replaces the old 3-card grid */
@@ -751,7 +768,7 @@ body.landing-reveal .hero-stage::before{
   <nav class="nav">
     <a href="/research">Research</a>
     <a href="/methodology">Methodology</a>
-    <a href="/launch" class="nav-cta" id="navCta">Launch →</a>
+    <a href="/launch" class="nav-cta" id="navCta">Launch a run</a>
   </nav>
 </header>
 
@@ -761,11 +778,10 @@ body.landing-reveal .hero-stage::before{
       <div class="hero-copy reveal">
         <div class="kicker">EQ in AI</div>
         <h1 class="hero-title">How do you <em>feel?</em></h1>
-        <p class="hero-sub">It is the oldest question in art and the newest question in technology. BrainDiff takes two pieces of content and simulates, region by region, how a brain responds to each.</p>
+        <p class="hero-sub">It is the oldest question in art and the newest question in technology. BrainDiff takes your content and simulates, region by region, how a brain responds to it.</p>
         <div class="cta-row">
-          <a href="/launch" class="btn btn-primary" id="heroCta">Launch app <span>→</span></a>
+          <a href="/launch" class="btn btn-primary" id="heroCta">Launch a run <span>→</span></a>
         </div>
-        <p class="hero-cta-sub">TRIBE v2 predicts. <em>You decide.</em></p>
         <div class="attribution-row">
           <span class="attribution-built">Built on</span>
           <span class="meta-lockup" aria-label="Meta FAIR">
@@ -801,20 +817,13 @@ body.landing-reveal .hero-stage::before{
         </div>
         <div class="hero-stage-foot">
           <div class="hero-pills" id="heroPills" role="tablist" aria-label="Cortical dimensions — hover to explore">
+            <button class="hero-pill" data-key="personal_resonance" type="button">Personal</button>
             <button class="hero-pill is-active" data-key="attention_salience" type="button">Attention</button>
-            <button class="hero-pill" data-key="brain_effort" type="button">Brain effort</button>
-            <div class="hero-pill-group">
-              <button class="hero-pill hero-pill-others" type="button" aria-haspopup="true">Others <span class="caret">▾</span></button>
-              <div class="hero-pill-popover-wrap">
-                <div class="hero-pill-popover" role="menu">
-                  <button class="hero-pill" data-key="gut_reaction" type="button">Gut reaction</button>
-                  <button class="hero-pill" data-key="language_depth" type="button">Language depth</button>
-                  <button class="hero-pill" data-key="memory_encoding" type="button">Memory encoding</button>
-                  <button class="hero-pill" data-key="personal_resonance" type="button">Personal relevance</button>
-                  <button class="hero-pill" data-key="social_thinking" type="button">Social reasoning</button>
-                </div>
-              </div>
-            </div>
+            <button class="hero-pill" data-key="brain_effort" type="button">Effort</button>
+            <button class="hero-pill" data-key="gut_reaction" type="button">Gut</button>
+            <button class="hero-pill" data-key="memory_encoding" type="button">Memory</button>
+            <button class="hero-pill" data-key="social_thinking" type="button">Social</button>
+            <button class="hero-pill" data-key="language_depth" type="button">Language</button>
           </div>
           <div class="hero-use-line" id="heroUseLine" aria-live="polite">
             <span class="hero-use-tag-inline">In the real world</span>
@@ -872,19 +881,18 @@ body.landing-reveal .hero-stage::before{
             <span>B stronger</span>
           </div>
         </div>
-        <p class="compare-caption"><em>TRIBE v2 predicts. You decide.</em></p>
       </div>
       <div class="readout">
         <div class="readout-eyebrow">Results preview · B − A</div>
         <div class="readout-headline">Use B if you want the message to feel more personal. Use A if clarity per sentence matters more.</div>
         <div class="readout-dims">
           <div class="rdim">
-            <div class="rdim-label">Personal relevance</div>
+            <div class="rdim-label">Personal Resonance</div>
             <div class="rdim-track"><div class="rdim-fill" style="width:62%;background:var(--accent)"></div></div>
             <div class="rdim-val pos">+0.31</div>
           </div>
           <div class="rdim">
-            <div class="rdim-label">Gut reaction</div>
+            <div class="rdim-label">Gut Reaction</div>
             <div class="rdim-track"><div class="rdim-fill" style="width:44%;background:var(--accent)"></div></div>
             <div class="rdim-val pos">+0.22</div>
           </div>
@@ -904,19 +912,19 @@ body.landing-reveal .hero-stage::before{
   <section class="section shell" id="systems">
     <div class="reveal">
       <div class="section-eyebrow">Mapped systems</div>
-      <h2 class="section-title">One cortex. <em>Seven answers.</em></h2>
+      <h2 class="section-title">One cortex. <em>Seven systems.</em></h2>
     </div>
     <div class="lens-panel reveal">
       <div class="lens-copy">
-        <p class="section-lead" style="margin-bottom:0">Every comparison returns seven readings — one per cortical system. Click a system to see where it lives. The same surface shows up in your own results.</p>
+        <p class="section-lead" style="margin-bottom:0">Every run returns seven readings — one per cortical system. Click a system to see where it lives. The same surface shows up in your own results.</p>
         <div class="lens-list" role="tablist">
+          <button class="lens-pill" data-key="personal_resonance">Personal</button>
           <button class="lens-pill active" data-key="attention_salience">Attention</button>
-          <button class="lens-pill" data-key="brain_effort">Brain effort</button>
-          <button class="lens-pill" data-key="gut_reaction">Gut reaction</button>
-          <button class="lens-pill" data-key="language_depth">Language depth</button>
-          <button class="lens-pill" data-key="memory_encoding">Memory encoding</button>
-          <button class="lens-pill" data-key="personal_resonance">Personal relevance</button>
-          <button class="lens-pill" data-key="social_thinking">Social reasoning</button>
+          <button class="lens-pill" data-key="brain_effort">Effort</button>
+          <button class="lens-pill" data-key="gut_reaction">Gut</button>
+          <button class="lens-pill" data-key="memory_encoding">Memory</button>
+          <button class="lens-pill" data-key="social_thinking">Social</button>
+          <button class="lens-pill" data-key="language_depth">Language</button>
         </div>
       </div>
       <div class="lens-stage">
@@ -1027,7 +1035,7 @@ body.landing-reveal .hero-stage::before{
         </div>
       </div>
       <div class="science-cta">
-        <a href="/research" class="btn btn-primary">Read the research <span>→</span></a>
+        <a href="/launch" class="btn btn-primary">Launch a run <span>→</span></a>
       </div>
     </div>
   </section>
@@ -1547,37 +1555,37 @@ function mountBrain(canvas, opts={}){
       use:  "Super Bowl ad testing · Nielsen / Neuro-Insight · $8M per airing"
     },
     memory_encoding: {
-      label: 'Memory encoding',
+      label: 'Memory Encoding',
       region: 'Left ventrolateral prefrontal cortex',
       body: "Not what the reader feels now — what they will still remember tomorrow. Two pieces of content can feel equal in the moment and differ sharply in what sticks.",
       use:  "Mars, Mondelez, Coca-Cola · long-term campaign ROI (sales 6 months out)"
     },
     personal_resonance: {
-      label: 'Personal relevance',
+      label: 'Personal Resonance',
       region: 'Medial prefrontal cortex (mPFC)',
       body: "Tracks whether a message feels like it is about you. Activation here has predicted real-world behaviour change where self-reports missed it entirely.",
       use:  "Anti-smoking PSA testing · Falk et al. showed mPFC predicts population quit rates"
     },
     gut_reaction: {
-      label: 'Gut reaction',
+      label: 'Gut Reaction',
       region: 'Anterior insula',
       body: "The visceral, felt edge of a message. Sensitive to urgency, moral weight, personal risk — the reaction that arrives before language catches up.",
       use:  "Public-health fear appeals (WHO) · insurance (Allstate \"Mayhem\")"
     },
     social_thinking: {
-      label: 'Social reasoning',
+      label: 'Social Thinking',
       region: 'Temporoparietal junction (TPJ)',
       body: "The cortical system for modelling other minds — figuring out intent, relationship, what a character is about to do.",
       use:  "Netflix thumbnail + trailer testing · which shot makes viewers infer intent"
     },
     language_depth: {
-      label: 'Language depth',
+      label: 'Language Depth',
       region: "Broca's + Wernicke's network",
       body: "Structural and semantic parsing. Stronger activation means more meaning is being pulled out of the words themselves.",
       use:  "Pharma consent-form comprehension · legal-disclosure testing"
     },
     brain_effort: {
-      label: 'Processing effort',
+      label: 'Brain Effort',
       region: 'Dorsolateral prefrontal cortex (dlPFC)',
       body: "How hard the brain is working to parse the message. Higher effort is fine when the payoff is big — and costly when the reader can just leave.",
       use:  "CFPB mortgage-form simplification · financial disclosure UX"
@@ -2091,16 +2099,16 @@ if(lensCanvas) lensCtrl = mountBrain(lensCanvas, {
   initialRegion:'attention_salience',
 });
 
-// Hierarchy order used throughout the site: Attention → Memory → Personal →
-// Gut → Social → Language → Processing.
+// Display order used on the result page: Personal → Attention → Effort →
+// Gut → Memory → Social → Language.
 const LENS_COPY = {
   attention_salience:{ nm:"Attention", rg:"Dorsal attention network", bd:"Where the reader locks focus. Activity here spikes on novelty, urgency, a sharp cut, a personal stake — anything that breaks the rhythm of what came before.", ct:"Corbetta &amp; Shulman, 2002" },
-  memory_encoding:{ nm:"Memory encoding", rg:"Left ventrolateral prefrontal cortex · vlPFC", bd:"Not what the reader feels now — what they will still remember tomorrow. Two pieces of content can feel equal in the moment and differ sharply in what sticks.", ct:"Paller &amp; Wagner, 2002" },
-  personal_resonance:{ nm:"Personal relevance", rg:"Medial prefrontal cortex · mPFC", bd:"Tracks whether a message feels like it's about <em>you</em>. Activation here has predicted real-world behaviour change at population scale where self-reports missed it entirely.", ct:"Falk et al., 2012 · Scholz et al., 2025" },
-  gut_reaction:{ nm:"Gut reaction", rg:"Anterior insula", bd:"The visceral, felt edge of a message. Sensitive to urgency, moral weight, personal risk — the reaction that arrives before language catches up.", ct:"Craig, 2009" },
-  social_thinking:{ nm:"Social reasoning", rg:"Temporoparietal junction · TPJ", bd:"The cortical system for modeling other minds — figuring out intent, relationship, what a character is about to do.", ct:"Saxe &amp; Kanwisher, 2003" },
-  language_depth:{ nm:"Language depth", rg:"Broca's + Wernicke's network", bd:"Structural and semantic parsing. Stronger activation means more meaning is being pulled from the words themselves.", ct:"Fedorenko et al., 2010" },
-  brain_effort:{ nm:"Processing effort", rg:"Dorsolateral prefrontal cortex · dlPFC", bd:"How hard the brain is working to parse the message. Higher effort is fine when the payoff is big — costly when the reader can just leave.", ct:"Owen et al., 2005" },
+  memory_encoding:{ nm:"Memory Encoding", rg:"Left ventrolateral prefrontal cortex · vlPFC", bd:"Not what the reader feels now — what they will still remember tomorrow. Two pieces of content can feel equal in the moment and differ sharply in what sticks.", ct:"Paller &amp; Wagner, 2002" },
+  personal_resonance:{ nm:"Personal Resonance", rg:"Medial prefrontal cortex · mPFC", bd:"Tracks whether a message feels like it's about <em>you</em>. Activation here has predicted real-world behaviour change at population scale where self-reports missed it entirely.", ct:"Falk et al., 2012 · Scholz et al., 2025" },
+  gut_reaction:{ nm:"Gut Reaction", rg:"Anterior insula", bd:"The visceral, felt edge of a message. Sensitive to urgency, moral weight, personal risk — the reaction that arrives before language catches up.", ct:"Craig, 2009" },
+  social_thinking:{ nm:"Social Thinking", rg:"Temporoparietal junction · TPJ", bd:"The cortical system for modeling other minds — figuring out intent, relationship, what a character is about to do.", ct:"Saxe &amp; Kanwisher, 2003" },
+  language_depth:{ nm:"Language Depth", rg:"Broca's + Wernicke's network", bd:"Structural and semantic parsing. Stronger activation means more meaning is being pulled from the words themselves.", ct:"Fedorenko et al., 2010" },
+  brain_effort:{ nm:"Brain Effort", rg:"Dorsolateral prefrontal cortex · dlPFC", bd:"How hard the brain is working to parse the message. Higher effort is fine when the payoff is big — costly when the reader can just leave.", ct:"Owen et al., 2005" },
 };
 
 // University affiliations behind each citation — picked for trust signal
@@ -2116,8 +2124,7 @@ const LAB_LOGOS = {
 };
 
 function labMark(label, color) {
-  const abbr = label.replace(/\s+/g,'').replace(/University|of|School/gi,'').replace(/[^A-Za-z]/g,'').slice(0,3).toUpperCase();
-  return `<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" style="border-radius:3px;flex-shrink:0"><rect width="18" height="18" rx="3" fill="${color}"/><text x="9" y="12.8" text-anchor="middle" fill="#fff" font-family="Arial,Helvetica,sans-serif" font-weight="900" font-size="${abbr.length>2?'5.5':'7'}">${abbr}</text></svg>`;
+  return '';
 }
 function renderLabChips(key){
   const el = document.getElementById('lensLabs');
