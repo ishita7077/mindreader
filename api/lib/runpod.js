@@ -18,6 +18,20 @@ function endpoints() {
   };
 }
 
+function positiveInt(value, fallback) {
+  const parsed = Number.parseInt(String(value || ""), 10);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+}
+
+function jobPolicy() {
+  return {
+    // Long single-text runs can spend most of their time in TRIBE's text→speech
+    // path. Keep the endpoint-level timeout from killing valid production runs.
+    executionTimeout: positiveInt(process.env.RUNPOD_EXECUTION_TIMEOUT_MS, 7_200_000),
+    ttl: positiveInt(process.env.RUNPOD_JOB_TTL_MS, 86_400_000)
+  };
+}
+
 async function parseResponseBody(res) {
   const text = await res.text();
   if (!text) return { data: {}, bodyPreview: "" };
@@ -45,13 +59,22 @@ async function submitJob(input) {
   const cfg = ep.cfg;
   const url = ep.run;
   const started = Date.now();
+  const policy = jobPolicy();
+  console.info(JSON.stringify({
+    event: "runpod_submit_started",
+    mode: input && input.mode,
+    run_type: input && input.run_type,
+    policy_execution_timeout_ms: policy.executionTimeout,
+    policy_ttl_ms: policy.ttl,
+    ...endpointTag(cfg.runpodEndpointId)
+  }));
   const res = await fetch(url, {
     method: "POST",
     headers: {
       "content-type": "application/json",
       authorization: `Bearer ${cfg.runpodApiKey}`
     },
-    body: JSON.stringify({ input })
+    body: JSON.stringify({ input, policy })
   });
   const { data, bodyPreview, parseError } = await parseResponseBody(res);
   if (!res.ok) {
