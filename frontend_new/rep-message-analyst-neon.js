@@ -58,6 +58,7 @@ let playbackStartedAt = 0;
 let playbackStartedFrom = 0;
 let lastHeroTranscriptKey = "";
 let lastScrubBarsKey = "";
+let pendingAgentHydration = null;
 
 const app = document.querySelector("#app");
 boot();
@@ -70,8 +71,33 @@ async function boot() {
     activeDimension = activeInsight()?.event.signalName || "attention";
     render();
     await mountBrain();
+    await hydrateReportAfterFirstPaint();
   } catch (error) {
     app.innerHTML = `<section class="error"><p class="eyebrow">Report failed</p><h1>${esc(error.message)}</h1></section>`;
+  }
+}
+
+async function hydrateReportAfterFirstPaint() {
+  if (!pendingAgentHydration) return;
+  try {
+    const hydrated = await pendingAgentHydration;
+    pendingAgentHydration = null;
+    if (!hydrated || !report || hydrated.input?.id !== report.input?.id) return;
+    const previousInsightId = activeInsightId;
+    const previousDimension = activeDimension;
+    report = hydrated;
+    activeInsightId = report.finalInsights.some((item) => item.id === previousInsightId)
+      ? previousInsightId
+      : report.finalInsights[0]?.id || null;
+    activeDimension = DIMENSION_LABELS[previousDimension]
+      ? previousDimension
+      : activeInsight()?.event.signalName || "attention";
+    lastHeroTranscriptKey = "";
+    lastScrubBarsKey = "";
+    render();
+    await mountBrain();
+  } catch (error) {
+    console.warn("BrainDiff report hydration failed after first paint", error);
   }
 }
 
@@ -105,7 +131,8 @@ async function loadJobReport(id, side) {
   const baseReport = buildRepMessageAnalystReport(adaptWorkerJobToSingleRun(job, side));
   const embeddedAgentReport = workerResult.single_report || workerResult.meta?.single_report || null;
   if (embeddedAgentReport) return applyAgentReport(baseReport, embeddedAgentReport);
-  return hydrateAgentReport(baseReport, id, side);
+  pendingAgentHydration = hydrateAgentReport(baseReport, id, side);
+  return baseReport;
 }
 
 async function hydrateAgentReport(baseReport, id, side) {
