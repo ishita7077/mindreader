@@ -1263,19 +1263,23 @@ h1 {
 
 .spine-right .spine-copy {
   grid-column: 3;
+  grid-row: 1;
   text-align: right;
 }
 
 .spine-right .spine-visual {
   grid-column: 1;
+  grid-row: 1;
 }
 
 .spine-left .spine-copy {
   grid-column: 1;
+  grid-row: 1;
 }
 
 .spine-left .spine-visual {
   grid-column: 3;
+  grid-row: 1;
 }
 
 .spine-node {
