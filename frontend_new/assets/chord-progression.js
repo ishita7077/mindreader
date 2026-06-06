@@ -1,5 +1,5 @@
 /**
- * Cortical Chord Progression — Brain Diff novel feature.
+ * Cortical Chord Progression — MindReader novel feature.
  *
  * A "chord" is the cortical state at one second: which combination of the
  * seven Yeo-network systems are co-active above their per-clip threshold.

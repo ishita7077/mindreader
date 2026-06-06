@@ -259,7 +259,7 @@ function renderPatterns(data) {
   } else if (skelRoot) {
     skelRoot.hidden = true;
   }
-  // Chord progression — Brain Diff novel section. Classifies each second of
+  // Chord progression — MindReader novel section. Classifies each second of
   // the seven-system response into a named chord (Learning Moment, Visceral
   // Hit, Emotional Impact, etc.) and renders the side-by-side progression.
   // Renders nothing if fewer than two named systems are present in dimensions.

@@ -97,7 +97,7 @@ async function hydrateReportAfterFirstPaint() {
     render();
     await mountBrain();
   } catch (error) {
-    console.warn("BrainDiff report hydration failed after first paint", error);
+    console.warn("MindReader report hydration failed after first paint", error);
   }
 }
 
@@ -175,13 +175,13 @@ async function hydrateAgentReport(baseReport, id, side) {
     });
     clearTimeout(timeout);
     if (!response.ok) {
-      console.warn("BrainDiff agent report unavailable", response.status, await response.text().catch(() => ""));
+      console.warn("MindReader agent report unavailable", response.status, await response.text().catch(() => ""));
       return { ...baseReport, agentError: `agent_http_${response.status}` };
     }
     const data = await response.json();
     return applyAgentReport(baseReport, data.report || data);
   } catch (error) {
-    console.warn("BrainDiff agent report failed", error);
+    console.warn("MindReader agent report failed", error);
     return { ...baseReport, agentError: error?.message || String(error) };
   } finally {
     if (timeout) clearTimeout(timeout);
@@ -206,7 +206,7 @@ function adaptWorkerJobToSingleRun(job, side) {
       meta.media_name ||
       meta.media_filename ||
       meta.modality ||
-      "Completed BrainDiff run";
+      "Completed MindReader run";
     const seriesLength = singleWorkerSeriesLength(result.dimensions || []);
     const duration = Math.max(
       Number(meta.text_timesteps || meta.media_duration_s || 0),
@@ -221,7 +221,7 @@ function adaptWorkerJobToSingleRun(job, side) {
     const transcriptWords = buildWordTimings(transcriptSegments, transcript, duration);
     return {
       id: String(job.job_id || jobId || "job"),
-      title: String(displayName || "Completed BrainDiff run"),
+      title: String(displayName || "Completed MindReader run"),
       transcriptText: transcript,
       transcriptWords,
       transcriptSegments,
@@ -265,7 +265,7 @@ function adaptWorkerJobToSingleRun(job, side) {
 
   return {
     id: String(job.job_id || jobId || "job"),
-    title: String(displayName || "Completed BrainDiff run"),
+    title: String(displayName || "Completed MindReader run"),
     transcriptText: transcript,
     transcriptWords,
     transcriptSegments,
@@ -432,11 +432,11 @@ async function mountBrain() {
 function render() {
   const selected = report.finalInsights;
   const active = activeInsight() || selected[0];
-  document.title = `BrainDiff - ${report.input.title} analyst report`;
+  document.title = `MindReader - ${report.input.title} analyst report`;
   app.innerHTML = `
     <div class="page">
       <header class="topbar">
-        <a class="brand" href="/"><span class="brand-mark"></span>BrainDiff</a>
+        <a class="brand" href="/"><span class="brand-mark"></span>MindReader</a>
         <div class="top-readout">
           <span class="live-dot"></span>
           <span>Live readout</span>
@@ -454,7 +454,7 @@ function render() {
 
       <section class="hero">
         <div class="hero-copy">
-          <p class="eyebrow"><span class="eyebrow-dot"></span> BrainDiff · Neural response engine</p>
+          <p class="eyebrow"><span class="eyebrow-dot"></span> MindReader · Neural response engine</p>
           <h1>What the <span>brain</span> heard.</h1>
           <h2 class="hero-subtitle">${esc(active?.analyst.title || "Whole-call response trace")}</h2>
           <p class="hero-metric"><span data-scrub-dimension>${esc(DIMENSION_LABELS[activeDimension])}</span> · score <b data-scrub-score>${active?.event.brainScore.toFixed(2) || "--"}</b> · <span data-scrub-shape>${esc(active?.event.eventShape.replaceAll("_", " ") || "signal")}</span></p>
@@ -479,7 +479,7 @@ function render() {
           </div>
           <div class="brain-canvas-wrap">
             <div class="mesh-badge">Real fsaverage5 · 20,484 vertices</div>
-            <canvas id="reportBrain" aria-label="Interactive BrainDiff cortical surface"></canvas>
+            <canvas id="reportBrain" aria-label="Interactive MindReader cortical surface"></canvas>
             <div class="brain-front-field" aria-hidden="true">
               <span class="front-filament f1"></span><span class="front-filament f2"></span><span class="front-filament f3"></span>
               <span class="front-filament f4"></span><span class="front-filament f5"></span>

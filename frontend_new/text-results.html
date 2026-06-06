@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#F7F2EA">
-<title>Brain Diff — Results</title>
+<title>MindReader — Results</title>
 <script>
 (function(){
   var params = new URLSearchParams(location.search);
@@ -851,7 +851,7 @@ body:not(.dev-mode) .src-badge{display:none !important}
 </div>
 
 <nav id="mainnav">
-  <a href="/" class="nav-logo">Brain<span>Diff</span></a>
+  <a href="/" class="nav-logo">MindReader</a>
   <ul class="nav-links">
     <li><a href="/research">Research</a></li>
     <li><a href="/methodology">Methodology</a></li>
@@ -1210,7 +1210,7 @@ async function bootFromJob(){
         const day = plain.day ? `<br><small>UTC day: ${escapeHtmlText(plain.day)}</small>` : '';
         return errCard(
           'Daily limit reached',
-          escapeHtmlText(plain.reason || 'BrainDiff has reached its daily budget.') +
+          escapeHtmlText(plain.reason || 'MindReader has reached its daily budget.') +
           '<br>' + escapeHtmlText(plain.action || 'Please try again tomorrow.') +
           day
         );
@@ -1248,13 +1248,13 @@ function acceptContent(json){
   json = applyReportRepairs(json);
   CONTENT = json;
   window.CONTENT = json;  // expose for the ES module that mounts the brain
-  // Update document title to the comparison ("A vs B — Brain Diff") so
+  // Update document title to the comparison ("A vs B — MindReader") so
   // browser tabs are scannable when the user runs many comparisons.
   try {
     const va = json.videos && json.videos.video_a;
     const vb = json.videos && json.videos.video_b;
     if (va && vb && va.display_name && vb.display_name){
-      document.title = `${va.display_name} vs ${vb.display_name} — Brain Diff`;
+      document.title = `${va.display_name} vs ${vb.display_name} — MindReader`;
     }
   } catch(_) {}
   document.getElementById('dev-comparison-id').textContent =
@@ -1484,7 +1484,7 @@ function renderHero(c, va, vb){
   return `
   <section class="hero">
     <div class="hero-meta-row">
-      <div class="hero-eyebrow-meta">Brain Diff · ${c.comparison_id.slice(0,8)}</div>
+      <div class="hero-eyebrow-meta">MindReader · ${c.comparison_id.slice(0,8)}</div>
       <div class="hero-files">
         <button class="hero-share-btn" id="heroShareBtn" type="button" title="Copy link to this comparison">
           <span class="hero-share-icon" aria-hidden="true">⎘</span>
@@ -1714,7 +1714,7 @@ function renderStrategyInsight(c, va, vb, matchA, matchB, descA, descB){
         <p class="si-play-desc has-badge">${badge(descB)}${rich(descB.value)}</p>
       </div>
     </div>
-    <div class="si-footer">Brain Diff is a strategy comparison. Neither play is winning — they're optimizing for different cortical outcomes.</div>
+    <div class="si-footer">MindReader is a strategy comparison. Neither play is winning — they're optimizing for different cortical outcomes.</div>
   </div>`;
 }
 
@@ -2419,7 +2419,7 @@ function renderCTA(c){
       : `Compare two pieces of writing. <em>Read where the brain forks.</em>`;
   return `
   <section class="cta">
-    <div class="cta-eyebrow">Brain Diff</div>
+    <div class="cta-eyebrow">MindReader</div>
     <p class="cta-headline">${headline}</p>
     <div class="cta-row">
       <a class="cta-primary" href="/launch">Run another comparison</a>
@@ -2439,7 +2439,7 @@ function renderFooter(c){
   const noun = contentNoun();
   return `
   <footer>
-    <div>Brain Diff — predicting the cortex from content. <a href="/methodology" style="color:inherit">Methodology</a> · <a href="/research" style="color:inherit">Research</a></div>
+    <div>MindReader — predicting the cortex from content. <a href="/methodology" style="color:inherit">Methodology</a> · <a href="/research" style="color:inherit">Research</a></div>
     <div style="display:flex;align-items:center;gap:1.2rem">
       <a href="/launch" style="color:var(--red);font-weight:500">Run your own ${esc(noun)} comparison →</a>
       <span title="Comparison ID — handy for support">${esc((c.comparison_id || '').slice(0,8))}</span>

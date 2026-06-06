@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#F7F2EA">
-<title>Brain Diff — Results</title>
+<title>MindReader — Results</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400;1,9..144,500&family=JetBrains+Mono:wght@300;400;500&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,300;1,6..72,400&family=Inter+Tight:wght@400;500;600&display=swap" rel="stylesheet">
@@ -367,7 +367,7 @@ footer span{color:var(--red)}
 </div>
 
 <nav id="mainnav">
-  <a href="/" class="nav-logo">Brain<span>Diff</span></a>
+  <a href="/" class="nav-logo">MindReader</a>
   <ul class="nav-links">
     <li><a href="/research">Research</a></li>
     <li><a href="/methodology">Methodology</a></li>
@@ -594,7 +594,7 @@ function renderHero(c, va, vb){
   return `
   <section class="hero">
     <div class="hero-meta-row">
-      <div class="hero-eyebrow-meta">Brain Diff · ${c.comparison_id.slice(0,8)}</div>
+      <div class="hero-eyebrow-meta">MindReader · ${c.comparison_id.slice(0,8)}</div>
       <div class="hero-files">${esc(va.id)}.mp4 · ${esc(vb.id)}.mp4 · ${esc(c.analysis_version)}</div>
     </div>
     <h1 class="hero-versus">
@@ -713,7 +713,7 @@ function renderStrategyInsight(c, va, vb, matchA, matchB, descA, descB){
         <p class="si-play-desc has-badge">${badge(descB)}${rich(descB.value)}</p>
       </div>
     </div>
-    <div class="si-footer">Brain Diff is a strategy comparison. Neither play is winning — they're optimizing for different cortical outcomes.</div>
+    <div class="si-footer">MindReader is a strategy comparison. Neither play is winning — they're optimizing for different cortical outcomes.</div>
   </div>`;
 }
 
@@ -941,10 +941,10 @@ function renderConnectCard(side, video, matrix, integration, hubNode){
 function renderCTA(c){
   return `
   <section class="cta">
-    <div class="cta-eyebrow">Brain Diff</div>
+    <div class="cta-eyebrow">MindReader</div>
     <p class="cta-headline">Compare two videos. <em>Watch the cortex pull apart.</em></p>
     <div class="cta-row">
-      <a class="cta-primary" href="/launch">Try Brain Diff</a>
+      <a class="cta-primary" href="/launch">Try MindReader</a>
       <a class="cta-ghost" href="/methodology">Read the methodology</a>
       <a class="cta-ghost" href="/research">Research</a>
     </div>

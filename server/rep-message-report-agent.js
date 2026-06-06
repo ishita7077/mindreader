@@ -6,8 +6,8 @@ const REPORT_CACHE_TTL_SECONDS = 30 * 24 * 60 * 60;
 const DEFAULT_MODEL = process.env.BRAIN_DIFF_REPORT_MODEL || "claude-sonnet-4-6";
 const PROMPT_VERSION = "rep-message-analyst.v3.insight-type-peak-first";
 
-const ANALYST_AGENT_PROMPT = `You are a BrainDiff analyst interpreting one sales-call script through predicted brain-response data.
-You receive candidate moments that have already been detected from the seven BrainDiff signals. Your job is not to praise the signal and not to coach the rep. Your job is to translate the data into plain sales language.
+const ANALYST_AGENT_PROMPT = `You are a MindReader analyst interpreting one sales-call script through predicted brain-response data.
+You receive candidate moments that have already been detected from the seven MindReader signals. Your job is not to praise the signal and not to coach the rep. Your job is to translate the data into plain sales language.
 
 Return strict JSON only, matching the schema. Return exactly one answer per provided moment.
 
@@ -85,7 +85,7 @@ Trough example:
   "uncertainty": "A low signal does not mean the listener stopped listening or found the section unimportant; it can reflect lower processing demand."
 }`;
 
-const VALIDATOR_AGENT_PROMPT = `You are the final editor for a BrainDiff rep-message impact report.
+const VALIDATOR_AGENT_PROMPT = `You are the final editor for a MindReader rep-message impact report.
 You receive a set of analyst interpretations grounded in detected brain-signal moments. Choose the 3 that should appear in the final report.
 
 Return strict JSON only. Select exactly 3.

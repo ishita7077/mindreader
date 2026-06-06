@@ -4,8 +4,8 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="theme-color" content="#f7f4ec" />
-<title>Methodology — BrainDiff</title>
-<meta name="description" content="How a BrainDiff is computed — the five-stage pipeline, the seven cortical systems, chord detection, and what the model cannot do." />
+<title>Methodology — MindReader</title>
+<meta name="description" content="How a MindReader is computed — the five-stage pipeline, the seven cortical systems, chord detection, and what the model cannot do." />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..400;1,6..72,300..400&family=Fraunces:ital,opsz,wght@0,9..144,300..500;1,9..144,300..500&family=JetBrains+Mono:wght@300;400;500&family=Inter+Tight:wght@300;400;500;600&display=swap" rel="stylesheet" />
@@ -408,8 +408,7 @@ h4 { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 
 
 <header class="topbar">
   <a href="/" class="brand">
-    <img class="brand-logo" src="./assets/braindiff-logo.png" alt="BrainDiff logo" />
-    <span class="brand-word">Brain<b>Diff</b></span>
+    <span class="brand-word">MindReader</span>
   </a>
   <nav class="nav">
     <a href="/research">Research</a>
@@ -448,8 +447,8 @@ h4 { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 
     <!-- PAGE HEADER -->
     <header class="page-header" id="overview">
       <span class="page-eyebrow">Methodology</span>
-      <h1 class="page-title">Measuring <em>Brain Diff</em></h1>
-      <p class="page-subtitle">Brain Diff runs content through a computational model trained on real fMRI measurements from 720+ participants. In a comparison run, two pieces of content are processed through the same model and contrasted second by second. In a single run, one piece of content gets the same cortical readout without the A-vs-B delta.</p>
+      <h1 class="page-title">Measuring <em>MindReader</em></h1>
+      <p class="page-subtitle">MindReader runs content through a computational model trained on real fMRI measurements from 720+ participants. In a comparison run, two pieces of content are processed through the same model and contrasted second by second. In a single run, one piece of content gets the same cortical readout without the A-vs-B delta.</p>
       <div class="version-tag">
         <span class="version-dot"></span>
         v1 methodology — thresholds updated as data accumulates
@@ -462,7 +461,7 @@ h4 { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 
 
       <p>For thirty-five years, researchers have tried to measure emotional impact in content by asking people what they felt — through questionnaires, expert panels, and behavioral tests. These approaches haven't converged on reliable results because they measure opinions about experience, not the experience itself.</p>
 
-      <p>Brain Diff doesn't ask people anything. It asks whether the content itself activates the brain systems that are known to be active during emotional, social, and cognitive experience. Two pieces of content go through the same simulated brain. The question is: what does each one do to it?</p>
+      <p>MindReader doesn't ask people anything. It asks whether the content itself activates the brain systems that are known to be active during emotional, social, and cognitive experience. Two pieces of content go through the same simulated brain. The question is: what does each one do to it?</p>
 
       <p>The person is not the variable. The content is. And because the brain being used is the same for both pieces of content — the same model, trained on the same population — whatever difference emerges in the output is a difference in the content, not a difference in the audience.</p>
     </section>
@@ -471,7 +470,7 @@ h4 { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 
       <div class="section-label">Run modes</div>
       <h2>Comparison runs, single runs, and fIV</h2>
 
-      <p><strong>Comparison runs</strong> process two inputs through the same TRIBEv2/fIV pipeline, then subtract the predicted cortical response for A from the response for B. This is the full Brain Diff output: cortical heatmap, dimension bars, time-series differences, and comparison-level interpretation.</p>
+      <p><strong>Comparison runs</strong> process two inputs through the same TRIBEv2/fIV pipeline, then subtract the predicted cortical response for A from the response for B. This is the full MindReader output: cortical heatmap, dimension bars, time-series differences, and comparison-level interpretation.</p>
 
       <p><strong>Single runs</strong> process one input through the same prediction stack and report the strongest cortical systems inside that one piece of content. There is no A/B winner because there is no second input. The result answers: what does this content ask the average cortex to do?</p>
 
@@ -517,7 +516,7 @@ h4 { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 
       <h2>Media preprocessing</h2>
 
       <h3>Transcription and waveforms</h3>
-      <p>The audio track is run through WhisperX, a speech recognition model, which transcribes every spoken word and records exactly when it starts and ends. This word-level timing is what allows Brain Diff to align cortical predictions back to specific moments in the content — so when a peak appears in the Memory Encoding dimension at 0:18, you can see what was being said at that moment.</p>
+      <p>The audio track is run through WhisperX, a speech recognition model, which transcribes every spoken word and records exactly when it starts and ends. This word-level timing is what allows MindReader to align cortical predictions back to specific moments in the content — so when a peak appears in the Memory Encoding dimension at 0:18, you can see what was being said at that moment.</p>
       <p>The audio amplitude envelope — the rising and falling loudness over time — is computed separately and becomes the waveform display on the results page.</p>
 
       <h3>Video keyframes</h3>
@@ -649,7 +648,7 @@ h4 { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 
 
       <p>At any given second, some combination of the seven cortical systems is active above threshold. That combination is a <strong>chord</strong> — and the sequence of chords across the video is its <strong>cortical chord progression</strong>.</p>
 
-      <p>This is Brain Diff's most distinctive output. The chord progression describes the cognitive arc of a video: when it asks the viewer to work, when it triggers something visceral, when it connects to the self. Two videos with identical dimension averages can have completely different chord progressions — and the progression is almost always the more useful comparison.</p>
+      <p>This is MindReader's most distinctive output. The chord progression describes the cognitive arc of a video: when it asks the viewer to work, when it triggers something visceral, when it connects to the self. Two videos with identical dimension averages can have completely different chord progressions — and the progression is almost always the more useful comparison.</p>
 
       <p>Each chord is a named co-activation pattern drawn from published neuroimaging research. The patterns emerge from TRIBEv2's output — they are not editorially assigned.</p>
 
@@ -726,7 +725,7 @@ h4 { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 
       </details>
 
       <h3>Connectivity mapping</h3>
-      <p>Beyond detecting which chords fire, Brain Diff computes how the seven dimensions relate to each other across the full video. Pearson correlation is computed between every pair of dimension time series, producing a 7×7 matrix showing which systems rise and fall together and which tend to suppress each other.</p>
+      <p>Beyond detecting which chords fire, MindReader computes how the seven dimensions relate to each other across the full video. Pearson correlation is computed between every pair of dimension time series, producing a 7×7 matrix showing which systems rise and fall together and which tend to suppress each other.</p>
 
       <div class="math-block">
         <div class="math-label">Connectivity — correlation between dimension time series</div>
@@ -761,7 +760,7 @@ h4 { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 
       <div class="section-label">Cortical regions</div>
       <h2>The 7 dimensions</h2>
 
-      <p>Brain Diff reports predicted activation across seven large-scale functional networks, each grounded in the Yeo et al. 2011 parcellation and the primary literature for each region. For each dimension, a binary vertex mask identifies which of the 20,484 cortical locations belong to that network. At each timestep, the mean predicted BOLD across the masked vertices gives one activation value. Masks do not overlap.</p>
+      <p>MindReader reports predicted activation across seven large-scale functional networks, each grounded in the Yeo et al. 2011 parcellation and the primary literature for each region. For each dimension, a binary vertex mask identifies which of the 20,484 cortical locations belong to that network. At each timestep, the mean predicted BOLD across the masked vertices gives one activation value. Masks do not overlap.</p>
 
       <div class="math-block">
         <div class="math-label">Dimension scoring — per second, per dimension</div>
@@ -805,7 +804,7 @@ h4 { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 
       <div class="section-label">Data &amp; open source</div>
       <h2>Files, data, and the codebase</h2>
       <p>Audio and video files are deleted from our servers immediately after processing completes. The output — waveforms, thumbnails, transcription, cortical predictions — is computed from your file and then the file is gone. TRIBEv2 is a frozen pre-trained model; submitted content does not update it.</p>
-      <p>Brain Diff is open source under CC BY-NC, inherited from TRIBEv2's license from Meta FAIR. The pattern definitions, threshold values, dimension vertex masks, and scoring logic are all published and versioned. Researchers and developers are encouraged to fork the codebase, run their own comparisons, and extend the methodology.</p>
+      <p>MindReader is open source under CC BY-NC, inherited from TRIBEv2's license from Meta FAIR. The pattern definitions, threshold values, dimension vertex masks, and scoring logic are all published and versioned. Researchers and developers are encouraged to fork the codebase, run their own comparisons, and extend the methodology.</p>
     </section>
 
     <!-- REFERENCES -->
@@ -855,7 +854,7 @@ h4 { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 
 
 <footer class="footer">
   <div class="shell">
-    <span class="footer-brand">BrainDiff</span>
+    <span class="footer-brand">MindReader</span>
     <nav class="footer-links">
       <a href="/">Compare</a>
       <a href="/research">Research</a>

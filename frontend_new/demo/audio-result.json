@@ -22,7 +22,7 @@
         {
           "start": 13.4,
           "end": 21.2,
-          "text": "BrainDiff compares two versions and shows the cortical response."
+          "text": "MindReader compares two versions and shows the cortical response."
         },
         {
           "start": 21.2,
@@ -83,7 +83,7 @@
         {
           "start": 13.6,
           "end": 22.8,
-          "text": "BrainDiff shows where each version pulls attention, trust, and memory."
+          "text": "MindReader shows where each version pulls attention, trust, and memory."
         },
         {
           "start": 22.8,
@@ -1088,14 +1088,14 @@
             "score": 0.589,
             "distance": 0.965,
             "before_summary": "They test clicks, but they rarely test what the brain is actually doing.",
-            "after_summary": "BrainDiff compares two versions and shows the cortical response."
+            "after_summary": "MindReader compares two versions and shows the cortical response."
           },
           {
             "time": 21.2,
             "type": "topic_shift",
             "score": 0.549,
             "distance": 0.947,
-            "before_summary": "BrainDiff compares two versions and shows the cortical response.",
+            "before_summary": "MindReader compares two versions and shows the cortical response.",
             "after_summary": "So you can choose the message people remember."
           }
         ],
@@ -1140,14 +1140,14 @@
             "score": 0.667,
             "distance": 1.0,
             "before_summary": "But the brain may be ignoring the part you care about.",
-            "after_summary": "BrainDiff shows where each version pulls attention, trust, and memory."
+            "after_summary": "MindReader shows where each version pulls attention, trust, and memory."
           },
           {
             "time": 22.8,
             "type": "topic_shift",
             "score": 0.512,
             "distance": 0.93,
-            "before_summary": "BrainDiff shows where each version pulls attention, trust, and memory.",
+            "before_summary": "MindReader shows where each version pulls attention, trust, and memory.",
             "after_summary": "Then it tells you which version deserves to ship."
           }
         ],

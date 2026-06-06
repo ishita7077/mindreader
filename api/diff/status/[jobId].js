@@ -72,14 +72,14 @@ function explainFailure(code, message, rawStatus) {
   const raw = String(rawStatus || "");
   const msg = String(message || "");
   const text = `${normalizedCode} ${raw} ${msg}`.toLowerCase();
-  let reason = "RunPod reported that the job failed, but did not return a specific BrainDiff error.";
-  let action = "Open the RunPod job logs for the exact stack trace. If the worker returns that error, BrainDiff will show it here.";
+  let reason = "RunPod reported that the job failed, but did not return a specific MindReader error.";
+  let action = "Open the RunPod job logs for the exact stack trace. If the worker returns that error, MindReader will show it here.";
   if (text.includes("timeout") || text.includes("timed_out")) {
     reason = "The job took too long and was stopped.";
     action = "Try shorter files/text, then check whether the RunPod worker has enough GPU time for media jobs.";
   } else if (text.includes("media_duration_mismatch") || (text.includes("durations differ") && text.includes("within 5s"))) {
     reason = "The worker rejected a media length mismatch from an older run path.";
-    action = "Retry from the current launch page. BrainDiff now compares full media by default, with optional trimming if you choose it.";
+    action = "Retry from the current launch page. MindReader now compares full media by default, with optional trimming if you choose it.";
   } else if ((text.includes("cuda") && text.includes("memory")) || text.includes("out of memory") || text.includes("oom")) {
     reason = "The worker ran out of GPU memory.";
     action = "Use shorter media or a worker with more available GPU memory, then retry.";
@@ -145,10 +145,10 @@ function mapRunpodStatus(data, jobId, jobMeta, events) {
         events,
         error: {
           code: "SPEND_CAP_REACHED",
-          message: `BrainDiff has reached its daily processing budget ($${(cap.cap_usd || 0).toFixed(2)} for ${cap.day || "today"}). Please try again tomorrow.`,
+          message: `MindReader has reached its daily processing budget ($${(cap.cap_usd || 0).toFixed(2)} for ${cap.day || "today"}). Please try again tomorrow.`,
           plain: {
             code: "SPEND_CAP_REACHED",
-            reason: "BrainDiff has reached its daily processing budget.",
+            reason: "MindReader has reached its daily processing budget.",
             action: "Please try again tomorrow when the budget resets at midnight UTC.",
             spent_usd: cap.spent_usd,
             cap_usd: cap.cap_usd,
@@ -291,7 +291,7 @@ module.exports = async function handler(req, res) {
           events,
           error: {
             code: "NOT_FOUND",
-            message: "RunPod no longer has this job and BrainDiff has no persisted result for it.",
+            message: "RunPod no longer has this job and MindReader has no persisted result for it.",
             plain: {
               reason: "This run is no longer available.",
               action: "Start a new run. If this just finished, the worker did not persist the final result for this job."

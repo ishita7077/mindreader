@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="theme-color" content="#050914" />
-<title>BrainDiff — running your comparison</title>
+<title>MindReader — running your comparison</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
@@ -731,7 +731,7 @@
 <div class="ink-blot" id="inkBlot" aria-hidden="true"></div>
 
 <header class="topbar">
-  <a class="brand" href="/"><img class="brand-logo" src="/assets/braindiff-logo.png" alt="BrainDiff logo" /><span class="brand-word">Brain<b>Diff</b></span></a>
+  <a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-word">MindReader</span></a>
   <div class="topbar-right">
     <span class="job-id" id="jobIdLabel">job · ········</span>
   </div>
@@ -764,7 +764,7 @@
     </p>
 
     <div class="done-cta" id="doneCta" aria-hidden="true">
-      <p class="done-cta-label">Your BrainDiff result is ready.</p>
+      <p class="done-cta-label">Your MindReader result is ready.</p>
       <a class="done-cta-btn" id="viewResultsBtn" href="#">View results <span aria-hidden="true">→</span></a>
     </div>
   </aside>
@@ -812,7 +812,7 @@
       <ul>
         <li><a href="/research"><span class="resource-tag">Paper</span><span class="resource-title">TRIBE v2 — the model powering this comparison</span><span class="resource-sub">Meta FAIR · open access</span><span class="resource-arrow">→</span></a></li>
         <li><a href="/methodology"><span class="resource-tag">Guide</span><span class="resource-title">Signed vs. absolute contrast, and why we show signed</span><span class="resource-sub">5-minute read</span><span class="resource-arrow">→</span></a></li>
-        <li><a href="/methodology#scope"><span class="resource-tag">FAQ</span><span class="resource-title">What BrainDiff can't tell you</span><span class="resource-sub">limits &amp; caveats</span><span class="resource-arrow">→</span></a></li>
+        <li><a href="/methodology#scope"><span class="resource-tag">FAQ</span><span class="resource-title">What MindReader can't tell you</span><span class="resource-sub">limits &amp; caveats</span><span class="resource-arrow">→</span></a></li>
       </ul>
     </div>
 
@@ -1444,7 +1444,7 @@ function toggleTheme(){
     LLAMA_LOAD_FAILED:   'The Llama text encoder failed to load. Check free RAM/VRAM and BRAIN_DIFF_TEXT_BACKEND settings.',
     ATLAS_MAPPING_ERROR: 'An HCP atlas ROI could not be matched. Verify atlas files under `atlases/`.',
     DIFF_JOB_FAILED:     'The pipeline raised an exception. Try longer, clearly-English inputs (15+ words per side, at least one full sentence).',
-    NOT_FOUND:           'This run is no longer available from RunPod, and BrainDiff could not find a saved result for it.',
+    NOT_FOUND:           'This run is no longer available from RunPod, and MindReader could not find a saved result for it.',
   };
   function showError(err){
     const msg = (err && err.message) || 'Something went wrong.';
@@ -1592,9 +1592,8 @@ function toggleTheme(){
     if (!_notifyOnComplete) return;
     if (typeof Notification === 'undefined' || Notification.permission !== 'granted') return;
     try {
-      new Notification('BrainDiff is ready', {
-        body: 'Your BrainDiff result is ready to view.',
-        icon: '/assets/braindiff-logo.png',
+      new Notification('MindReader is ready', {
+        body: 'Your MindReader result is ready to view.',
         tag: 'braindiff-complete',
       });
     } catch(_){}

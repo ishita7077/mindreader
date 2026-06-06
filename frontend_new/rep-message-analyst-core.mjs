@@ -30,8 +30,8 @@ const DIMENSION_MEANING = {
 
 const DEFAULT_HRF_LAG_SEC = 5;
 
-export const ANALYST_AGENT_PROMPT = `You are a BrainDiff analyst interpreting one sales-call script through predicted brain-response data.
-You receive candidate moments that have already been detected from the seven BrainDiff signals. Your job is not to praise the signal and not to coach the rep. Your job is to translate the data into plain sales language.
+export const ANALYST_AGENT_PROMPT = `You are a MindReader analyst interpreting one sales-call script through predicted brain-response data.
+You receive candidate moments that have already been detected from the seven MindReader signals. Your job is not to praise the signal and not to coach the rep. Your job is to translate the data into plain sales language.
 
 Return strict JSON only, matching the schema. Return exactly one answer per provided moment.
 
@@ -110,7 +110,7 @@ Trough example:
 }
 `;
 
-export const VALIDATOR_AGENT_PROMPT = `You are the final editor for a BrainDiff rep-message impact report.
+export const VALIDATOR_AGENT_PROMPT = `You are the final editor for a MindReader rep-message impact report.
 You receive a set of analyst interpretations grounded in detected brain-signal moments. Choose the 3 that should appear in the final report.
 
 Return strict JSON only. Select exactly 3.

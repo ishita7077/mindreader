@@ -14,14 +14,14 @@ function fetchBrainMesh(){
       try {
         const res = await fetch(url);
         if (!res.ok) {
-          console.warn('[BrainDiff] fetch', url, 'returned', res.status);
+          console.warn('[MindReader] fetch', url, 'returned', res.status);
           continue;
         }
         const data = await res.json();
         if (data && data.lh_coord && data.rh_coord) return data;
-        console.warn('[BrainDiff] fetch', url, 'payload missing lh_coord/rh_coord');
+        console.warn('[MindReader] fetch', url, 'payload missing lh_coord/rh_coord');
       } catch(err) {
-        console.warn('[BrainDiff] fetch', url, 'error:', err.message);
+        console.warn('[MindReader] fetch', url, 'error:', err.message);
       }
     }
     return null;
@@ -751,7 +751,7 @@ function mountBrain(canvas, opts={}){
   if (useRealMesh) {
     fetchBrainMesh().then((payload) => {
       if (!payload) {
-        console.warn('[BrainDiff] /api/brain-mesh unavailable — keeping placeholder cortex.');
+        console.warn('[MindReader] /api/brain-mesh unavailable — keeping placeholder cortex.');
         return;
       }
       try {
@@ -814,7 +814,7 @@ function mountBrain(canvas, opts={}){
           }
         })();
       } catch (err) {
-        console.warn('[BrainDiff] failed to build real mesh geometry:', err);
+        console.warn('[MindReader] failed to build real mesh geometry:', err);
       }
     });
   }

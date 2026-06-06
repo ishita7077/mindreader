@@ -4,15 +4,15 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="theme-color" content="#050914" />
-<title>BrainDiff — EQ in AI</title>
-<meta name="description" content="EQ in AI. BrainDiff takes your content and simulates, region by region, how a brain responds to it — built on Meta FAIR's TRIBE v2." />
+<title>MindReader — EQ in AI</title>
+<meta name="description" content="EQ in AI. MindReader takes your content and simulates, region by region, how a brain responds to it — built on Meta FAIR's TRIBE v2." />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <script>(function(){var r=document.documentElement;try{var t=localStorage.getItem('braindiff-theme');if(t==='light')r.removeAttribute('data-theme');else r.setAttribute('data-theme','dark');}catch(e){r.setAttribute('data-theme','dark');}})();</script>
 <style>
 /* ============================================================
-   BrainDiff · tokens
+   MindReader · tokens
    Dark is default. Light is opt-in by removing data-theme="dark".
    Vermillion (B-stronger) + slate blue (A-stronger) — Nature-journal diverging.
    ============================================================ */
@@ -762,8 +762,8 @@ body.landing-reveal .hero-stage::before{
 
 <header class="topbar">
   <a href="./" class="brand">
-    <img class="brand-logo" src="/assets/braindiff-logo.png" alt="BrainDiff logo" />
-    <span class="brand-word">Brain<b>Diff</b></span>
+    <span class="brand-mark" aria-hidden="true"></span>
+    <span class="brand-word">MindReader</span>
   </a>
   <nav class="nav">
     <a href="/research">Research</a>
@@ -778,7 +778,7 @@ body.landing-reveal .hero-stage::before{
       <div class="hero-copy reveal">
         <div class="kicker">EQ in AI</div>
         <h1 class="hero-title">How do you <em>feel?</em></h1>
-        <p class="hero-sub">It is the oldest question in art and the newest question in technology. BrainDiff takes your content and simulates, region by region, how a brain responds to it.</p>
+        <p class="hero-sub">It is the oldest question in art and the newest question in technology. MindReader takes your content and simulates, region by region, how a brain responds to it.</p>
         <div class="cta-row">
           <a href="/launch" class="btn btn-primary" id="heroCta">Launch a run <span>→</span></a>
         </div>
@@ -1043,7 +1043,7 @@ body.landing-reveal .hero-stage::before{
 
 <footer class="footer">
   <div class="shell">
-    <span class="footer-brand">BrainDiff</span>
+    <span class="footer-brand">MindReader</span>
     <span class="footer-credit">Made with <span class="heart" aria-hidden="true">♥</span> by <a href="https://polka.foundation" target="_blank" rel="noopener">Polka Foundation</a> · <a href="https://github.com/" target="_blank" rel="noopener">GitHub</a></span>
   </div>
 </footer>
@@ -1184,14 +1184,14 @@ function fetchBrainMesh(){
       try {
         const res = await fetch(url);
         if (!res.ok) {
-          console.warn('[BrainDiff] fetch', url, 'returned', res.status);
+          console.warn('[MindReader] fetch', url, 'returned', res.status);
           continue;
         }
         const data = await res.json();
         if (data && data.lh_coord && data.rh_coord) return data;
-        console.warn('[BrainDiff] fetch', url, 'payload missing lh_coord/rh_coord');
+        console.warn('[MindReader] fetch', url, 'payload missing lh_coord/rh_coord');
       } catch(err) {
-        console.warn('[BrainDiff] fetch', url, 'error:', err.message);
+        console.warn('[MindReader] fetch', url, 'error:', err.message);
       }
     }
     return null;
@@ -1921,7 +1921,7 @@ function mountBrain(canvas, opts={}){
   if (useRealMesh) {
     fetchBrainMesh().then((payload) => {
       if (!payload) {
-        console.warn('[BrainDiff] /api/brain-mesh unavailable — keeping placeholder cortex.');
+        console.warn('[MindReader] /api/brain-mesh unavailable — keeping placeholder cortex.');
         return;
       }
       try {
@@ -1984,7 +1984,7 @@ function mountBrain(canvas, opts={}){
           }
         })();
       } catch (err) {
-        console.warn('[BrainDiff] failed to build real mesh geometry:', err);
+        console.warn('[MindReader] failed to build real mesh geometry:', err);
       }
     });
   }

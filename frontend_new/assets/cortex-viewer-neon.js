@@ -11,7 +11,7 @@
  * Per-modality or system emphasis is applied via the `roiHighlight` parameter:
  *   - audio page passes 'auditory' → boost luminance in temporal-lobe verts
  *   - video page passes 'visual'   → boost luminance in occipital + MT verts
- *   - result pages may pass one BrainDiff system key for an approximate
+ *   - result pages may pass one MindReader system key for an approximate
  *     anatomical neighborhood highlight when vertex-level paint is unavailable
  *
  * Exported singletons (no class needed; we mount one per page):
@@ -146,7 +146,7 @@ function roiMask(meshPayload, kind, lhVertCount, totalVerts, atlasMasks = null) 
   // So we approximate the relevant lobes from vertex coordinates instead:
   //   - auditory: superior temporal sulcus / Heschl's region
   //   - visual:   occipital pole + MT
-  //   - BrainDiff systems: coarse anatomical neighborhoods for orientation
+  //   - MindReader systems: coarse anatomical neighborhoods for orientation
   // It's an approximation, not an atlas-mapped ROI. We label it as such in
   // the UI hint so the user knows the highlight is "approximate" not exact.
   if (!kind) return null;

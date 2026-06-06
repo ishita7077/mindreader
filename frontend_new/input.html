@@ -4,15 +4,15 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="theme-color" content="#050914" />
-<title>BrainDiff — new comparison</title>
-<meta name="description" content="Paste two versions of a text. BrainDiff compares how a population-average cortex responds to each." />
+<title>MindReader — new comparison</title>
+<meta name="description" content="Paste two versions of a text. MindReader compares how a population-average cortex responds to each." />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <script>(function(){var r=document.documentElement;r.setAttribute('data-theme','dark');try{localStorage.setItem('braindiff-theme','dark');}catch(e){}})();</script>
 <style>
 /* ============================================================
-   BrainDiff · tokens (shared with index / run / results)
+   MindReader · tokens (shared with index / run / results)
    ============================================================ */
 :root{
   color-scheme:light;
@@ -404,8 +404,8 @@ textarea::placeholder{color:var(--ink-mute);opacity:0.7}
 
 <header class="topbar">
   <a href="/" class="brand">
-    <img class="brand-logo" src="/assets/braindiff-logo.png" alt="BrainDiff logo" />
-    <span class="brand-word">Brain<b>Diff</b></span>
+    <span class="brand-mark" aria-hidden="true"></span>
+    <span class="brand-word">MindReader</span>
   </a>
   <div class="topbar-right">
     <a href="/research">Research</a>
@@ -418,7 +418,7 @@ textarea::placeholder{color:var(--ink-mute);opacity:0.7}
   <div class="page-head">
     <div class="kicker">Trial setup</div>
     <h1 class="page-title">Prepare your <em>content.</em></h1>
-    <p class="page-sub">Read one script deeply, or compare two versions. BrainDiff maps the response across seven systems.</p>
+    <p class="page-sub">Read one script deeply, or compare two versions. MindReader maps the response across seven systems.</p>
     <p class="page-sub" style="font-size:13px;color:var(--accent);margin-top:8px;">Experimental v1. Do not upload sensitive content.</p>
   </div>
 
@@ -471,7 +471,7 @@ textarea::placeholder{color:var(--ink-mute);opacity:0.7}
           <span class="name-row-hint" id="nameHintA">edit if needed</span>
         </div>
         <textarea id="textA" name="text_a" spellcheck="true"
-          placeholder="Paste the script, call transcript, or message you want BrainDiff to read."></textarea>
+          placeholder="Paste the script, call transcript, or message you want MindReader to read."></textarea>
         <input id="fileA" name="file_a" type="file" hidden />
         <div class="dropzone" id="dropA" tabindex="0" role="button" aria-label="Upload stimulus A file">
           <div><strong>Drop content here</strong> or click to browse</div>
@@ -521,7 +521,7 @@ textarea::placeholder{color:var(--ink-mute);opacity:0.7}
 
 <footer class="footer">
   <div class="shell">
-    <span class="footer-brand">BrainDiff</span>
+    <span class="footer-brand">MindReader</span>
     <span class="footer-credit">Made with <span class="heart" aria-hidden="true">♥</span> by <a href="https://polka.foundation" target="_blank" rel="noopener">Polka Foundation</a> · <a href="https://github.com/" target="_blank" rel="noopener">GitHub</a></span>
   </div>
 </footer>
@@ -602,7 +602,7 @@ function toggleTheme(){
     single: {
       'sales-call': {
         label: 'Sales call',
-        a: "Thanks for taking the time today. The problem we keep hearing is not that teams lack data, it's that they cannot see which moments actually change a buyer's mind. BrainDiff gives your team a second-by-second readout of attention, memory encoding, and personal relevance so you can improve the message before it goes live."
+        a: "Thanks for taking the time today. The problem we keep hearing is not that teams lack data, it's that they cannot see which moments actually change a buyer's mind. MindReader gives your team a second-by-second readout of attention, memory encoding, and personal relevance so you can improve the message before it goes live."
       },
       'founder-update': {
         label: 'Founder update',
@@ -714,7 +714,7 @@ function toggleTheme(){
         const rB = B.trim().length >= 20 ? latinRatio(B) : 1;
         return rA < 0.6 || rB < 0.6;
       },
-      copy:  'BrainDiff currently supports English text only. Please paste English for both versions.' },
+      copy:  'MindReader currently supports English text only. Please paste English for both versions.' },
     { code: 'LINK_HEAVY',    sev: 'soft',
       check: function(A, B){
         const rA = A.trim().length ? urlChars(A) / A.trim().length : 0;
@@ -746,7 +746,7 @@ function toggleTheme(){
       copy: 'Short samples can be noisy — more context gives a cleaner reading.' },
     { code: 'NON_ENGLISH', sev: 'hard',
       check: function(A){ return A.trim().length >= 20 && latinRatio(A) < 0.6; },
-      copy: 'BrainDiff currently supports English text only.' },
+      copy: 'MindReader currently supports English text only.' },
     { code: 'LINK_HEAVY', sev: 'soft',
       check: function(A){ return A.trim().length ? urlChars(A) / A.trim().length > 0.25 : false; },
       copy: 'URLs get read aloud letter-by-letter, so the reading may not mean much.' },
@@ -992,7 +992,7 @@ function toggleTheme(){
         durations.a = await probeMediaDuration(fileAObj);
       } catch (err) {
         showToast(
-          'I could not read the file length in the browser. BrainDiff will still check it before running.',
+          'I could not read the file length in the browser. MindReader will still check it before running.',
           {kind:'warn', durationMs:7000, key:'media-duration-probe'}
         );
       }
@@ -1007,7 +1007,7 @@ function toggleTheme(){
       durations.b = values[1];
     } catch (err) {
       showToast(
-        'I could not read the file lengths in the browser. BrainDiff will still check them before running.',
+        'I could not read the file lengths in the browser. MindReader will still check them before running.',
         {kind:'warn', durationMs:7000, key:'media-duration-probe'}
       );
       return durations;
@@ -1028,13 +1028,13 @@ function toggleTheme(){
     if (window.confirm(message)) {
       durations.trimToShorter = true;
       showToast(
-        'BrainDiff will compare the first <strong>' + fmtMediaSeconds(shortLen) + '</strong> of both files.',
+        'MindReader will compare the first <strong>' + fmtMediaSeconds(shortLen) + '</strong> of both files.',
         {kind:'info', durationMs:7000, key:'media-duration-trim'}
       );
       return durations;
     }
     showToast(
-      'BrainDiff will compare both full files. Longer or uneven files may take more time.',
+      'MindReader will compare both full files. Longer or uneven files may take more time.',
       {kind:'warn', durationMs:7000, key:'media-duration-full'}
     );
     return durations;
@@ -1265,7 +1265,7 @@ function toggleTheme(){
         turnstileToken = '';
       }
     } catch (e){
-      showError('Network error reaching the BrainDiff API.', String(e && e.message || e));
+      showError('Network error reaching the MindReader API.', String(e && e.message || e));
       btn.innerHTML = originalLabel;
       btn.disabled = false;
       return;
