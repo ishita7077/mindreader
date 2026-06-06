@@ -180,16 +180,30 @@ async function handleRepMessageAnalystReport(req, res) {
 
   try {
     const analystPrompt = renderAnalystPrompt(candidates, body.input || {});
-    const analystRaw = await callAnthropic({ apiKey, model, prompt: analystPrompt, maxTokens: 2600, temperature: 0.35 });
-    const analystJson = extractJsonObject(analystRaw);
+    const analystJson = await callAnthropicJson({
+      apiKey,
+      model,
+      prompt: analystPrompt,
+      maxTokens: 6500,
+      temperature: 0.2,
+      stage: "analyst",
+      jobId
+    });
     const analystCandidates = normalizeAnalystAnswers(analystJson.answers, candidates);
     if (analystCandidates.length !== candidates.length) {
       throw new Error(`Analyst returned ${analystCandidates.length} answers for ${candidates.length} candidates`);
     }
 
     const validatorPrompt = renderValidatorPrompt(candidates, analystCandidates);
-    const validatorRaw = await callAnthropic({ apiKey, model, prompt: validatorPrompt, maxTokens: 1200, temperature: 0.2 });
-    const validatorJson = extractJsonObject(validatorRaw);
+    const validatorJson = await callAnthropicJson({
+      apiKey,
+      model,
+      prompt: validatorPrompt,
+      maxTokens: 2200,
+      temperature: 0.1,
+      stage: "validator",
+      jobId
+    });
     const validation = normalizeValidation(validatorJson, candidates, analystCandidates);
     if (validation.selected.length !== 3) {
       throw new Error(`Validator selected ${validation.selected.length} moments, expected 3`);
@@ -298,6 +312,38 @@ async function callAnthropic({ apiKey, model, prompt, maxTokens, temperature }) 
     : "";
   if (!output.trim()) throw new Error("Anthropic returned no text");
   return output;
+}
+
+async function callAnthropicJson({ apiKey, model, prompt, maxTokens, temperature, stage, jobId }) {
+  let lastError = null;
+  for (let attempt = 1; attempt <= 2; attempt += 1) {
+    const attemptPrompt = attempt === 1
+      ? prompt
+      : `${prompt}
+
+Your previous answer was not parseable JSON. Return exactly one complete JSON object. No markdown, no commentary, no trailing explanation. Keep every sentence shorter if needed, but close every brace and bracket.`;
+    const raw = await callAnthropic({
+      apiKey,
+      model,
+      prompt: attemptPrompt,
+      maxTokens: attempt === 1 ? maxTokens : Math.max(maxTokens, 8000),
+      temperature: attempt === 1 ? temperature : 0
+    });
+    try {
+      return extractJsonObject(raw);
+    } catch (error) {
+      lastError = error;
+      console.error(JSON.stringify({
+        event: "single_report_json_parse_failed",
+        job_id: jobId,
+        stage,
+        attempt,
+        output_chars: raw.length,
+        error: error instanceof Error ? error.message : String(error)
+      }));
+    }
+  }
+  throw lastError || new Error("Could not parse JSON object from model output");
 }
 
 function sanitizeCandidates(topMoments) {
