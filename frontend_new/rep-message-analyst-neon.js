@@ -144,7 +144,7 @@ async function hydrateAgentReport(baseReport, id, side) {
       title: baseReport.input.title,
       durationSec: baseReport.input.alignment.generatedAudioDurationSec || baseReport.input.alignment.analysisDurationSec || 0,
     },
-    topMoments: baseReport.topMoments.slice(0, 10).map((item) => ({
+    topMoments: baseReport.topMoments.slice(0, 7).map((item) => ({
       id: item.id,
       rank: item.rank,
       event: item.event,

@@ -167,9 +167,9 @@ export function buildRepMessageAnalystReport(raw) {
   const normalized = normalizeCurves(input);
   const candidates = mineEvents(input, normalized)
     .filter((event) => Number.isFinite(event.brainScore))
-    .sort((a, b) => b.brainScore - a.brainScore);
+    .sort((a, b) => (b.priorityScore ?? b.brainScore) - (a.priorityScore ?? a.brainScore));
   const topMoments = clusterMoments(candidates)
-    .slice(0, 10)
+    .slice(0, 18)
     .map((event, index) => {
       const transcript = resolveTranscript(event, input);
       const packet = buildAnalystPacket(input, event, transcript, index + 1, normalized);
@@ -178,6 +178,18 @@ export function buildRepMessageAnalystReport(raw) {
         rank: index + 1,
         event,
         transcript,
+        packet,
+        analyst: runAnalystAgent(packet),
+      };
+    })
+    .sort((a, b) => momentPriorityScore(b) - momentPriorityScore(a))
+    .slice(0, 10)
+    .map((item, index) => {
+      const packet = buildAnalystPacket(input, item.event, item.transcript, index + 1, normalized);
+      return {
+        ...item,
+        id: packet.moment_id,
+        rank: index + 1,
         packet,
         analyst: runAnalystAgent(packet),
       };
@@ -522,7 +534,25 @@ function scoreEvent(input, normalized, event) {
     end: clamp(event.end, 0, input.alignment.analysisDurationSec),
     peakTime: clamp(event.peakTime, 0, input.alignment.analysisDurationSec),
     brainScore,
+    priorityScore: priorityScoreForEvent(event, brainScore),
   };
+}
+
+function priorityScoreForEvent(event, brainScore) {
+  const shape = String(event.eventShape || "").toLowerCase();
+  let score = brainScore;
+  if (shape.includes("spike")) score += 0.28;
+  else if (shape.includes("rise")) score += 0.24;
+  else if (shape.includes("high")) score += 0.20;
+  else if (shape.includes("dominant")) score += 0.18;
+  else if (shape.includes("crossover")) score += 0.05;
+  else if (shape.includes("trough")) score -= 0.08;
+  else if (shape.includes("drop")) score -= 0.12;
+  else if (shape.includes("low")) score -= 0.18;
+  if (event.peakTime < 10 && (shape.includes("low") || shape.includes("trough") || shape.includes("drop"))) {
+    score -= 0.12;
+  }
+  return score;
 }
 
 function clusterMoments(events) {
@@ -535,6 +565,62 @@ function clusterMoments(events) {
     if (!duplicate) kept.push(event);
   }
   return kept;
+}
+
+function momentPriorityScore(item) {
+  const event = item.event || {};
+  const text = `${item.transcript?.quote || ""} ${item.transcript?.contextText || ""}`.toLowerCase();
+  let score = event.priorityScore ?? event.brainScore ?? 0;
+  const strongSalesSignals = [
+    "pain",
+    "problem",
+    "manager",
+    "managers",
+    "manual",
+    "manually",
+    "listen to every call",
+    "ramp reps",
+    "buyer",
+    "confused",
+    "trust",
+    "over-explained",
+    "next step",
+    "coaching",
+    "discovery",
+    "objections",
+    "pilot",
+    "working session",
+    "sales enablement",
+    "ae roles",
+    "pipeline",
+  ];
+  const weakIntroSignals = [
+    "hey, this is",
+    "out of the blue",
+    "i’ll be quick",
+    "i'll be quick",
+  ];
+  for (const phrase of strongSalesSignals) {
+    if (text.includes(phrase)) score += 0.045;
+  }
+  for (const phrase of weakIntroSignals) {
+    if (text.includes(phrase)) score -= 0.055;
+  }
+  if ((event.signalName === "attention" || event.signalName === "gut_reaction") && isPeakOrHighEvent(event)) {
+    score += 0.08;
+  }
+  if (String(event.eventShape || "").includes("low") && !text.includes("working session") && !text.includes("next step")) {
+    score -= 0.08;
+  }
+  return score;
+}
+
+function isPeakOrHighEvent(event) {
+  const shape = String(event?.eventShape || "").toLowerCase();
+  return shape.includes("spike") ||
+    shape.includes("rise") ||
+    shape.includes("high") ||
+    shape.includes("dominant");
 }
 
 function buildAnalystPacket(input, event, transcript, rank, normalized) {
@@ -591,7 +677,9 @@ function insightTypeFor(packet) {
 }
 
 function runValidatorAgent(topMoments) {
-  const sorted = [...topMoments].sort((a, b) => b.event.brainScore - a.event.brainScore);
+  const sorted = [...topMoments].sort((a, b) =>
+    momentPriorityScore(b) - momentPriorityScore(a)
+  );
   const selected = [];
   const rejected = new Map();
   const usable = sorted.filter((item) => isUsableAgentAnswer(item));
@@ -723,8 +811,29 @@ function isUsableAgentAnswer(item) {
 function sharesQuote(item, selected, topMoments) {
   return selected.some((selection) => {
     const picked = topMoments.find((candidate) => candidate.id === selection.moment_id);
-    return picked && sameQuote(picked.analyst.quote, item.analyst.quote);
+    return picked && (
+      sameQuote(picked.analyst.quote, item.analyst.quote) ||
+      Math.abs((picked.transcript?.stimulusPeak ?? picked.event.peakTime) - (item.transcript?.stimulusPeak ?? item.event.peakTime)) <= 9 ||
+      overlappingText(picked.analyst.quote, item.analyst.quote)
+    );
   });
+}
+
+function overlappingText(a, b) {
+  const aa = normalizedQuoteTokens(a);
+  const bb = normalizedQuoteTokens(b);
+  if (aa.length < 4 || bb.length < 4) return false;
+  const [shorter, longer] = aa.length <= bb.length ? [aa, bb] : [bb, aa];
+  const overlap = shorter.filter((token) => longer.includes(token)).length;
+  return overlap / shorter.length >= 0.7;
+}
+
+function normalizedQuoteTokens(value) {
+  return String(value || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9\s'-]+/g, " ")
+    .split(/\s+/)
+    .filter((token) => token.length > 2 && !/^(the|and|that|this|with|from|into|where|when|what|why|how|you|your|they|their|our|but|not)$/.test(token));
 }
 
 function sharesDimension(item, selected, topMoments) {
