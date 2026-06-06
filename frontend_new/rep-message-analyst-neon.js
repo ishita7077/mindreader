@@ -136,6 +136,9 @@ async function loadJobReport(id, side) {
 }
 
 async function hydrateAgentReport(baseReport, id, side) {
+  const agentMoments = baseReport.finalInsights.length >= 3
+    ? baseReport.finalInsights.slice(0, 3)
+    : baseReport.topMoments.slice(0, 3);
   const payload = {
     jobId: id,
     side,
@@ -144,7 +147,7 @@ async function hydrateAgentReport(baseReport, id, side) {
       title: baseReport.input.title,
       durationSec: baseReport.input.alignment.generatedAudioDurationSec || baseReport.input.alignment.analysisDurationSec || 0,
     },
-    topMoments: baseReport.topMoments.slice(0, 7).map((item) => ({
+    topMoments: agentMoments.map((item) => ({
       id: item.id,
       rank: item.rank,
       event: item.event,
