@@ -201,7 +201,7 @@ from backend.duration_utils import (
     trim_to_duration,
 )
 from backend.heatmap import compute_vertex_delta, generate_heatmap_artifact
-from backend.media_features import audio_envelope, peak_moments, video_keyframes
+from backend.media_features import WAVEFORM_BINS, audio_envelope, peak_moments, video_keyframes
 from backend.model_service import TribeService
 from backend.narrative import build_headline
 from backend.result_semantics import UI_LABELS, TOOLTIPS, USER_MEANING, enrich_dimension_payload, winner_summary
@@ -629,6 +629,28 @@ def _warnings_for_single_text(text: str) -> list[str]:
     return warnings
 
 
+def _text_waveform(text: str, bins: int = WAVEFORM_BINS) -> list[float]:
+    """Deterministic display waveform for text inputs.
+
+    Text runs now use offline speech internally for TRIBE, but the result page
+    still benefits from a stable visual rhythm. This avoids a second network
+    gTTS call whose only purpose was drawing bars.
+    """
+    tokens = [tok.strip() for tok in (text or "").split() if tok.strip()]
+    if not tokens or bins <= 0:
+        return []
+    values = np.zeros(bins, dtype=np.float32)
+    for idx in range(bins):
+        start = int(idx * len(tokens) / bins)
+        end = max(start + 1, int((idx + 1) * len(tokens) / bins))
+        chunk = tokens[start:end]
+        avg_len = sum(len(tok.strip(".,;:!?()[]{}\"'")) for tok in chunk) / max(len(chunk), 1)
+        punctuation = sum(1 for tok in chunk if tok[-1:] in {".", "?", "!", ","})
+        values[idx] = min(1.0, 0.18 + avg_len / 16.0 + punctuation * 0.06)
+    peak = float(values.max()) or 1.0
+    return [round(float(v / peak), 4) for v in values]
+
+
 def _build_single_response(
     *,
     transcript: str,
@@ -779,6 +801,7 @@ def _run_text_single_locked(
         scores=scores,
         median=median,
         warnings=warnings,
+        media_features={"waveform": _text_waveform(text)},
         job_id=job_id,
         display_name=display_name or "Text",
         gpu_snapshots=gpu_snapshots,
@@ -986,35 +1009,10 @@ def _run_text_locked(
     title_a = display_name_a or text_a[:60] or "Stimulus A"
     title_b = display_name_b or text_b[:60] or "Stimulus B"
 
-    # ─── Generate TTS waveforms so text mode has the same audio-shape view
-    # the results page renders for audio mode. The TRIBE pipeline already
-    # synthesises speech internally to feed audio features into the model
-    # but doesn't expose the audio file; we re-synthesise here with gTTS
-    # (cheap and identical voice) so the frontend can draw a waveform.
-    # Soft-fail: never block the brain payload on a TTS hiccup.
-    media_features_payload: dict[str, Any] | None = None
-    try:
-        from gtts import gTTS  # type: ignore
-        from backend.media_features import audio_envelope, WAVEFORM_BINS
-        wf_a: list[float] = []
-        wf_b: list[float] = []
-        for text, slot in ((text_a, "a"), (text_b, "b")):
-            try:
-                tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".mp3")
-                tmp.close()
-                gTTS(text=text or " ", lang="en").save(tmp.name)
-                env = audio_envelope(tmp.name, bins=WAVEFORM_BINS) or []
-                if slot == "a": wf_a = env
-                else: wf_b = env
-            except Exception as werr:
-                log.warning("TTS waveform failed for slot %s: %s", slot, werr)
-            finally:
-                try: os.unlink(tmp.name)
-                except Exception: pass
-        if wf_a or wf_b:
-            media_features_payload = {"waveform_a": wf_a, "waveform_b": wf_b}
-    except Exception as exc:
-        log.warning("Text-mode waveform pipeline unavailable: %s", exc)
+    media_features_payload: dict[str, Any] | None = {
+        "waveform_a": _text_waveform(text_a),
+        "waveform_b": _text_waveform(text_b),
+    }
     gpu_snapshots.append(_gpu_snapshot("before_content_gen"))
     results_content = _generate_results_content(
         job_id=job_id or "",

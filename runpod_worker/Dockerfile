@@ -11,6 +11,7 @@ WORKDIR /app
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ffmpeg \
+    espeak-ng \
     git \
     curl \
     && rm -rf /var/lib/apt/lists/*
@@ -67,6 +68,8 @@ COPY atlases /app/atlases
 COPY runpod_worker /app/runpod_worker
 
 ENV BRAIN_DIFF_ATLAS_DIR=/app/atlases
+ENV BRAIN_DIFF_TEXT_TTS_ENGINE=espeak
+ENV BRAIN_DIFF_TEXT_TTS_TIMEOUT_S=180
 ENV PYTHONPATH=/app
 
 CMD ["sh", "-c", "if [ \"$BRAIN_DIFF_RUNPOD_STUB_RESULT\" = \"1\" ]; then python -u runpod_worker/stub_handler.py; else python -u runpod_worker/handler.py; fi"]

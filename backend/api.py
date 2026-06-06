@@ -383,7 +383,7 @@ def _run_diff_job(job_id: str, request_id: str, payload: DiffRequest) -> None:
     media_features_payload: dict[str, Any] | None = None
     try:
         if modality == "text":
-            job_store.update_status(job_id, "synthesizing_speech", "Synthesising speech for the text via gTTS...")
+            job_store.update_status(job_id, "synthesizing_speech", "Preparing speech for the text...")
         elif modality == "audio":
             job_store.update_status(job_id, "decoding_audio", "Decoding audio features...")
             logger.info("diff_job:probe_media request_id=%s job_id=%s side=a modality=audio path=%s", request_id, job_id, payload.audio_path_a)

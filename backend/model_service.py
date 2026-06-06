@@ -1,6 +1,7 @@
 import logging
 import os
 import shutil
+import subprocess
 import sys
 import tempfile
 import time
@@ -329,6 +330,82 @@ class TribeService:
         path_entries = [shim_dir, ffmpeg_dir, os.environ.get("PATH", "")]
         os.environ["PATH"] = ":".join([p for p in path_entries if p])
 
+    @staticmethod
+    def _text_tts_engine() -> str:
+        return os.getenv("BRAIN_DIFF_TEXT_TTS_ENGINE", "tribe").strip().lower()
+
+    @staticmethod
+    def _synthesize_text_with_espeak(text: str, output_path: str, text_path: str) -> dict[str, Any]:
+        """Create an offline speech WAV for text runs.
+
+        TRIBE's native text path uses gTTS internally. On RunPod that can hang
+        indefinitely when the Google TTS network call stalls. espeak-ng is
+        deterministic, offline, and fast; we then feed the WAV through TRIBE's
+        already-supported audio path.
+        """
+        binary = (
+            shutil.which(os.getenv("BRAIN_DIFF_ESPEAK_BIN", ""))
+            if os.getenv("BRAIN_DIFF_ESPEAK_BIN", "").strip()
+            else None
+        ) or shutil.which("espeak-ng") or shutil.which("espeak")
+        if not binary:
+            raise RuntimeError("ESPEAK_REQUIRED: espeak-ng/espeak is required for offline text runs.")
+
+        voice = os.getenv("BRAIN_DIFF_ESPEAK_VOICE", "en-us")
+        speed = os.getenv("BRAIN_DIFF_ESPEAK_SPEED", "155")
+        timeout_s = int(os.getenv("BRAIN_DIFF_TEXT_TTS_TIMEOUT_S", "180"))
+        with open(text_path, "w", encoding="utf-8") as handle:
+            handle.write(text or " ")
+
+        cmd = [binary, "-v", voice, "-s", speed, "-w", output_path, "-f", text_path]
+        started = time.perf_counter()
+        proc = subprocess.run(
+            cmd,
+            capture_output=True,
+            text=True,
+            timeout=timeout_s,
+            check=False,
+        )
+        elapsed_ms = int((time.perf_counter() - started) * 1000)
+        if proc.returncode != 0:
+            stderr = (proc.stderr or proc.stdout or "").strip()
+            raise RuntimeError(f"ESPEAK_FAILED: returncode={proc.returncode} detail={stderr[:300]}")
+        if not os.path.exists(output_path) or os.path.getsize(output_path) <= 44:
+            raise RuntimeError("ESPEAK_FAILED: no usable WAV file was produced.")
+        return {
+            "tts_engine": os.path.basename(binary),
+            "tts_ms": elapsed_ms,
+            "tts_audio_bytes": os.path.getsize(output_path),
+        }
+
+    def _text_to_predictions_via_offline_audio(
+        self,
+        text: str,
+        progress: "ProgressEmitter | None" = None,
+    ) -> tuple[np.ndarray, Any, dict[str, Any]]:
+        with tempfile.TemporaryDirectory(prefix="braindiff-text-tts-") as tmpdir:
+            text_path = os.path.join(tmpdir, "input.txt")
+            wav_path = os.path.join(tmpdir, "input.wav")
+            if progress is not None:
+                progress.emit("synthesizing_speech", "Preparing offline speech for the text...")
+            print("[RP-17] offline_tts_started engine=espeak", flush=True)
+            logger.info("[RP-17] offline_tts_started engine=espeak")
+            logger.info("disk_snapshot %s", _disk_snapshot("before_offline_tts"))
+            tts_meta = self._synthesize_text_with_espeak(text, wav_path, text_path)
+            print(
+                f"[RP-18] offline_tts_ok elapsed_ms={tts_meta.get('tts_ms')} bytes={tts_meta.get('tts_audio_bytes')}",
+                flush=True,
+            )
+            logger.info("[RP-18] offline_tts_ok meta=%s", tts_meta)
+            logger.info("disk_snapshot %s", _disk_snapshot("after_offline_tts_before_audio_events"))
+            preds_np, segments, timing = self._media_to_predictions(wav_path, kind="audio", progress=progress)
+            return preds_np, segments, {
+                **timing,
+                **tts_meta,
+                "transcript_text": text,
+                "transcript_segments": [],
+            }
+
     def text_to_predictions(
         self,
         text: str,
@@ -336,6 +413,8 @@ class TribeService:
     ) -> tuple[np.ndarray, Any, dict[str, Any]]:
         if self.model is None:
             raise RuntimeError("TRIBEv2 model not loaded")
+        if self._text_tts_engine() in {"espeak", "espeak-ng", "offline", "offline_audio"}:
+            return self._text_to_predictions_via_offline_audio(text, progress=progress)
         logger.info("disk_snapshot %s", _disk_snapshot("text_predict_start"))
         with tempfile.NamedTemporaryFile(mode="w", suffix=".txt", delete=False) as handle:
             handle.write(text)
@@ -346,7 +425,7 @@ class TribeService:
             logger.info("[RP-17] gtts_started")
             logger.info("disk_snapshot %s", _disk_snapshot("before_gtts"))
             if progress is not None:
-                progress.emit("synthesizing_speech", "Synthesising speech for the text via gTTS...")
+                progress.emit("synthesizing_speech", "Preparing speech for the text...")
             t0 = time.perf_counter()
             events = self.model.get_events_dataframe(text_path=temp_path)
             events_ms = int((time.perf_counter() - t0) * 1000)
