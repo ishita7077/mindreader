@@ -137,6 +137,7 @@ h1.hero-title{
   color:var(--ink);
 }
 h1.hero-title em{font-style:italic;color:var(--accent);font-variation-settings:"opsz" 144, "SOFT" 0, "WONK" 0}
+.hero-question{font-style:normal;color:var(--accent);display:inline-block;margin-left:.02em}
 .hero-sub{
   font-size:clamp(15.5px,1.25vw,18px);
   color:var(--ink-dim);
@@ -354,6 +355,159 @@ h2.section-title em{font-style:italic;color:var(--accent);font-variation-setting
 .rdim-val.neg{color:var(--good)}
 .readout-insight{background:color-mix(in srgb,var(--surface) 70%,var(--bg-2));border:1px solid var(--line);border:1px solid color-mix(in srgb,var(--accent) 20%,transparent);border-left:3px solid var(--accent);border-radius:8px;padding:11px 13px;font-size:12.5px;color:var(--ink-dim);line-height:1.55}
 .readout-insight strong{color:var(--ink)}
+.maya-call-grid{
+  display:grid;
+  grid-template-columns:minmax(260px,.86fr) minmax(340px,1.08fr) minmax(290px,.9fr);
+  gap:22px;
+  align-items:stretch;
+}
+.maya-panel,
+.maya-readout{
+  position:relative;
+  background:
+    linear-gradient(180deg,rgba(8,18,38,.88),rgba(5,10,24,.72)),
+    var(--panel);
+  border:1px solid rgba(88,221,255,.18);
+  border-radius:14px;
+  box-shadow:0 24px 70px rgba(0,0,0,.28);
+  backdrop-filter:blur(10px);
+  overflow:hidden;
+}
+.maya-panel::before,
+.maya-readout::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    linear-gradient(rgba(88,221,255,.045) 1px, transparent 1px),
+    linear-gradient(90deg,rgba(88,221,255,.03) 1px, transparent 1px);
+  background-size:100% 7px, 48px 100%;
+  pointer-events:none;
+  opacity:.5;
+}
+.maya-panel{padding:22px;display:flex;flex-direction:column;gap:18px}
+.maya-readout{padding:24px;display:flex;flex-direction:column;gap:18px}
+.maya-eyebrow{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  color:#58ddff;
+}
+.maya-panel h3,
+.maya-readout h3{
+  margin:0;
+  color:#f4f7ff;
+  font-size:clamp(22px,2vw,30px);
+  line-height:1.08;
+  letter-spacing:-.02em;
+}
+.maya-copy{margin:0;color:#b7c3d8;font-size:14px;line-height:1.55}
+.maya-transcript{
+  border:1px solid rgba(88,221,255,.22);
+  border-left:3px solid #58ddff;
+  border-radius:10px;
+  padding:14px 15px;
+  background:rgba(5,14,32,.6);
+}
+.maya-transcript b{
+  display:block;
+  margin-bottom:8px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:#58ddff;
+}
+.maya-transcript p{margin:0;color:#edf5ff;font-size:15px;line-height:1.5}
+.maya-transcript strong{color:#ffd94a;font-weight:600}
+.maya-moments{display:flex;flex-direction:column;gap:10px;margin-top:auto}
+.maya-moment{
+  display:grid;
+  grid-template-columns:28px 1fr;
+  gap:11px;
+  align-items:start;
+  padding:12px;
+  border:1px solid rgba(88,221,255,.16);
+  border-radius:10px;
+  background:rgba(4,12,28,.48);
+}
+.maya-moment-num{
+  display:grid;
+  place-items:center;
+  width:24px;
+  height:24px;
+  border-radius:7px;
+  background:rgba(88,221,255,.14);
+  border:1px solid rgba(88,221,255,.28);
+  color:#58ddff;
+  font:600 11px/1 'JetBrains Mono',monospace;
+}
+.maya-moment-title{display:block;color:#f5f8ff;font-size:13px;font-weight:600;line-height:1.25}
+.maya-moment-sub{display:block;margin-top:4px;color:#8797b6;font:11px/1.35 'JetBrains Mono',monospace;letter-spacing:.04em}
+.maya-cortex-stage{
+  position:relative;
+  min-height:470px;
+  border:1px solid rgba(88,221,255,.18);
+  border-radius:14px;
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 50% 38%, rgba(88,221,255,.12), transparent 42%),
+    #020309;
+  box-shadow:0 30px 90px rgba(0,0,0,.46);
+}
+.maya-cortex-stage canvas{width:100%;height:100%;display:block}
+.maya-cortex-badge{
+  position:absolute;
+  top:14px;
+  left:50%;
+  transform:translateX(-50%);
+  border:1px solid rgba(88,221,255,.38);
+  border-radius:999px;
+  padding:7px 13px;
+  color:#b9d7ff;
+  background:rgba(3,7,18,.72);
+  font:10px/1 'JetBrains Mono',monospace;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+}
+.maya-scale{
+  position:absolute;
+  left:18px;
+  right:18px;
+  bottom:16px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  color:#77839d;
+  font:10px/1 'JetBrains Mono',monospace;
+  letter-spacing:.08em;
+}
+.maya-scale span:first-child{white-space:nowrap}
+.maya-scale .bar{
+  flex:1;
+  height:4px;
+  border-radius:99px;
+  background:linear-gradient(90deg,#10204f,#58ddff 48%,#ff6f8e 100%);
+}
+.maya-dims{display:flex;flex-direction:column;gap:12px}
+.maya-dim{display:grid;grid-template-columns:1fr 110px 44px;gap:10px;align-items:center}
+.maya-dim-label{color:#c7d7ef;font-size:13px}
+.maya-dim-track{height:6px;border-radius:999px;background:rgba(255,255,255,.11);overflow:hidden}
+.maya-dim-fill{height:100%;border-radius:inherit;box-shadow:0 0 18px color-mix(in srgb,var(--dim-color) 48%,transparent);background:var(--dim-color)}
+.maya-dim-val{color:#58ddff;text-align:right;font:600 12px/1 'JetBrains Mono',monospace}
+.maya-insight{
+  margin-top:auto;
+  padding:15px 16px;
+  border:1px solid rgba(88,221,255,.24);
+  border-left:3px solid #58ddff;
+  border-radius:10px;
+  background:rgba(7,18,40,.62);
+  color:#cbd6ea;
+  font-size:14px;
+  line-height:1.56;
+}
+.maya-insight strong{color:#fff}
 .citation-badge-header{display:flex;align-items:center;gap:8px;margin-bottom:4px}
 .citation-logo{flex-shrink:0;display:block}
 .meta-logo,
@@ -597,7 +751,7 @@ h2.section-title em{font-style:italic;color:var(--accent);font-variation-setting
 @keyframes heartbeat{0%,60%,100%{transform:scale(1)}30%{transform:scale(1.12)}45%{transform:scale(1.05)}}
 
 /* REVEAL */
-.reveal{opacity:0;transform:translateY(16px);transition:opacity .6s ease, transform .6s ease}
+.reveal{opacity:1;transform:none;transition:opacity .6s ease, transform .6s ease}
 .reveal.visible{opacity:1;transform:translateY(0)}
 @media (prefers-reduced-motion: reduce){
   .reveal{opacity:1;transform:none;transition:none}
@@ -705,6 +859,8 @@ body.landing-reveal .hero-stage::before{
   .hero-stage{height:clamp(340px,48vh,440px)}
   .hero-dim-card{top:14px;left:14px;right:14px;max-width:none}
   .compare-grid{grid-template-columns:1fr;gap:14px}
+  .maya-call-grid{grid-template-columns:1fr;gap:16px}
+  .maya-cortex-stage{min-height:360px}
   /* Tablet / small-laptop: stack the card vertically, separator flips horizontal */
   .case-head{grid-template-columns:1fr;gap:16px}
   .case-card{grid-template-columns:1fr}
@@ -747,6 +903,10 @@ body.landing-reveal .hero-stage::before{
   .case-bar-label{font-size:9.5px}
   .case-inst{padding:8px 10px;gap:10px}
   .case-inst-line1{font-size:13px}
+  .maya-panel,.maya-readout{padding:18px}
+  .maya-transcript{font-size:14px}
+  .maya-dim{grid-template-columns:1fr 90px 38px}
+  .maya-cortex-stage{min-height:320px}
 }
 
 /* Very narrow phones — allow horizontal scroll on the nav row instead of hiding it fully. */
@@ -783,7 +943,7 @@ body.landing-reveal .hero-stage::before{
     <div class="hero-grid">
       <div class="hero-copy reveal">
         <div class="kicker">EQ in AI</div>
-        <h1 class="hero-title">How do you <em>feel?</em></h1>
+        <h1 class="hero-title">How do you <em>feel</em><span class="hero-question">?</span></h1>
         <p class="hero-sub">It is the oldest question in art and the newest question in technology. MindReader takes your content and simulates, region by region, how a brain responds to it.</p>
         <div class="cta-row">
           <a href="/launch" class="btn btn-primary" id="heroCta">Launch a run <span>→</span></a>
@@ -843,73 +1003,75 @@ body.landing-reveal .hero-stage::before{
   <section class="section shell" id="see">
     <div class="reveal">
       <div class="section-eyebrow">See it in action</div>
-      <h2 class="section-title">One message. <em>Seven systems.</em></h2>
-      <p class="section-lead">A run starts with the strongest brain response, then shows the words and systems that likely produced it.</p>
+      <h2 class="section-title">Maya's call. <em>Three brain-readable moments.</em></h2>
+      <p class="section-lead">A salesperson does not need a research report first. They need to see which words pulled focus, felt relevant, or created a gut reaction.</p>
     </div>
-    <div class="compare-grid reveal">
-      <div style="display:flex;flex-direction:column;gap:14px">
-        <div class="compare-card">
-          <div style="display:flex;align-items:center;gap:10px">
-            <span class="compare-tag a">1</span>
-            <h3>Opening hook</h3>
-          </div>
-          <a class="compare-video" href="https://www.youtube.com/watch?v=lBYC4_Lccjw&start=0&end=30" target="_blank" rel="noopener" aria-label="Open example video on YouTube (first 30s)">
-            <img src="https://img.youtube.com/vi/lBYC4_Lccjw/hqdefault.jpg" alt="" loading="lazy" />
-            <span class="compare-video-play" aria-hidden="true">
-              <svg viewBox="0 0 48 48" width="44" height="44"><circle cx="24" cy="24" r="23" fill="rgba(7,8,11,0.72)" stroke="rgba(255,255,255,0.55)"/><path d="M19 15 L34 24 L19 33 Z" fill="#fff"/></svg>
-            </span>
-          </a>
-          <p class="sub">First 30s · setup · context</p>
+    <div class="maya-call-grid reveal">
+      <div class="maya-panel">
+        <div>
+          <div class="maya-eyebrow">Maya's sales-call script</div>
+          <h3>Northstar Revenue opening sequence</h3>
+          <p class="maya-copy">The page turns a normal sales script into a brain-response readout: exact words first, interpretation second.</p>
         </div>
-        <div class="compare-card">
-          <div style="display:flex;align-items:center;gap:10px">
-            <span class="compare-tag b">2</span>
-            <h3>Strongest response</h3>
-          </div>
-          <a class="compare-video" href="https://www.youtube.com/watch?v=0e3GPea1Tyg&start=0&end=30" target="_blank" rel="noopener" aria-label="Open example video on YouTube (first 30s)">
-            <img src="https://img.youtube.com/vi/0e3GPea1Tyg/hqdefault.jpg" alt="" loading="lazy" />
-            <span class="compare-video-play" aria-hidden="true">
-              <svg viewBox="0 0 48 48" width="44" height="44"><circle cx="24" cy="24" r="23" fill="rgba(7,8,11,0.72)" stroke="rgba(255,255,255,0.55)"/><path d="M19 15 L34 24 L19 33 Z" fill="#fff"/></svg>
-            </span>
-          </a>
-          <p class="sub">First 30s · hook · personal stakes</p>
+        <div class="maya-transcript">
+          <b>00:44-01:13 transcript</b>
+          <p>Usually when those two things happen together, someone is trying to ramp reps faster <strong>without making managers listen to every call manually.</strong> Is that close?</p>
         </div>
-      </div>
-      <div class="compare-stage-col">
-        <div class="compare-stage">
-          <canvas id="compareBrain" class="brain-canvas"></canvas>
-          <span class="compare-hotspot hotspot-personal" aria-hidden="true"></span>
-          <span class="compare-hotspot hotspot-gut" aria-hidden="true"></span>
-          <span class="compare-hotspot hotspot-language" aria-hidden="true"></span>
-          <div class="compare-scale">
-            <span>lower activation</span>
-            <div class="bar"></div>
-            <span>higher activation</span>
+        <div class="maya-moments" aria-label="Example report moments">
+          <div class="maya-moment">
+            <span class="maya-moment-num">01</span>
+            <span>
+              <span class="maya-moment-title">Manual review burden grabs attention</span>
+              <span class="maya-moment-sub">Attention · peak · 01:04</span>
+            </span>
+          </div>
+          <div class="maya-moment">
+            <span class="maya-moment-num">02</span>
+            <span>
+              <span class="maya-moment-title">Coaching-method list feels relevant</span>
+              <span class="maya-moment-sub">Personal Resonance · peak · 02:29</span>
+            </span>
+          </div>
+          <div class="maya-moment">
+            <span class="maya-moment-num">03</span>
+            <span>
+              <span class="maya-moment-title">Discovery question keeps gut reaction high</span>
+              <span class="maya-moment-sub">Gut Reaction · sustained · 02:08</span>
+            </span>
           </div>
         </div>
       </div>
-      <div class="readout">
-        <div class="readout-eyebrow">Results preview</div>
-        <div class="readout-headline">See where the content feels personal, where it creates a gut reaction, and where language depth changes.</div>
-        <div class="readout-dims">
-          <div class="rdim">
-            <div class="rdim-label">Personal Resonance</div>
-            <div class="rdim-track"><div class="rdim-fill" style="width:62%;background:var(--accent)"></div></div>
-            <div class="rdim-val pos">0.87</div>
+      <div class="maya-cortex-stage">
+        <canvas id="compareBrain" class="brain-canvas"></canvas>
+        <div class="maya-cortex-badge">Real fsaverage5 · 20,484 vertices</div>
+        <div class="maya-scale">
+          <span>lower activation</span>
+          <div class="bar"></div>
+          <span>higher activation</span>
+        </div>
+      </div>
+      <div class="maya-readout">
+        <div class="maya-eyebrow">Results preview</div>
+        <h3>The strongest read is not "AI coaching." It is the manual work managers want to avoid.</h3>
+        <div class="maya-dims">
+          <div class="maya-dim" style="--dim-color:#5aa2ff">
+            <div class="maya-dim-label">Attention</div>
+            <div class="maya-dim-track"><div class="maya-dim-fill" style="width:89%"></div></div>
+            <div class="maya-dim-val">0.89</div>
           </div>
-          <div class="rdim">
-            <div class="rdim-label">Gut Reaction</div>
-            <div class="rdim-track"><div class="rdim-fill" style="width:44%;background:var(--accent)"></div></div>
-            <div class="rdim-val pos">0.74</div>
+          <div class="maya-dim" style="--dim-color:#7af4de">
+            <div class="maya-dim-label">Personal Resonance</div>
+            <div class="maya-dim-track"><div class="maya-dim-fill" style="width:84%"></div></div>
+            <div class="maya-dim-val">0.84</div>
           </div>
-          <div class="rdim">
-            <div class="rdim-label">Language Depth</div>
-            <div class="rdim-track"><div class="rdim-fill" style="width:24%;background:var(--good)"></div></div>
-            <div class="rdim-val neg">0.42</div>
+          <div class="maya-dim" style="--dim-color:#ff6f8e">
+            <div class="maya-dim-label">Gut Reaction</div>
+            <div class="maya-dim-track"><div class="maya-dim-fill" style="width:80%"></div></div>
+            <div class="maya-dim-val">0.80</div>
           </div>
         </div>
-        <div class="readout-insight">
-          <strong>What this means:</strong> The model turns one piece of content into a brain-response readout. A salesperson can see which words pulled attention, felt personal, created effort, or stayed easy to understand.
+        <div class="maya-insight">
+          <strong>What this means:</strong> Maya's script works best when it names the listener's concrete workflow pain: hiring reps, ramping faster, and avoiding manual call review. The brain readout turns that into a visible signal instead of another transcript summary.
         </div>
       </div>
     </div>
@@ -1050,7 +1212,7 @@ body.landing-reveal .hero-stage::before{
 <footer class="footer">
   <div class="shell">
     <span class="footer-brand">MindReader</span>
-    <span class="footer-credit">Made with <span class="heart" aria-hidden="true">♥</span> by <a href="https://polka.foundation" target="_blank" rel="noopener">Polka Foundation</a> · <a href="https://github.com/" target="_blank" rel="noopener">GitHub</a></span>
+    <span class="footer-credit">Made with <span class="heart" aria-hidden="true">♥</span> <a href="http://cassiniresearch.com/" target="_blank" rel="noopener">Cassini Research</a></span>
   </div>
 </footer>
 

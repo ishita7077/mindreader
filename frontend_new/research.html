@@ -1774,6 +1774,32 @@ path[stroke="#2a2a3e"] { stroke: var(--line); }
     linear-gradient(120deg, #030715 0%, #061737 100%) !important;
 }
 
+.cold-open::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  left: clamp(18px, 5vw, 72px);
+  top: clamp(72px, 9vh, 112px);
+  bottom: clamp(58px, 8vh, 96px);
+  width: min(730px, calc(100% - clamp(36px, 10vw, 144px)));
+  border: 1px solid rgba(88, 221, 255, 0.18);
+  border-radius: 18px;
+  background:
+    linear-gradient(90deg, rgba(0, 0, 0, 0.91), rgba(3, 7, 21, 0.78)),
+    radial-gradient(ellipse at 38% 22%, rgba(88, 221, 255, 0.08), transparent 62%);
+  box-shadow: 0 34px 90px rgba(0, 0, 0, 0.54);
+  backdrop-filter: blur(3px);
+  pointer-events: none;
+}
+
+.cold-open > * {
+  z-index: 2 !important;
+}
+
+.cold-open::before {
+  z-index: 3 !important;
+}
+
 .theme-switcher { display: none !important; }
 .topbar-new {
   max-width: none !important;
@@ -1788,6 +1814,13 @@ path[stroke="#2a2a3e"] { stroke: var(--line); }
       linear-gradient(180deg, rgba(3, 7, 21, 0.72), rgba(3, 7, 21, 0.92)),
       url("/assets/research-cover-brain.png") center top / auto 520px no-repeat,
       linear-gradient(120deg, #030715 0%, #061737 100%) !important;
+  }
+  .cold-open::after {
+    left: 14px;
+    right: 14px;
+    top: 66px;
+    bottom: 42px;
+    width: auto;
   }
 }
 </style>
@@ -1858,8 +1891,7 @@ path[stroke="#2a2a3e"] { stroke: var(--line); }
 <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
 <section class="section">
   <div class="section-header">
-    <div class="section-num">SECTION <strong>01</strong> · THEREFORE</div>
-    <span class="therefore-tag">→ THEREFORE</span>
+    <div class="section-num">SECTION <strong>01</strong></div>
     <h2 class="section-h2">Defining our <em>'brain'</em></h2>
   </div>
 

@@ -8,7 +8,7 @@
 
 ## Product context (60 seconds)
 
-BrainDiff takes two pieces of content (text, audio, or short video, max 30s) and runs them through Meta's **TRIBE v2** brain-prediction model. TRIBE outputs per-second activation across **7 cortical systems**:
+MindReader takes your content and runs it through Meta's **TRIBE v2** brain-prediction model. TRIBE outputs per-second activation across **7 cortical systems**:
 
 | Key | Display name | Region |
 |---|---|---|
