@@ -6,6 +6,8 @@
 <meta name="theme-color" content="#050914" />
 <title>MindReader — EQ in AI</title>
 <meta name="description" content="EQ in AI. MindReader takes your content and simulates, region by region, how a brain responds to it — built on Meta FAIR's TRIBE v2." />
+<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+<link rel="alternate icon" href="/favicon.ico" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
@@ -25,6 +27,8 @@
   --accent:#c1272d; --accent-2:#d94a4e; --accent-3:#f8e9e6;
   --good:#2a5583; --good-2:#4a78ab; --good-3:#e6edf6;
   --brain-stage:#ebe6da; --brain-stage-2:#e0d9ca; --brain-stage-glow:rgba(150,160,185,0.18);
+  --hero-dim-color:#5aa2ff; --hero-dim-glow:rgba(90,162,255,0.35);
+  --lens-dim-color:#5aa2ff; --lens-dim-glow:rgba(90,162,255,0.35);
   --shadow-sm:0 1px 2px rgba(20,20,25,0.04), 0 1px 3px rgba(20,20,25,0.05);
   --shadow-md:0 1px 2px rgba(20,20,25,0.04), 0 8px 24px rgba(20,20,25,0.06);
   --shell-max: 1280px;
@@ -203,7 +207,7 @@ canvas.brain-canvas{width:100%;height:100%;display:block}
 /* Stacked header: label on line 1, anatomy on line 2 — constant card height
    across regions whether the anatomy name is short or long. */
 .hero-dim-head{display:flex;flex-direction:column;align-items:flex-start;gap:4px;margin-bottom:10px}
-.hero-dim-label{font-family:'Fraunces',serif;font-variation-settings:"opsz" 96;font-size:20px;font-weight:400;color:#7ea4d4;letter-spacing:-0.01em;line-height:1.1}
+.hero-dim-label{font-family:'Fraunces',serif;font-variation-settings:"opsz" 96;font-size:20px;font-weight:400;color:var(--hero-dim-color);letter-spacing:-0.01em;line-height:1.1}
 .hero-dim-region{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#8893a8;letter-spacing:0.06em;text-transform:uppercase;line-height:1.35}
 .hero-dim-body{font-size:13.5px;line-height:1.55;color:#d2d6dc;margin:0}
 
@@ -216,14 +220,15 @@ canvas.brain-canvas{width:100%;height:100%;display:block}
 .hero-line-svg.fading{opacity:0.35}
 .hero-line-path{
   fill:none;
-  stroke:rgba(120,160,210,0.55);
+  stroke:var(--hero-dim-color);
   stroke-width:1.2;
   stroke-dasharray:4 4;
   stroke-linecap:round;
+  opacity:.58;
 }
 .hero-line-end{
-  fill:rgba(160,200,240,0.9);
-  filter:drop-shadow(0 0 6px rgba(120,160,210,0.7)) drop-shadow(0 0 14px rgba(120,160,210,0.4));
+  fill:var(--hero-dim-color);
+  filter:drop-shadow(0 0 6px var(--hero-dim-glow)) drop-shadow(0 0 14px var(--hero-dim-glow));
 }
 
 /* Stage foot — pills row + real-world use line, inside the brain stage */
@@ -527,10 +532,11 @@ h2.section-title em{font-style:italic;color:var(--accent);font-variation-setting
 .lens-note{
   position:absolute;bottom:16px;left:16px;right:16px;
   background:rgba(7,8,11,0.82);backdrop-filter:blur(10px);
-  padding:14px 16px;border-radius:10px;border:1px solid rgba(255,255,255,0.08);
+  padding:14px 16px;border-radius:10px;border:1px solid color-mix(in srgb, var(--lens-dim-color) 24%, rgba(255,255,255,0.08));
   color:#e8e4db;
+  box-shadow:0 0 24px var(--lens-dim-glow);
 }
-.lens-note .nm{font-size:14px;font-weight:600;color:#e8e4db;margin-bottom:4px}
+.lens-note .nm{font-size:14px;font-weight:600;color:var(--lens-dim-color);margin-bottom:4px}
 .lens-note .rg{font-size:11.5px;color:#a8a29e;margin-bottom:8px;font-family:'JetBrains Mono',monospace;letter-spacing:0.04em}
 .lens-note .bd{font-size:13px;line-height:1.55;color:#c8c3b8;margin-bottom:8px}
 .lens-note .ct{font-size:11px;color:#8a857b;font-style:italic}
@@ -1165,10 +1171,86 @@ function toggleTheme(){
 </script>
 
 <script type="importmap">
-{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } }
+{ "imports": { "three": "https://unpkg.com/three@0.164.1/build/three.module.js" } }
 </script>
 <script type="module">
 import * as THREE from "three";
+import { mountCortex } from "./assets/cortex-viewer-neon.js?v=28";
+
+const LANDING_DIMENSIONS = {
+  personal_resonance: {
+    resultKey: 'personal_resonance',
+    color: '#7af4de',
+    label: 'Personal Resonance',
+    region: 'Medial prefrontal cortex (mPFC)',
+    body: "Tracks whether a message feels like it is about you. Activation here has predicted real-world behaviour change where self-reports missed it entirely.",
+    use:  "Anti-smoking PSA testing · Falk et al. showed mPFC predicts population quit rates"
+  },
+  attention_salience: {
+    resultKey: 'attention',
+    color: '#5aa2ff',
+    label: 'Attention',
+    region: 'Dorsal attention network',
+    body: "Where the reader locks focus. This network lights up when something breaks the rhythm of what came before — novelty, urgency, a sharp cut, a personal stake.",
+    use:  "Super Bowl ad testing · Nielsen / Neuro-Insight · $8M per airing"
+  },
+  brain_effort: {
+    resultKey: 'brain_effort',
+    color: '#a994ff',
+    label: 'Brain Effort',
+    region: 'Dorsolateral prefrontal cortex (dlPFC)',
+    body: "How hard the brain is working to parse the message. Higher effort is fine when the payoff is big — and costly when the reader can just leave.",
+    use:  "CFPB mortgage-form simplification · financial disclosure UX"
+  },
+  gut_reaction: {
+    resultKey: 'gut_reaction',
+    color: '#ff6f8e',
+    label: 'Gut Reaction',
+    region: 'Anterior insula',
+    body: "The visceral, felt edge of a message. Sensitive to urgency, moral weight, personal risk — the reaction that arrives before language catches up.",
+    use:  "Public-health fear appeals (WHO) · insurance (Allstate \"Mayhem\")"
+  },
+  memory_encoding: {
+    resultKey: 'memory_encoding',
+    color: '#ffd94a',
+    label: 'Memory Encoding',
+    region: 'Left ventrolateral prefrontal cortex',
+    body: "Not what the reader feels now — what they will still remember tomorrow. Two pieces of content can feel equal in the moment and differ sharply in what sticks.",
+    use:  "Mars, Mondelez, Coca-Cola · long-term campaign ROI (sales 6 months out)"
+  },
+  social_thinking: {
+    resultKey: 'social_thinking',
+    color: '#ff914d',
+    label: 'Social Thinking',
+    region: 'Temporoparietal junction (TPJ)',
+    body: "The cortical system for modelling other minds — figuring out intent, relationship, what a character is about to do.",
+    use:  "Netflix thumbnail + trailer testing · which shot makes viewers infer intent"
+  },
+  language_depth: {
+    resultKey: 'language_depth',
+    color: '#84d6ff',
+    label: 'Language Depth',
+    region: "Broca's + Wernicke's network",
+    body: "Structural and semantic parsing. Stronger activation means more meaning is being pulled out of the words themselves.",
+    use:  "Pharma consent-form comprehension · legal-disclosure testing"
+  },
+};
+
+function resultRoiKey(key){
+  return LANDING_DIMENSIONS[key]?.resultKey || key;
+}
+function hexToRgb(hex){
+  const value = String(hex || '').replace('#', '');
+  const n = Number.parseInt(value.length === 3 ? value.split('').map(ch => ch + ch).join('') : value, 16);
+  if (!Number.isFinite(n)) return [90, 162, 255];
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+}
+function setLandingAccent(scope, key){
+  const color = LANDING_DIMENSIONS[key]?.color || '#5aa2ff';
+  const [r, g, b] = hexToRgb(color);
+  document.documentElement.style.setProperty(`--${scope}-dim-color`, color);
+  document.documentElement.style.setProperty(`--${scope}-dim-glow`, `rgba(${r},${g},${b},0.35)`);
+}
 
 /* ---------------------------------------------------------------------------
    Real fsaverage5 mesh loader (shared cache — one fetch per page).
@@ -2064,12 +2146,125 @@ const heroCanvas = document.getElementById('heroBrain');
 const compareCanvas = document.getElementById('compareBrain');
 const lensCanvas = document.getElementById('lensBrain');
 
-if(heroCanvas) mountBrain(heroCanvas, {
-  rotation:true,
-  rotationSpeed:0.05,          // slower — give the reader time to read the card
-  useRealMesh:true,
-  cycleRegions:true,           // alternate Attention ↔ Memory encoding highlight
-});
+function updateHeroPills(key){
+  const pillsEl = document.getElementById('heroPills');
+  if (!pillsEl) return;
+  pillsEl.querySelectorAll('.hero-pill').forEach(p => {
+    p.classList.toggle('is-active', p.dataset.key === key);
+  });
+}
+function updateHeroCopy(key, fade = true){
+  const c = LANDING_DIMENSIONS[key];
+  if (!c) return;
+  const card = document.getElementById('heroDimCard');
+  const useLn = document.getElementById('heroUseLine');
+  const apply = () => {
+    const nmEl = document.getElementById('heroDimLabel');
+    const rgEl = document.getElementById('heroDimRegion');
+    const bdEl = document.getElementById('heroDimBody');
+    const useEl = document.getElementById('heroUseText');
+    if (nmEl) nmEl.textContent = c.label;
+    if (rgEl) rgEl.textContent = c.region;
+    if (bdEl) bdEl.textContent = c.body;
+    if (useEl) useEl.textContent = c.use;
+    if (card) card.classList.remove('fading');
+    if (useLn) useLn.classList.remove('fading');
+  };
+  setLandingAccent('hero', key);
+  updateHeroPills(key);
+  if (!fade) {
+    apply();
+    return;
+  }
+  if (card) card.classList.add('fading');
+  if (useLn) useLn.classList.add('fading');
+  setTimeout(apply, 220);
+}
+function setupHeroCortex(ctrl){
+  const autoOrder = ['attention_salience', 'memory_encoding'];
+  let autoIdx = 0;
+  let autoTimer = null;
+  let resumeTimer = null;
+  const go = (key, fade = true) => {
+    updateHeroCopy(key, fade);
+    if (ctrl?.setRoi) ctrl.setRoi(resultRoiKey(key));
+    if (ctrl?.setRoiIntensity) ctrl.setRoiIntensity(1);
+  };
+  const startAuto = () => {
+    if (autoTimer) return;
+    autoTimer = setInterval(() => {
+      autoIdx = (autoIdx + 1) % autoOrder.length;
+      go(autoOrder[autoIdx]);
+    }, 8000);
+  };
+  const stopAuto = () => {
+    if (autoTimer) {
+      clearInterval(autoTimer);
+      autoTimer = null;
+    }
+  };
+  const cancelResume = () => {
+    if (resumeTimer) {
+      clearTimeout(resumeTimer);
+      resumeTimer = null;
+    }
+  };
+  const scheduleResume = () => {
+    cancelResume();
+    resumeTimer = setTimeout(() => {
+      autoIdx = 0;
+      go(autoOrder[autoIdx]);
+      startAuto();
+    }, 320);
+  };
+  const pillsEl = document.getElementById('heroPills');
+  if (pillsEl) {
+    pillsEl.querySelectorAll('.hero-pill[data-key]').forEach(pill => {
+      const key = pill.dataset.key;
+      const activate = () => {
+        cancelResume();
+        stopAuto();
+        go(key);
+      };
+      pill.addEventListener('mouseenter', activate);
+      pill.addEventListener('focus', activate);
+      pill.addEventListener('click', activate);
+      pill.addEventListener('mouseleave', scheduleResume);
+    });
+  }
+  go(autoOrder[autoIdx], false);
+  startAuto();
+}
+async function mountSharedLandingCortex(canvas, initialKey){
+  try {
+    const ctrl = await mountCortex({
+      canvas,
+      roiHighlight: resultRoiKey(initialKey),
+      roiIntensity: 1,
+      cameraDistance: 5.7,
+    });
+    if (!ctrl || ctrl.isReal === false) return null;
+    return ctrl;
+  } catch (err) {
+    console.warn('[MindReader] shared cortex viewer failed on landing page; using fallback brain.', err);
+    return null;
+  }
+}
+
+if(heroCanvas) {
+  mountSharedLandingCortex(heroCanvas, 'attention_salience').then(ctrl => {
+    if (ctrl) {
+      setupHeroCortex(ctrl);
+      return;
+    }
+    mountBrain(heroCanvas, {
+      rotation:true,
+      rotationSpeed:0.05,
+      useRealMesh:true,
+      cycleRegions:true,
+    });
+  });
+}
 
 // Mock per-region activations for the preview section. Production result pages
 // use run-specific values returned by the backend.
@@ -2090,13 +2285,28 @@ if(compareCanvas) mountBrain(compareCanvas, {
 });
 
 let lensCtrl = null;
-if(lensCanvas) lensCtrl = mountBrain(lensCanvas, {
-  rotation:true,
-  rotationSpeed:0.05,
-  useRealMesh:true,
-  lensMode:true,
-  initialRegion:'attention_salience',
-});
+if(lensCanvas) {
+  setLandingAccent('lens', 'attention_salience');
+  mountSharedLandingCortex(lensCanvas, 'attention_salience').then(ctrl => {
+    if (ctrl) {
+      lensCtrl = {
+        setHighlight(key){
+          if (ctrl.setRoi) ctrl.setRoi(resultRoiKey(key));
+          if (ctrl.setRoiIntensity) ctrl.setRoiIntensity(1);
+        },
+        dispose: ctrl.dispose ? () => ctrl.dispose() : () => {},
+      };
+      return;
+    }
+    lensCtrl = mountBrain(lensCanvas, {
+      rotation:true,
+      rotationSpeed:0.05,
+      useRealMesh:true,
+      lensMode:true,
+      initialRegion:'attention_salience',
+    });
+  });
+}
 
 // Display order used on the result page: Personal → Attention → Effort →
 // Gut → Memory → Social → Language.
@@ -2148,6 +2358,7 @@ document.querySelectorAll('.lens-pill').forEach(pill=>{
       document.getElementById('lensCt').innerHTML = c.ct;
     }
     renderLabChips(k);
+    setLandingAccent('lens', k);
     if(lensCtrl && lensCtrl.setHighlight) lensCtrl.setHighlight(k);
   });
 });
