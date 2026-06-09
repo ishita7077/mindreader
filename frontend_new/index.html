@@ -2376,16 +2376,21 @@ function updateHeroPills(key){
     p.classList.toggle('is-active', p.dataset.key === key);
   });
 }
+let heroCopySeq = 0;
 function updateHeroCopy(key, fade = true){
   const c = LANDING_DIMENSIONS[key];
   if (!c) return;
+  const seq = ++heroCopySeq;
   const card = document.getElementById('heroDimCard');
   const useLn = document.getElementById('heroUseLine');
   const apply = () => {
+    if (seq !== heroCopySeq) return;
     const nmEl = document.getElementById('heroDimLabel');
     const rgEl = document.getElementById('heroDimRegion');
     const bdEl = document.getElementById('heroDimBody');
     const useEl = document.getElementById('heroUseText');
+    setLandingAccent('hero', key);
+    updateHeroPills(key);
     if (nmEl) nmEl.textContent = c.label;
     if (rgEl) rgEl.textContent = c.region;
     if (bdEl) bdEl.textContent = c.body;
@@ -2393,8 +2398,6 @@ function updateHeroCopy(key, fade = true){
     if (card) card.classList.remove('fading');
     if (useLn) useLn.classList.remove('fading');
   };
-  setLandingAccent('hero', key);
-  updateHeroPills(key);
   if (!fade) {
     apply();
     return;
