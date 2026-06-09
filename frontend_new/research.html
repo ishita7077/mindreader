@@ -1769,9 +1769,9 @@ path[stroke="#2a2a3e"] { stroke: var(--line); }
 .cold-open {
   min-height: min(760px, calc(100vh - 90px)) !important;
   background:
-    linear-gradient(90deg, rgba(3, 7, 21, 0.99) 0%, rgba(3, 7, 21, 0.98) 43%, rgba(3, 7, 21, 0.62) 72%, rgba(3, 7, 21, 0.34) 100%),
-    linear-gradient(180deg, rgba(3, 7, 21, 0.30), rgba(3, 7, 21, 0.62)),
-    url("/assets/research-cover-brain.png") center center / cover no-repeat,
+    radial-gradient(circle at 76% 38%, rgba(88, 221, 255, 0.18), transparent 34%),
+    linear-gradient(90deg, rgba(3, 7, 21, 0.99) 0%, rgba(3, 7, 21, 0.93) 41%, rgba(3, 7, 21, 0.62) 67%, rgba(3, 7, 21, 0.22) 100%),
+    linear-gradient(180deg, rgba(3, 7, 21, 0.22), rgba(3, 7, 21, 0.72)),
     linear-gradient(120deg, #030715 0%, #061737 100%) !important;
 }
 
@@ -1785,14 +1785,44 @@ path[stroke="#2a2a3e"] { stroke: var(--line); }
   width: min(700px, calc(100% - clamp(36px, 10vw, 144px)));
   border: 1px solid rgba(88, 221, 255, 0.18);
   border-radius: 18px;
-  background: #02050e;
-  box-shadow: 0 34px 90px rgba(0, 0, 0, 0.68);
-  backdrop-filter: none;
+  background:
+    linear-gradient(180deg, rgba(2, 5, 14, 0.94), rgba(2, 5, 14, 0.86)),
+    linear-gradient(rgba(88, 221, 255, 0.035) 1px, transparent 1px);
+  background-size: auto, 100% 7px;
+  box-shadow: 0 34px 90px rgba(0, 0, 0, 0.54);
+  backdrop-filter: blur(10px);
   pointer-events: none;
 }
 
+.research-hero-art {
+  position: absolute;
+  z-index: 0 !important;
+  inset: 0 0 0 auto;
+  width: min(72vw, 1060px);
+  height: 100%;
+  background: url("/assets/research-cover-brain-clean.png") center center / cover no-repeat;
+  opacity: 0.92;
+  filter: saturate(1.08) contrast(1.04);
+  pointer-events: none;
+}
+
+.research-hero-chip {
+  position: absolute;
+  left: clamp(22px, 5vw, 70px);
+  bottom: clamp(64px, 10vh, 100px);
+  padding: 10px 16px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 187, 74, 0.28);
+  background: rgba(5, 9, 24, 0.78);
+  color: rgba(255, 187, 74, 0.96);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.32);
+  font: 600 12px/1 "JetBrains Mono", monospace;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
 .cold-open .cold-frame {
-  background: #061124 !important;
+  background: rgba(6, 17, 36, 0.78) !important;
 }
 
 .cold-open > * {
@@ -1815,9 +1845,17 @@ path[stroke="#2a2a3e"] { stroke: var(--line); }
   .cold-open {
     min-height: min(720px, calc(100vh - 82px)) !important;
     background:
-      linear-gradient(180deg, rgba(3, 7, 21, 0.90), rgba(3, 7, 21, 0.96)),
-      url("/assets/research-cover-brain.png") center top / auto 520px no-repeat,
+      linear-gradient(180deg, rgba(3, 7, 21, 0.78), rgba(3, 7, 21, 0.97)),
       linear-gradient(120deg, #030715 0%, #061737 100%) !important;
+  }
+  .research-hero-art {
+    inset: 0;
+    width: 100%;
+    opacity: 0.42;
+    background-size: cover;
+  }
+  .research-hero-chip {
+    display: none;
   }
   .cold-open::after {
     left: 14px;
@@ -1852,6 +1890,9 @@ path[stroke="#2a2a3e"] { stroke: var(--line); }
 <!-- COLD OPEN -->
 <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
 <section class="cold-open">
+  <div class="research-hero-art" aria-hidden="true">
+    <span class="research-hero-chip">Gut Reaction 0.94</span>
+  </div>
   <!-- Rotating brain outline behind hero, low-contrast, ambient -->
   <div class="hero-brain-bg" aria-hidden="true">
     <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">

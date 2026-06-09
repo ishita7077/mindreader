@@ -43,6 +43,16 @@ const ROI_COLORS = {
   visual: [1.0, 0.57, 0.30],
 };
 
+const ROI_CAMERA = {
+  personal_resonance: { position: [-1.15, 1.75, 5.2], target: [-0.05, 0.36, 0.14] },
+  attention: { position: [-2.45, 1.45, 5.05], target: [-0.12, 0.24, 0.08] },
+  brain_effort: { position: [-2.95, 1.85, 4.42], target: [-0.32, 0.24, 0.22] },
+  gut_reaction: { position: [-4.10, 0.68, 3.92], target: [-0.48, -0.10, 0.00] },
+  memory_encoding: { position: [-3.75, 1.02, 4.18], target: [-0.52, 0.02, 0.02] },
+  social_thinking: { position: [-3.70, 1.25, 3.88], target: [-0.58, -0.18, 0.10] },
+  language_depth: { position: [-4.28, 0.92, 3.54], target: [-0.62, 0.00, 0.08] },
+};
+
 function decodeFloat32B64(b64) {
   if (!b64 || typeof b64 !== "string") return new Float32Array(0);
   const raw = atob(b64);
@@ -220,8 +230,8 @@ function surfaceGrain(i) {
 function paintColors(geometry, vertexDelta, view, roi, themeIsDark, roiIntensity = 1, roiColor = ROI_COLORS.attention) {
   const colorAttr = geometry.attributes.color;
   if (!colorAttr) return;
-  const baseDark = [0.015, 0.10, 0.40];
-  const baseLight = [0.035, 0.16, 0.52];
+  const baseDark = [0.010, 0.09, 0.46];
+  const baseLight = [0.030, 0.16, 0.58];
   const [bR, bG, bB] = themeIsDark ? baseDark : baseLight;
   const aColor = [0.10, 0.82, 1.0];    // cyan outer activation
   const bColor = [0.86, 0.58, 0.96];    // restrained violet-peach activation
@@ -274,7 +284,7 @@ function paintColors(geometry, vertexDelta, view, roi, themeIsDark, roiIntensity
       // this is a restrained tint; when it does not, the tint is stronger so
       // the brain still visibly tracks the selected system.
       const hasPaint = vertexDelta && vertexDelta.length;
-      const strength = (hasPaint ? 0.46 : 0.82) * Math.max(0.20, Math.min(1, roiIntensity));
+      const strength = (hasPaint ? 0.50 : 0.88) * Math.max(0.20, Math.min(1, roiIntensity));
       const [hR, hG, hB] = roiColor;
       const whiteHot = Math.max(0, Math.min(1, roiIntensity)) ** 0.75;
       const hotR = hR * 0.62 + 1.0 * 0.38;
@@ -283,7 +293,7 @@ function paintColors(geometry, vertexDelta, view, roi, themeIsDark, roiIntensity
       r = r * (1 - strength) + hotR * strength;
       g = g * (1 - strength) + hotG * strength;
       b = b * (1 - strength) + hotB * strength;
-      const lift = 0.34 * Math.max(0.18, whiteHot);
+      const lift = 0.28 * Math.max(0.18, whiteHot);
       r = Math.min(1, r + hotR * lift);
       g = Math.min(1, g + hotG * lift);
       b = Math.min(1, b + hotB * lift);
@@ -353,7 +363,7 @@ export async function mountCortex({
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.08;
+  renderer.toneMappingExposure = 1.04;
   renderer.setClearColor(0x000000, 0);
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 100);
@@ -383,19 +393,19 @@ export async function mountCortex({
   controls.autoRotateSpeed = 0.4;
 
   scene.add(new THREE.HemisphereLight(0x3ccfff, 0x02030a, 0.34));
-  const key = new THREE.DirectionalLight(0x67c6ff, 1.9); key.position.set(1.2, 4.5, 2.2); scene.add(key);
-  const fill = new THREE.DirectionalLight(0x0b2f8f, 0.82); fill.position.set(-3, 0.5, 1.5); scene.add(fill);
-  const rim = new THREE.PointLight(0x1bbcff, 2.3, 7); rim.position.set(-2.4, 0.7, 2.6); scene.add(rim);
-  const hot = new THREE.PointLight(0xffd94a, 1.4, 6); hot.position.set(1.8, -0.9, 2.4); scene.add(hot);
+  const key = new THREE.DirectionalLight(0x67c6ff, 1.72); key.position.set(1.2, 4.5, 2.2); scene.add(key);
+  const fill = new THREE.DirectionalLight(0x0b2f8f, 0.74); fill.position.set(-3, 0.5, 1.5); scene.add(fill);
+  const rim = new THREE.PointLight(0x1bbcff, 1.84, 7); rim.position.set(-2.4, 0.7, 2.6); scene.add(rim);
+  const hot = new THREE.PointLight(0xffd94a, 1.16, 6); hot.position.set(1.8, -0.9, 2.4); scene.add(hot);
 
   const glow = { color: { value: new THREE.Color("#4cc9ff") }, intensity: { value: 0.0 } };
   const material = new THREE.MeshStandardMaterial({
-    color: new THREE.Color(0x0d37a7),
+    color: new THREE.Color(0x0847d4),
     roughness: 0.66,
     metalness: 0.0,
     vertexColors: true,
     emissive: new THREE.Color(0x03113a),
-    emissiveIntensity: 0.17,
+    emissiveIntensity: 0.13,
   });
   material.onBeforeCompile = (shader) => {
     shader.uniforms.uGlow = glow.color;
@@ -404,8 +414,8 @@ export async function mountCortex({
       shader.vertexShader.replace("void main() {", "void main() {\n  vRoi = aRoi;\n  vSulc = sulc;");
     shader.fragmentShader = "uniform vec3 uGlow;\nuniform float uInt;\nvarying float vRoi;\nvarying float vSulc;\n" +
       shader.fragmentShader
-        .replace("#include <emissivemap_fragment>", "#include <emissivemap_fragment>\n  vec3 hotGlow = mix(uGlow, vec3(1.0, 0.94, 0.54), clamp(vRoi * uInt * 0.62, 0.0, 1.0));\n  totalEmissiveRadiance += hotGlow * vRoi * uInt * 1.28;")
-        .replace("#include <color_fragment>", "#include <color_fragment>\n  float sulcShade = clamp(-vSulc * 0.8, 0.0, 1.0);\n  diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.005, 0.025, 0.13), sulcShade * 0.48);\n  diffuseColor.rgb += vec3(0.015, 0.075, 0.18);\n  vec3 hotColor = mix(uGlow, vec3(1.0, 0.96, 0.62), clamp(vRoi * uInt * 0.68, 0.0, 1.0));\n  diffuseColor.rgb = mix(diffuseColor.rgb, hotColor, clamp(vRoi * uInt * 0.82, 0.0, 0.92));");
+        .replace("#include <emissivemap_fragment>", "#include <emissivemap_fragment>\n  vec3 hotGlow = mix(uGlow, vec3(1.0, 0.94, 0.54), clamp(vRoi * uInt * 0.62, 0.0, 1.0));\n  totalEmissiveRadiance += hotGlow * vRoi * uInt * 1.02;")
+        .replace("#include <color_fragment>", "#include <color_fragment>\n  float sulcShade = clamp(-vSulc * 0.8, 0.0, 1.0);\n  diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.005, 0.025, 0.13), sulcShade * 0.48);\n  diffuseColor.rgb += vec3(0.012, 0.082, 0.22);\n  vec3 hotColor = mix(uGlow, vec3(1.0, 0.96, 0.62), clamp(vRoi * uInt * 0.68, 0.0, 1.0));\n  diffuseColor.rgb = mix(diffuseColor.rgb, hotColor, clamp(vRoi * uInt * 0.72, 0.0, 0.86));");
   };
   const mesh = new THREE.Mesh(geometry, material);
   mesh.rotation.set(0.06, -0.45, 0);
@@ -414,7 +424,7 @@ export async function mountCortex({
   const rimMaterial = new THREE.MeshBasicMaterial({
     color: 0x45dfff,
     transparent: true,
-    opacity: 0.05,
+    opacity: 0.04,
     blending: THREE.AdditiveBlending,
     side: THREE.BackSide,
     depthWrite: false,
@@ -439,13 +449,13 @@ export async function mountCortex({
   function repaint(view) {
     updateRoiAttribute();
     paintColors(geometry, VIEW_DELTAS[view], view, roi, true, roiIntensity, roiColorFor(roiKind));
-    glow.intensity.value = 0.27 + Math.max(0, Math.min(1, roiIntensity)) * 0.83;
+    glow.intensity.value = 0.22 + Math.max(0, Math.min(1, roiIntensity)) * 0.62;
   }
   repaint(currentView);
 
   const composer = new EffectComposer(renderer);
   composer.addPass(new RenderPass(scene, camera));
-  const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.58, 0.36, 0.58);
+  const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.46, 0.36, 0.58);
   composer.addPass(bloom);
 
   const ro = new ResizeObserver(() => {
@@ -460,8 +470,26 @@ export async function mountCortex({
 
   let raf = 0;
   let disposed = false;
+  let cameraGoal = null;
+  function focusRoi(kind) {
+    const cfg = ROI_CAMERA[roiKey(kind)] || ROI_CAMERA[kind];
+    if (!cfg) return;
+    const distScale = (cameraDistance || 5.3) / 5.3;
+    cameraGoal = {
+      position: new THREE.Vector3(cfg.position[0], cfg.position[1], cfg.position[2] * distScale),
+      target: new THREE.Vector3(cfg.target[0], cfg.target[1], cfg.target[2]),
+    };
+    controls.autoRotate = false;
+  }
   function loop() {
     if (disposed) return;
+    if (cameraGoal) {
+      camera.position.lerp(cameraGoal.position, 0.055);
+      controls.target.lerp(cameraGoal.target, 0.055);
+      if (camera.position.distanceTo(cameraGoal.position) < 0.018 && controls.target.distanceTo(cameraGoal.target) < 0.012) {
+        cameraGoal = null;
+      }
+    }
     controls.update();
     composer.render();
     raf = requestAnimationFrame(loop);
@@ -488,7 +516,9 @@ export async function mountCortex({
       roiIntensity = Number.isFinite(Number(value)) ? Number(value) : 1;
       repaint(currentView);
     },
+    focusRoi,
     reset() {
+      cameraGoal = null;
       camera.position.set(-2.65, 1.18, cameraDistance || 6.35);
       controls.target.set(0, 0, 0);
       mesh.rotation.set(0.06, -0.45, 0);

@@ -363,194 +363,216 @@ h2.section-title em{font-style:italic;color:var(--accent);font-variation-setting
 .rdim-val.neg{color:var(--good)}
 .readout-insight{background:color-mix(in srgb,var(--surface) 70%,var(--bg-2));border:1px solid var(--line);border:1px solid color-mix(in srgb,var(--accent) 20%,transparent);border-left:3px solid var(--accent);border-radius:8px;padding:11px 13px;font-size:12.5px;color:var(--ink-dim);line-height:1.55}
 .readout-insight strong{color:var(--ink)}
-.maya-call-grid{
+.maya-read-section{padding-top:78px}
+.maya-read-layout{
   display:grid;
-  grid-template-columns:minmax(260px,.86fr) minmax(340px,1.08fr) minmax(290px,.9fr);
-  gap:22px;
+  grid-template-columns:minmax(0,1.24fr) minmax(320px,.76fr);
+  gap:26px;
   align-items:stretch;
+  margin-top:34px;
 }
-.maya-panel,
-.maya-readout{
+.maya-reader-card,
+.maya-systems-card,
+.maya-live-insight{
   position:relative;
+  border:1px solid rgba(88,221,255,.16);
+  border-radius:16px;
   background:
-    linear-gradient(180deg,rgba(8,18,38,.88),rgba(5,10,24,.72)),
-    var(--panel);
-  border:1px solid rgba(88,221,255,.18);
-  border-radius:14px;
-  box-shadow:0 24px 70px rgba(0,0,0,.28);
-  backdrop-filter:blur(10px);
+    linear-gradient(180deg,rgba(8,20,42,.84),rgba(5,11,25,.72)),
+    rgba(3,8,20,.8);
+  box-shadow:0 24px 80px rgba(0,0,0,.34);
   overflow:hidden;
 }
-.maya-panel::before,
-.maya-readout::before{
+.maya-reader-card::before,
+.maya-systems-card::before,
+.maya-live-insight::before{
   content:"";
   position:absolute;
   inset:0;
   background:
-    linear-gradient(rgba(88,221,255,.045) 1px, transparent 1px),
-    linear-gradient(90deg,rgba(88,221,255,.03) 1px, transparent 1px);
-  background-size:100% 7px, 48px 100%;
+    linear-gradient(rgba(88,221,255,.035) 1px, transparent 1px),
+    linear-gradient(90deg,rgba(88,221,255,.025) 1px, transparent 1px);
+  background-size:100% 7px, 56px 100%;
+  opacity:.54;
   pointer-events:none;
-  opacity:.5;
 }
-.maya-panel{padding:22px;display:flex;flex-direction:column;gap:18px}
-.maya-readout{padding:24px;display:flex;flex-direction:column;gap:18px}
-.maya-eyebrow{
-  font-family:'JetBrains Mono',monospace;
-  font-size:10px;
-  letter-spacing:.16em;
-  text-transform:uppercase;
-  color:#58ddff;
-}
-.maya-panel h3,
-.maya-readout h3{
-  margin:0;
-  color:#f4f7ff;
-  font-size:clamp(22px,2vw,30px);
-  line-height:1.08;
-  letter-spacing:-.02em;
-}
-.maya-copy{margin:0;color:#b7c3d8;font-size:14px;line-height:1.55}
-.maya-transcript{
-  border:1px solid rgba(88,221,255,.22);
-  border-left:3px solid #58ddff;
-  border-radius:10px;
-  padding:14px 15px;
-  background:rgba(5,14,32,.6);
-}
-.maya-transcript b{
-  display:block;
-  margin-bottom:8px;
-  font-family:'JetBrains Mono',monospace;
-  font-size:10px;
-  letter-spacing:.14em;
-  text-transform:uppercase;
-  color:#58ddff;
-}
-.maya-transcript p{margin:0;color:#edf5ff;font-size:15px;line-height:1.5}
-.maya-transcript strong{color:#ffd94a;font-weight:600}
-.maya-moments{display:flex;flex-direction:column;gap:12px;margin-top:auto}
-.maya-moment{
-  display:grid;
-  grid-template-columns:30px 1fr;
-  gap:13px;
-  align-items:start;
-  padding:15px 15px 16px;
-  border:1px solid color-mix(in srgb,var(--moment-color,#58ddff) 26%,rgba(255,255,255,.08));
-  border-radius:10px;
-  background:
-    radial-gradient(circle at 0 0,color-mix(in srgb,var(--moment-color,#58ddff) 10%,transparent),transparent 42%),
-    linear-gradient(180deg,rgba(10,24,48,.66),rgba(4,12,28,.46));
-}
-.maya-moment-num{
-  display:grid;
-  place-items:center;
-  width:24px;
-  height:24px;
-  border-radius:7px;
-  background:color-mix(in srgb,var(--moment-color,#58ddff) 15%,rgba(5,14,32,.55));
-  border:1px solid color-mix(in srgb,var(--moment-color,#58ddff) 34%,rgba(255,255,255,.08));
-  color:var(--moment-color,#58ddff);
-  font:600 11px/1 'JetBrains Mono',monospace;
-}
-.maya-moment-kicker{
-  display:block;
-  margin-bottom:6px;
-  color:var(--moment-color,#58ddff);
-  font:600 9.5px/1 'JetBrains Mono',monospace;
-  letter-spacing:.15em;
-  text-transform:uppercase;
-}
-.maya-moment-title{display:block;color:#f5f8ff;font-size:15.5px;font-weight:750;line-height:1.16;letter-spacing:-.012em}
-.maya-moment-sub{display:block;margin-top:7px;color:#b4c2d6;font:13px/1.4 Inter,system-ui,sans-serif;letter-spacing:0;text-transform:none}
-.maya-system-pills{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
-.maya-system-pill{
-  display:inline-flex;
-  align-items:center;
-  gap:6px;
-  min-height:23px;
-  padding:4px 8px;
-  border-radius:999px;
-  border:1px solid color-mix(in srgb,var(--system-color) 36%,rgba(255,255,255,.10));
-  background:color-mix(in srgb,var(--system-color) 7%,rgba(5,14,32,.46));
-  color:#93a4bd;
-  font:10px/1 'JetBrains Mono',monospace;
-  letter-spacing:.04em;
-  white-space:nowrap;
-}
-.maya-system-pill::before{
-  content:"";
-  width:6px;
-  height:6px;
-  border-radius:50%;
-  background:var(--system-color);
-  box-shadow:0 0 10px color-mix(in srgb,var(--system-color) 58%,transparent);
-}
-.maya-readout .maya-dims{opacity:.74}
-.maya-readout .maya-insight{border-left-color:#ffd94a;background:rgba(88,221,255,.075)}
-.maya-cortex-stage{
-  position:relative;
-  min-height:470px;
-  border:1px solid rgba(88,221,255,.18);
-  border-radius:14px;
-  overflow:hidden;
-  background:
-    radial-gradient(circle at 50% 38%, rgba(88,221,255,.12), transparent 42%),
-    #020309;
-  box-shadow:0 30px 90px rgba(0,0,0,.46);
-}
-.maya-cortex-stage canvas{width:100%;height:100%;display:block}
-.maya-cortex-badge{
+.maya-reader-card{min-height:390px;padding:34px;display:flex;flex-direction:column;justify-content:center}
+.maya-reading-top{
   position:absolute;
-  top:14px;
-  left:50%;
-  transform:translateX(-50%);
-  border:1px solid rgba(88,221,255,.38);
-  border-radius:999px;
-  padding:7px 13px;
-  color:#b9d7ff;
-  background:rgba(3,7,18,.72);
-  font:10px/1 'JetBrains Mono',monospace;
-  letter-spacing:.12em;
-  text-transform:uppercase;
-}
-.maya-scale{
-  position:absolute;
-  left:18px;
-  right:18px;
-  bottom:16px;
+  left:34px;
+  top:28px;
+  right:34px;
   display:flex;
   align-items:center;
-  gap:10px;
-  color:#77839d;
+  justify-content:space-between;
+  gap:14px;
+}
+.maya-reading-status{
+  display:inline-flex;
+  align-items:center;
+  gap:9px;
+  color:#9fb2cc;
   font:10px/1 'JetBrains Mono',monospace;
+  letter-spacing:.22em;
+  text-transform:uppercase;
+}
+.maya-reading-status::before{
+  content:"";
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:#58ddff;
+  box-shadow:0 0 16px rgba(88,221,255,.7);
+}
+.maya-signal-chip{
+  --moment-color:#58ddff;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:8px 12px;
+  border-radius:8px;
+  border:1px solid color-mix(in srgb,var(--moment-color) 44%,rgba(255,255,255,.12));
+  color:#fff;
+  background:rgba(3,8,20,.62);
+  box-shadow:0 0 24px color-mix(in srgb,var(--moment-color) 18%,transparent);
+  font:700 11px/1 'JetBrains Mono',monospace;
   letter-spacing:.08em;
+  text-transform:uppercase;
 }
-.maya-scale span:first-child{white-space:nowrap}
-.maya-scale .bar{
-  flex:1;
-  height:4px;
+.maya-signal-chip span{color:var(--moment-color)}
+.maya-reader-text{
+  max-width:760px;
+  margin-top:52px;
+  color:#edf5ff;
+  font-size:clamp(28px,3.25vw,46px);
+  line-height:1.55;
+  font-weight:780;
+  letter-spacing:-.025em;
+}
+.maya-reader-text .muted{color:rgba(141,160,188,.34)}
+.maya-reader-text .pre{color:rgba(235,244,255,.92)}
+.maya-reader-text .hot{
+  color:#fff;
+  text-shadow:0 0 22px color-mix(in srgb,var(--moment-color,#58ddff) 46%,transparent);
+}
+.maya-systems-card{padding:30px}
+.maya-systems-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:22px;
+}
+.maya-systems-title{
+  color:#58ddff;
+  font:700 11px/1 'JetBrains Mono',monospace;
+  letter-spacing:.28em;
+  text-transform:uppercase;
+}
+.maya-systems-time{
+  color:#9fb2cc;
+  font:600 12px/1 'JetBrains Mono',monospace;
+}
+.maya-system-row{
+  --system-color:#58ddff;
+  display:grid;
+  grid-template-columns:1fr 80px 44px;
+  gap:12px;
+  align-items:center;
+  padding:10px 0;
+  color:#b8c8df;
+}
+.maya-system-row + .maya-system-row{border-top:1px solid rgba(255,255,255,.06)}
+.maya-system-row strong{font-size:14px}
+.maya-system-bar{height:5px;border-radius:999px;background:rgba(255,255,255,.10);overflow:hidden}
+.maya-system-bar span{
+  display:block;
+  height:100%;
+  width:var(--w,0%);
+  border-radius:inherit;
+  background:var(--system-color);
+  box-shadow:0 0 14px color-mix(in srgb,var(--system-color) 38%,transparent);
+}
+.maya-system-val{
+  color:var(--system-color);
+  text-align:right;
+  font:700 12px/1 'JetBrains Mono',monospace;
+}
+.maya-transport{
+  grid-column:1 / -1;
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr) auto;
+  gap:18px;
+  align-items:center;
+  margin-top:2px;
+}
+.maya-play{
+  width:46px;
+  height:46px;
+  border-radius:50%;
+  border:1px solid rgba(88,221,255,.28);
+  background:rgba(88,221,255,.14);
+  color:#58ddff;
+  box-shadow:0 0 22px rgba(88,221,255,.18);
+  font:800 16px/1 Inter,system-ui,sans-serif;
+  cursor:pointer;
+}
+.maya-progress{
+  position:relative;
+  height:5px;
+  border-radius:999px;
+  background:rgba(255,255,255,.12);
+  overflow:visible;
+}
+.maya-progress-fill{
+  position:absolute;
+  inset:0 auto 0 0;
+  width:var(--progress,0%);
+  border-radius:999px;
+  background:#58ddff;
+  box-shadow:0 0 18px rgba(88,221,255,.45);
+}
+.maya-progress-dot{
+  position:absolute;
+  top:50%;
+  left:var(--progress,0%);
+  width:13px;
+  height:13px;
+  border-radius:50%;
+  transform:translate(-50%,-50%);
+  background:#fff;
+  box-shadow:0 0 24px rgba(255,255,255,.55);
+}
+.maya-progress-mark{
+  --mark-color:#58ddff;
+  position:absolute;
+  top:50%;
+  left:var(--x);
+  width:3px;
+  height:18px;
   border-radius:99px;
-  background:linear-gradient(90deg,#10204f,#58ddff 48%,#ff6f8e 100%);
+  transform:translate(-50%,-50%);
+  background:var(--mark-color);
+  box-shadow:0 0 15px color-mix(in srgb,var(--mark-color) 44%,transparent);
 }
-.maya-dims{display:flex;flex-direction:column;gap:12px}
-.maya-dim{display:grid;grid-template-columns:1fr 110px 44px;gap:10px;align-items:center}
-.maya-dim-label{color:#c7d7ef;font-size:13px}
-.maya-dim-track{height:6px;border-radius:999px;background:rgba(255,255,255,.11);overflow:hidden}
-.maya-dim-fill{height:100%;border-radius:inherit;box-shadow:0 0 18px color-mix(in srgb,var(--dim-color) 48%,transparent);background:var(--dim-color)}
-.maya-dim-val{color:#58ddff;text-align:right;font:600 12px/1 'JetBrains Mono',monospace}
-.maya-insight{
-  margin-top:auto;
-  padding:15px 16px;
-  border:1px solid rgba(88,221,255,.24);
-  border-left:3px solid #58ddff;
-  border-radius:10px;
-  background:rgba(7,18,40,.62);
-  color:#cbd6ea;
-  font-size:14px;
-  line-height:1.56;
+.maya-clock{color:#b8c8df;font:600 12px/1 'JetBrains Mono',monospace;white-space:nowrap}
+.maya-live-insight{
+  grid-column:1 / -1;
+  max-width:760px;
+  padding:18px 22px;
+  border-left:3px solid var(--moment-color,#58ddff);
 }
-.maya-insight strong{color:#fff}
+.maya-live-insight strong{
+  color:var(--moment-color,#58ddff);
+  font-weight:800;
+}
+.maya-live-insight span{
+  position:relative;
+  z-index:1;
+  color:#cad8ee;
+  font-size:15px;
+  line-height:1.55;
+}
 .citation-badge-header{display:flex;align-items:center;gap:8px;margin-bottom:4px}
 .citation-logo{flex-shrink:0;display:block}
 .meta-logo,
@@ -902,8 +924,8 @@ body.landing-reveal .hero-stage::before{
   .hero-stage{height:clamp(340px,48vh,440px)}
   .hero-dim-card{top:14px;left:14px;right:14px;max-width:none}
   .compare-grid{grid-template-columns:1fr;gap:14px}
-  .maya-call-grid{grid-template-columns:1fr;gap:16px}
-  .maya-cortex-stage{min-height:360px}
+  .maya-read-layout{grid-template-columns:1fr;gap:16px}
+  .maya-transport,.maya-live-insight{grid-column:auto}
   /* Tablet / small-laptop: stack the card vertically, separator flips horizontal */
   .case-head{grid-template-columns:1fr;gap:16px}
   .case-card{grid-template-columns:1fr}
@@ -946,10 +968,13 @@ body.landing-reveal .hero-stage::before{
   .case-bar-label{font-size:9.5px}
   .case-inst{padding:8px 10px;gap:10px}
   .case-inst-line1{font-size:13px}
-  .maya-panel,.maya-readout{padding:18px}
-  .maya-transcript{font-size:14px}
-  .maya-dim{grid-template-columns:1fr 90px 38px}
-  .maya-cortex-stage{min-height:320px}
+  .maya-reader-card{min-height:340px;padding:26px 22px}
+  .maya-reading-top{left:22px;right:22px;top:20px}
+  .maya-reader-text{font-size:clamp(23px,7vw,32px);margin-top:46px}
+  .maya-systems-card{padding:22px}
+  .maya-system-row{grid-template-columns:1fr 70px 38px}
+  .maya-transport{grid-template-columns:auto 1fr;gap:12px}
+  .maya-clock{grid-column:2}
 }
 
 /* Very narrow phones — allow horizontal scroll on the nav row instead of hiding it fully. */
@@ -1043,97 +1068,42 @@ body.landing-reveal .hero-stage::before{
     </div>
   </section>
 
-  <section class="section shell" id="see">
+  <section class="section shell maya-read-section" id="see">
     <div class="reveal">
       <div class="section-eyebrow">See it in action</div>
-      <h2 class="section-title">Maya's call. <em>Three brain-readable moments.</em></h2>
-      <p class="section-lead">A salesperson does not need a research report first. They need to see which words pulled focus, felt relevant, or created a gut reaction.</p>
+      <h2 class="section-title">Watch it read <em>every word.</em></h2>
+      <p class="section-lead">Maya's discovery call, played back at the speed of thought. The model reads each line and shows which words pulled attention, felt personal, or fired a gut reaction.</p>
     </div>
-    <div class="maya-call-grid reveal">
-      <div class="maya-panel">
-        <div>
-          <div class="maya-eyebrow">Maya's sales-call script</div>
-          <h3>Northstar Revenue opening sequence</h3>
-          <p class="maya-copy">The page turns a normal sales script into a brain-response readout: exact words first, interpretation second.</p>
+    <div class="maya-read-layout reveal" id="mayaReadout" style="--moment-color:#5aa2ff">
+      <div class="maya-reader-card">
+        <div class="maya-reading-top">
+          <div class="maya-reading-status">Reading call</div>
+          <div class="maya-signal-chip" id="mayaSignalChip"><span>Attention</span> · 0.89</div>
         </div>
-        <div class="maya-transcript">
-          <b>00:44-01:13 transcript</b>
-          <p>Usually when those two things happen together, someone is trying to ramp reps faster <strong>without making managers listen to every call manually.</strong> Is that close?</p>
-        </div>
-        <div class="maya-moments" aria-label="Example report moments">
-          <div class="maya-moment" style="--moment-color:#5aa2ff">
-            <span class="maya-moment-num">01</span>
-            <span>
-              <span class="maya-moment-kicker">Strongest attention pull</span>
-              <span class="maya-moment-title">Manual review burden grabs attention</span>
-              <span class="maya-moment-sub">The call gets sharp when Maya names the manager work nobody wants to do.</span>
-              <span class="maya-system-pills" aria-label="Relevant systems">
-                <span class="maya-system-pill" style="--system-color:#5aa2ff">Attention</span>
-                <span class="maya-system-pill" style="--system-color:#7af4de">Personal Resonance</span>
-                <span class="maya-system-pill" style="--system-color:#a994ff">Brain Effort</span>
-              </span>
-            </span>
-          </div>
-          <div class="maya-moment" style="--moment-color:#7af4de">
-            <span class="maya-moment-num">02</span>
-            <span>
-              <span class="maya-moment-kicker">Felt relevant</span>
-              <span class="maya-moment-title">Coaching-method list feels relevant</span>
-              <span class="maya-moment-sub">Named tools make the listener recognize their own sales workflow.</span>
-              <span class="maya-system-pills" aria-label="Relevant systems">
-                <span class="maya-system-pill" style="--system-color:#7af4de">Personal Resonance</span>
-                <span class="maya-system-pill" style="--system-color:#ff6f8e">Gut Reaction</span>
-                <span class="maya-system-pill" style="--system-color:#5aa2ff">Attention</span>
-              </span>
-            </span>
-          </div>
-          <div class="maya-moment" style="--moment-color:#ff6f8e">
-            <span class="maya-moment-num">03</span>
-            <span>
-              <span class="maya-moment-kicker">Gut response holds</span>
-              <span class="maya-moment-title">Discovery question keeps gut reaction high</span>
-              <span class="maya-moment-sub">The question stays tied to real call friction instead of turning generic.</span>
-              <span class="maya-system-pills" aria-label="Relevant systems">
-                <span class="maya-system-pill" style="--system-color:#ff6f8e">Gut Reaction</span>
-                <span class="maya-system-pill" style="--system-color:#7af4de">Personal Resonance</span>
-                <span class="maya-system-pill" style="--system-color:#ff914d">Social Thinking</span>
-              </span>
-            </span>
-          </div>
+        <div class="maya-reader-text" id="mayaReaderText">
+          <span class="pre">Usually when those two things happen together, someone is trying to ramp reps faster </span><span class="hot">without making managers listen to every call manually.</span> <span class="muted">Is that close?</span>
         </div>
       </div>
-      <div class="maya-cortex-stage">
-        <canvas id="compareBrain" class="brain-canvas"></canvas>
-        <div class="maya-cortex-badge">Real fsaverage5 · 20,484 vertices</div>
-        <div class="maya-scale">
-          <span>lower activation</span>
-          <div class="bar"></div>
-          <span>higher activation</span>
+      <div class="maya-systems-card">
+        <div class="maya-systems-head">
+          <div class="maya-systems-title">Three systems · live</div>
+          <div class="maya-systems-time" id="mayaSystemsTime">01:04</div>
         </div>
+        <div id="mayaSystemsList"></div>
       </div>
-      <div class="maya-readout">
-        <div class="maya-eyebrow">Results preview</div>
-        <h3>The strongest read is not "AI coaching." It is the manual work managers want to avoid.</h3>
-        <div class="maya-dims">
-          <div class="maya-dim" style="--dim-color:#5aa2ff">
-            <div class="maya-dim-label">Attention</div>
-            <div class="maya-dim-track"><div class="maya-dim-fill" style="width:89%"></div></div>
-            <div class="maya-dim-val">0.89</div>
-          </div>
-          <div class="maya-dim" style="--dim-color:#7af4de">
-            <div class="maya-dim-label">Personal Resonance</div>
-            <div class="maya-dim-track"><div class="maya-dim-fill" style="width:84%"></div></div>
-            <div class="maya-dim-val">0.84</div>
-          </div>
-          <div class="maya-dim" style="--dim-color:#ff6f8e">
-            <div class="maya-dim-label">Gut Reaction</div>
-            <div class="maya-dim-track"><div class="maya-dim-fill" style="width:80%"></div></div>
-            <div class="maya-dim-val">0.80</div>
-          </div>
+      <div class="maya-transport" aria-label="Maya call preview controls">
+        <button class="maya-play" id="mayaPlay" type="button" aria-label="Pause preview">Ⅱ</button>
+        <div class="maya-progress" id="mayaProgress" style="--progress:16%">
+          <span class="maya-progress-fill"></span>
+          <span class="maya-progress-dot"></span>
+          <span class="maya-progress-mark" style="--x:16%;--mark-color:#5aa2ff"></span>
+          <span class="maya-progress-mark" style="--x:32%;--mark-color:#ff6f8e"></span>
+          <span class="maya-progress-mark" style="--x:37%;--mark-color:#7af4de"></span>
         </div>
-        <div class="maya-insight">
-          <strong>What this means:</strong> Maya's script works best when it names the listener's concrete workflow pain: hiring reps, ramping faster, and avoiding manual call review. The brain readout turns that into a visible signal instead of another transcript summary.
-        </div>
+        <div class="maya-clock" id="mayaClock">01:04 / 06:31</div>
+      </div>
+      <div class="maya-live-insight" id="mayaLiveInsight">
+        <span><strong>Attention peak · 01:04</strong> Attention spiked when Maya named the exact manager burden: listening to every call manually.</span>
       </div>
     </div>
   </section>
@@ -1398,7 +1368,7 @@ function toggleTheme(){
 </script>
 <script type="module">
 import * as THREE from "three";
-import { mountCortex } from "./assets/cortex-viewer-neon.js?v=28";
+import { mountCortex } from "./assets/cortex-viewer-neon.js?v=29";
 
 const LANDING_DIMENSIONS = {
   personal_resonance: {
@@ -2415,6 +2385,7 @@ function setupHeroCortex(ctrl){
     updateHeroCopy(key, fade);
     if (ctrl?.setRoi) ctrl.setRoi(resultRoiKey(key));
     if (ctrl?.setRoiIntensity) ctrl.setRoiIntensity(1);
+    if (ctrl?.focusRoi) ctrl.focusRoi(resultRoiKey(key));
   };
   const startAuto = () => {
     if (autoTimer) return;
@@ -2588,6 +2559,107 @@ document.querySelectorAll('.lens-pill').forEach(pill=>{
     if(lensCtrl && lensCtrl.setHighlight) lensCtrl.setHighlight(k);
   });
 });
+
+const MAYA_MOMENTS = [
+  {
+    label: 'Attention',
+    value: 0.89,
+    time: '01:04',
+    progress: 16,
+    color: '#5aa2ff',
+    text: '<span class="pre">Usually when those two things happen together, someone is trying to ramp reps faster </span><span class="hot">without making managers listen to every call manually.</span> <span class="muted">Is that close?</span>',
+    systems: [
+      ['Attention', 0.89, '#5aa2ff'],
+      ['Personal Resonance', 0.55, '#7af4de'],
+      ['Brain Effort', 0.38, '#a994ff'],
+    ],
+    insight: '<strong>Attention peak · 01:04</strong> Attention spiked when Maya named the exact manager burden: listening to every call manually.'
+  },
+  {
+    label: 'Gut Reaction',
+    value: 0.74,
+    time: '02:08',
+    progress: 32,
+    color: '#ff6f8e',
+    text: '<span class="muted">Not just summaries, but where the buyer got confused, where trust improved, where the rep over-explained, and </span><span class="hot">where the next step became easier or harder.</span>',
+    systems: [
+      ['Gut Reaction', 0.74, '#ff6f8e'],
+      ['Personal Resonance', 0.62, '#7af4de'],
+      ['Social Thinking', 0.50, '#ff914d'],
+    ],
+    insight: '<strong>Gut reaction holds · 02:08</strong> The line stays tied to real call friction instead of becoming a generic product claim.'
+  },
+  {
+    label: 'Personal Resonance',
+    value: 0.83,
+    time: '02:29',
+    progress: 37,
+    color: '#7af4de',
+    text: '<span class="muted">Is it mostly </span><span class="hot">manager shadowing, scorecards, Gong snippets,</span> <span class="pre">or just pipeline outcomes showing up later?</span>',
+    systems: [
+      ['Personal Resonance', 0.83, '#7af4de'],
+      ['Social Thinking', 0.66, '#ff914d'],
+      ['Gut Reaction', 0.60, '#ff6f8e'],
+    ],
+    insight: '<strong>Felt relevant · 02:29</strong> Named sales tools made the listener map the question to their own workflow.'
+  },
+];
+
+function setupMayaReadout(){
+  const root = document.getElementById('mayaReadout');
+  if (!root) return;
+  const reader = document.getElementById('mayaReaderText');
+  const chip = document.getElementById('mayaSignalChip');
+  const systems = document.getElementById('mayaSystemsList');
+  const time = document.getElementById('mayaSystemsTime');
+  const progress = document.getElementById('mayaProgress');
+  const clock = document.getElementById('mayaClock');
+  const insight = document.getElementById('mayaLiveInsight');
+  const play = document.getElementById('mayaPlay');
+  let idx = 0;
+  let paused = false;
+  let timer = null;
+
+  function render(moment){
+    root.style.setProperty('--moment-color', moment.color);
+    if (reader) reader.innerHTML = moment.text;
+    if (chip) {
+      chip.style.setProperty('--moment-color', moment.color);
+      chip.innerHTML = `<span>${moment.label}</span> · ${moment.value.toFixed(2)}`;
+    }
+    if (systems) {
+      systems.innerHTML = moment.systems.map(([name, val, color]) => `
+        <div class="maya-system-row" style="--system-color:${color}">
+          <strong>${name}</strong>
+          <div class="maya-system-bar"><span style="--w:${Math.round(val * 100)}%"></span></div>
+          <div class="maya-system-val">${val.toFixed(2)}</div>
+        </div>
+      `).join('');
+    }
+    if (time) time.textContent = moment.time;
+    if (clock) clock.textContent = `${moment.time} / 06:31`;
+    if (progress) progress.style.setProperty('--progress', `${moment.progress}%`);
+    if (insight) insight.innerHTML = `<span>${moment.insight}</span>`;
+  }
+
+  function tick(){
+    if (paused) return;
+    idx = (idx + 1) % MAYA_MOMENTS.length;
+    render(MAYA_MOMENTS[idx]);
+  }
+
+  if (play) {
+    play.addEventListener('click', () => {
+      paused = !paused;
+      play.textContent = paused ? '▶' : 'Ⅱ';
+      play.setAttribute('aria-label', paused ? 'Play preview' : 'Pause preview');
+    });
+  }
+  render(MAYA_MOMENTS[idx]);
+  timer = setInterval(tick, 4400);
+  window.addEventListener('pagehide', () => clearInterval(timer), { once: true });
+}
+setupMayaReadout();
 
 // Reveal on scroll
 const io = new IntersectionObserver(entries=>{
