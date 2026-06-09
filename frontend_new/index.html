@@ -137,7 +137,15 @@ h1.hero-title{
   color:var(--ink);
 }
 h1.hero-title em{font-style:italic;color:var(--accent);font-variation-settings:"opsz" 144, "SOFT" 0, "WONK" 0}
-.hero-question{font-style:normal;color:var(--accent);display:inline-block;margin-left:.02em}
+.hero-word-feel{
+  display:inline-block;
+  font-family:'Inter Tight', Inter, system-ui, sans-serif;
+  font-style:normal !important;
+  font-weight:700;
+  letter-spacing:-0.035em;
+  white-space:nowrap;
+  transform:translateY(.015em);
+}
 .hero-sub{
   font-size:clamp(15.5px,1.25vw,18px);
   color:var(--ink-dim);
@@ -421,16 +429,18 @@ h2.section-title em{font-style:italic;color:var(--accent);font-variation-setting
 }
 .maya-transcript p{margin:0;color:#edf5ff;font-size:15px;line-height:1.5}
 .maya-transcript strong{color:#ffd94a;font-weight:600}
-.maya-moments{display:flex;flex-direction:column;gap:10px;margin-top:auto}
+.maya-moments{display:flex;flex-direction:column;gap:12px;margin-top:auto}
 .maya-moment{
   display:grid;
-  grid-template-columns:28px 1fr;
-  gap:11px;
+  grid-template-columns:30px 1fr;
+  gap:13px;
   align-items:start;
-  padding:12px;
-  border:1px solid rgba(88,221,255,.16);
+  padding:15px 15px 16px;
+  border:1px solid color-mix(in srgb,var(--moment-color,#58ddff) 26%,rgba(255,255,255,.08));
   border-radius:10px;
-  background:rgba(4,12,28,.48);
+  background:
+    radial-gradient(circle at 0 0,color-mix(in srgb,var(--moment-color,#58ddff) 10%,transparent),transparent 42%),
+    linear-gradient(180deg,rgba(10,24,48,.66),rgba(4,12,28,.46));
 }
 .maya-moment-num{
   display:grid;
@@ -438,13 +448,46 @@ h2.section-title em{font-style:italic;color:var(--accent);font-variation-setting
   width:24px;
   height:24px;
   border-radius:7px;
-  background:rgba(88,221,255,.14);
-  border:1px solid rgba(88,221,255,.28);
-  color:#58ddff;
+  background:color-mix(in srgb,var(--moment-color,#58ddff) 15%,rgba(5,14,32,.55));
+  border:1px solid color-mix(in srgb,var(--moment-color,#58ddff) 34%,rgba(255,255,255,.08));
+  color:var(--moment-color,#58ddff);
   font:600 11px/1 'JetBrains Mono',monospace;
 }
-.maya-moment-title{display:block;color:#f5f8ff;font-size:13px;font-weight:600;line-height:1.25}
-.maya-moment-sub{display:block;margin-top:4px;color:#8797b6;font:11px/1.35 'JetBrains Mono',monospace;letter-spacing:.04em}
+.maya-moment-kicker{
+  display:block;
+  margin-bottom:6px;
+  color:var(--moment-color,#58ddff);
+  font:600 9.5px/1 'JetBrains Mono',monospace;
+  letter-spacing:.15em;
+  text-transform:uppercase;
+}
+.maya-moment-title{display:block;color:#f5f8ff;font-size:15.5px;font-weight:750;line-height:1.16;letter-spacing:-.012em}
+.maya-moment-sub{display:block;margin-top:7px;color:#b4c2d6;font:13px/1.4 Inter,system-ui,sans-serif;letter-spacing:0;text-transform:none}
+.maya-system-pills{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.maya-system-pill{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  min-height:23px;
+  padding:4px 8px;
+  border-radius:999px;
+  border:1px solid color-mix(in srgb,var(--system-color) 36%,rgba(255,255,255,.10));
+  background:color-mix(in srgb,var(--system-color) 7%,rgba(5,14,32,.46));
+  color:#93a4bd;
+  font:10px/1 'JetBrains Mono',monospace;
+  letter-spacing:.04em;
+  white-space:nowrap;
+}
+.maya-system-pill::before{
+  content:"";
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:var(--system-color);
+  box-shadow:0 0 10px color-mix(in srgb,var(--system-color) 58%,transparent);
+}
+.maya-readout .maya-dims{opacity:.74}
+.maya-readout .maya-insight{border-left-color:#ffd94a;background:rgba(88,221,255,.075)}
 .maya-cortex-stage{
   position:relative;
   min-height:470px;
@@ -943,7 +986,7 @@ body.landing-reveal .hero-stage::before{
     <div class="hero-grid">
       <div class="hero-copy reveal">
         <div class="kicker">EQ in AI</div>
-        <h1 class="hero-title">How do you <em>feel</em><span class="hero-question">?</span></h1>
+        <h1 class="hero-title">How do you <span class="hero-word-feel">feel?</span></h1>
         <p class="hero-sub">It is the oldest question in art and the newest question in technology. MindReader takes your content and simulates, region by region, how a brain responds to it.</p>
         <div class="cta-row">
           <a href="/launch" class="btn btn-primary" id="heroCta">Launch a run <span>→</span></a>
@@ -1018,25 +1061,43 @@ body.landing-reveal .hero-stage::before{
           <p>Usually when those two things happen together, someone is trying to ramp reps faster <strong>without making managers listen to every call manually.</strong> Is that close?</p>
         </div>
         <div class="maya-moments" aria-label="Example report moments">
-          <div class="maya-moment">
+          <div class="maya-moment" style="--moment-color:#5aa2ff">
             <span class="maya-moment-num">01</span>
             <span>
+              <span class="maya-moment-kicker">Strongest attention pull</span>
               <span class="maya-moment-title">Manual review burden grabs attention</span>
-              <span class="maya-moment-sub">Attention · peak · 01:04</span>
+              <span class="maya-moment-sub">The call gets sharp when Maya names the manager work nobody wants to do.</span>
+              <span class="maya-system-pills" aria-label="Relevant systems">
+                <span class="maya-system-pill" style="--system-color:#5aa2ff">Attention</span>
+                <span class="maya-system-pill" style="--system-color:#7af4de">Personal Resonance</span>
+                <span class="maya-system-pill" style="--system-color:#a994ff">Brain Effort</span>
+              </span>
             </span>
           </div>
-          <div class="maya-moment">
+          <div class="maya-moment" style="--moment-color:#7af4de">
             <span class="maya-moment-num">02</span>
             <span>
+              <span class="maya-moment-kicker">Felt relevant</span>
               <span class="maya-moment-title">Coaching-method list feels relevant</span>
-              <span class="maya-moment-sub">Personal Resonance · peak · 02:29</span>
+              <span class="maya-moment-sub">Named tools make the listener recognize their own sales workflow.</span>
+              <span class="maya-system-pills" aria-label="Relevant systems">
+                <span class="maya-system-pill" style="--system-color:#7af4de">Personal Resonance</span>
+                <span class="maya-system-pill" style="--system-color:#ff6f8e">Gut Reaction</span>
+                <span class="maya-system-pill" style="--system-color:#5aa2ff">Attention</span>
+              </span>
             </span>
           </div>
-          <div class="maya-moment">
+          <div class="maya-moment" style="--moment-color:#ff6f8e">
             <span class="maya-moment-num">03</span>
             <span>
+              <span class="maya-moment-kicker">Gut response holds</span>
               <span class="maya-moment-title">Discovery question keeps gut reaction high</span>
-              <span class="maya-moment-sub">Gut Reaction · sustained · 02:08</span>
+              <span class="maya-moment-sub">The question stays tied to real call friction instead of turning generic.</span>
+              <span class="maya-system-pills" aria-label="Relevant systems">
+                <span class="maya-system-pill" style="--system-color:#ff6f8e">Gut Reaction</span>
+                <span class="maya-system-pill" style="--system-color:#7af4de">Personal Resonance</span>
+                <span class="maya-system-pill" style="--system-color:#ff914d">Social Thinking</span>
+              </span>
             </span>
           </div>
         </div>

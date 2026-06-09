@@ -308,6 +308,17 @@ h1 span,
   text-shadow: 0 0 24px rgba(79, 212, 255, 0.30);
 }
 
+.hero .hero-title .hero-word-feel,
+h1.hero-title .hero-word-feel {
+  display: inline-block !important;
+  font-family: var(--bd-sans) !important;
+  font-style: normal !important;
+  font-weight: 800 !important;
+  letter-spacing: 0 !important;
+  white-space: nowrap !important;
+  transform: none !important;
+}
+
 p,
 li,
 .page-sub,

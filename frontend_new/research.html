@@ -1767,9 +1767,10 @@ path[stroke="#2a2a3e"] { stroke: var(--line); }
 /* Research-only cover override. The shared neon stylesheet defines the same
    hero class, so this must load after it and keep !important. */
 .cold-open {
+  min-height: min(760px, calc(100vh - 90px)) !important;
   background:
-    linear-gradient(90deg, rgba(3, 7, 21, 0.92) 0%, rgba(3, 7, 21, 0.66) 44%, rgba(3, 7, 21, 0.24) 100%),
-    linear-gradient(180deg, rgba(3, 7, 21, 0.08), rgba(3, 7, 21, 0.36)),
+    linear-gradient(90deg, rgba(3, 7, 21, 0.99) 0%, rgba(3, 7, 21, 0.98) 43%, rgba(3, 7, 21, 0.62) 72%, rgba(3, 7, 21, 0.34) 100%),
+    linear-gradient(180deg, rgba(3, 7, 21, 0.30), rgba(3, 7, 21, 0.62)),
     url("/assets/research-cover-brain.png") center center / cover no-repeat,
     linear-gradient(120deg, #030715 0%, #061737 100%) !important;
 }
@@ -1779,17 +1780,19 @@ path[stroke="#2a2a3e"] { stroke: var(--line); }
   position: absolute;
   z-index: 0;
   left: clamp(18px, 5vw, 72px);
-  top: clamp(72px, 9vh, 112px);
-  bottom: clamp(58px, 8vh, 96px);
-  width: min(730px, calc(100% - clamp(36px, 10vw, 144px)));
+  top: clamp(118px, 17vh, 166px);
+  bottom: clamp(62px, 10vh, 94px);
+  width: min(700px, calc(100% - clamp(36px, 10vw, 144px)));
   border: 1px solid rgba(88, 221, 255, 0.18);
   border-radius: 18px;
-  background:
-    linear-gradient(90deg, rgba(0, 0, 0, 0.91), rgba(3, 7, 21, 0.78)),
-    radial-gradient(ellipse at 38% 22%, rgba(88, 221, 255, 0.08), transparent 62%);
-  box-shadow: 0 34px 90px rgba(0, 0, 0, 0.54);
-  backdrop-filter: blur(3px);
+  background: #02050e;
+  box-shadow: 0 34px 90px rgba(0, 0, 0, 0.68);
+  backdrop-filter: none;
   pointer-events: none;
+}
+
+.cold-open .cold-frame {
+  background: #061124 !important;
 }
 
 .cold-open > * {
@@ -1810,8 +1813,9 @@ path[stroke="#2a2a3e"] { stroke: var(--line); }
 
 @media (max-width: 700px) {
   .cold-open {
+    min-height: min(720px, calc(100vh - 82px)) !important;
     background:
-      linear-gradient(180deg, rgba(3, 7, 21, 0.72), rgba(3, 7, 21, 0.92)),
+      linear-gradient(180deg, rgba(3, 7, 21, 0.90), rgba(3, 7, 21, 0.96)),
       url("/assets/research-cover-brain.png") center top / auto 520px no-repeat,
       linear-gradient(120deg, #030715 0%, #061737 100%) !important;
   }
