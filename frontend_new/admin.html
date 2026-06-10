@@ -732,8 +732,9 @@ function base64ToFile(b64, filename) {
 function resultUrl(run) {
   if (!run.jobId) return null;
   const base = `?job=${encodeURIComponent(run.jobId)}`;
-  if (run.mod === 'text') return `/text-results-demo.html${base}`;
-  if (run.mod === 'audio') return `/audio-results.html${base}`;
+  if (run.mod === 'text' || run.mod === 'audio') {
+    return `/rep-message-analyst-neon.html?jobId=${encodeURIComponent(run.jobId)}&reveal=1`;
+  }
   if (run.mod === 'video') return `/video-results.html${base}`;
   return `/results.html${base}`;
 }

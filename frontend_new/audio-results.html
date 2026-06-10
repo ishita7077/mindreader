@@ -1,195 +1,22 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<script>(function(){var p=new URLSearchParams(location.search);var j=p.get('jobId')||p.get('job_id')||p.get('job');if(j)location.replace('./text-results.html?jobId='+encodeURIComponent(j));})();</script>
-<meta name="theme-color" content="#08080F" />
-<title>MindReader – Audio results</title>
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..700&family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
-<script>(function(){var r=document.documentElement;try{var t=localStorage.getItem('braindiff-theme');if(t==='light')r.removeAttribute('data-theme');else r.setAttribute('data-theme','dark');}catch(e){r.setAttribute('data-theme','dark');}})();</script>
-<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-<link rel="alternate icon" href="/favicon.ico" />
-<link rel="stylesheet" href="./media-results.css" />
-<script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.164.1/build/three.module.js"}}</script>
-<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Crimson+Pro:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Caveat:wght@400;500;700&family=Kalam:wght@300;400;700&family=Inter+Tight:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/theme.css">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>MindReader — Opening audio result</title>
+<script>
+(function () {
+  var params = new URLSearchParams(location.search);
+  var jobId = params.get("jobId") || params.get("job_id") || params.get("job");
+  var side = params.get("side") || "a";
+  var target = jobId
+    ? "/rep-message-analyst-neon.html?jobId=" + encodeURIComponent(jobId) + "&side=" + encodeURIComponent(side) + "&reveal=1"
+    : "/launch";
+  location.replace(target);
+})();
+</script>
 </head>
-<body data-media-kind="audio">
-
-<div class="theme-switcher">
-  <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle theme">
-    <span class="tt-moon">●</span><span class="tt-sun">○</span>
-  </button>
-</div>
-
-<header class="topbar">
-  <a class="brand" href="./index.html">
-    <span>MindReader</span>
-  </a>
-  <div id="heroStats" class="topbar-meta"></div>
-  <nav class="topbar-actions" aria-label="Result actions">
-    <a class="top-btn" href="./launch">New comparison</a>
-    <button class="top-btn" id="shareBtn" type="button">Share</button>
-  </nav>
-</header>
-
-<div class="headline-section">
-  <p class="eyebrow">Audio comparison</p>
-  <h1 id="pageHeadline" class="headline">Loading audio comparison.</h1>
-  <p id="pageDek" class="headline-dek">Preparing the cortical contrast view.</p>
-  <div class="input-meta-row">
-    <div class="input-card a">
-      <span class="input-card-badge">A</span>
-      <div class="input-card-info">
-        <span class="input-card-name" id="sampleNameA">Version A</span>
-        <span class="input-card-stats" id="sampleStatsA">—</span>
-      </div>
-    </div>
-    <div class="input-card-vs">vs</div>
-    <div class="input-card b">
-      <span class="input-card-badge">B</span>
-      <div class="input-card-info">
-        <span class="input-card-name" id="sampleNameB">Version B</span>
-        <span class="input-card-stats" id="sampleStatsB">—</span>
-      </div>
-    </div>
-  </div>
-</div>
-
-<main id="mediaApp" class="media-shell" data-kind="audio">
-
-  <!-- 01 / BRAIN -->
-  <section class="section" aria-labelledby="sec01-title">
-    <div class="section-header">
-      <div class="section-num"><strong>01</strong> / BRAIN</div>
-      <h2 id="sec01-title" class="section-title">Cortical <em>surface</em></h2>
-    </div>
-    <div class="brain-stage">
-      <div class="brain-canvas-side">
-        <div class="brain-canvas-wrap">
-          <canvas id="brainCanvas" aria-label="Interactive 3D cortical surface"></canvas>
-        </div>
-        <div class="brain-controls">
-          <div class="brain-view-btns">
-            <button class="brain-view-btn active" type="button" data-view="diff">A vs B</button>
-            <button class="brain-view-btn" type="button" data-view="a">A only</button>
-            <button class="brain-view-btn" type="button" data-view="b">B only</button>
-          </div>
-          <div class="brain-legend">
-            <span><span class="legend-dot a"></span>Sample A</span>
-            <span><span class="legend-dot b"></span>Sample B</span>
-          </div>
-          <button class="ghost-btn" id="resetBrain" type="button">Reset view</button>
-        </div>
-        <p class="brain-caption" id="brainCaption">Drag to rotate · scroll to zoom · scrub the timeline below to repaint contrast</p>
-      </div>
-      <div class="decision-inline">
-        <p class="micro">Summary</p>
-        <h3 id="decisionTitle">What changed between A and B.</h3>
-        <ol id="recommendations" class="recommendations"></ol>
-      </div>
-    </div>
-  </section>
-
-  <!-- 02 / LISTEN -->
-  <section class="section" aria-labelledby="sec02-title">
-    <div class="section-header">
-      <div class="section-num"><strong>02</strong> / LISTEN</div>
-      <h2 id="sec02-title" class="section-title">The <em>audio</em></h2>
-    </div>
-    <div class="sample-grid">
-      <article class="sample-card audio-sample" id="sampleA"></article>
-      <article class="sample-card audio-sample" id="sampleB"></article>
-    </div>
-    <div class="timeline-console">
-      <div class="timeline-head">
-        <div>
-          <p class="micro">Scrub by time</p>
-          <p class="timeline-sub">Cortical contrast over the audio</p>
-        </div>
-        <button id="playBtn" class="play-btn" type="button">Play</button>
-      </div>
-      <input id="scrubber" class="scrubber" type="range" min="0" max="100" value="0" />
-      <div class="time-readout"><span id="timeA">A 0:00</span><span id="timeB">B 0:00</span></div>
-      <div id="tracks" class="tracks"></div>
-    </div>
-  </section>
-
-  <!-- 03 / WHEN IT HAPPENED -->
-  <section class="section" aria-labelledby="sec03-title">
-    <div class="section-header">
-      <div class="section-num"><strong>03</strong> / WHEN IT HAPPENED</div>
-      <h2 id="sec03-title" class="section-title">Time <em>map</em></h2>
-    </div>
-    <section id="spectrogramSection" class="spectro-section panel"></section>
-    <div class="patterns-section">
-      <div class="patterns-head">
-        <p class="micro">Co-activation patterns</p>
-        <h3>Where two cortical systems light up together</h3>
-        <p class="patterns-sub">Each block marks a window where two systems exceeded their thresholds together — a Learning Moment, Emotional Impact, Reasoning Beat, or Social Resonance.</p>
-      </div>
-      <div class="patterns-pair">
-        <div class="patterns-side">
-          <div class="patterns-side-head"><span class="badge a">A</span> Version A</div>
-          <div id="patternStripA" class="pattern-strip"></div>
-        </div>
-        <div class="patterns-side">
-          <div class="patterns-side-head"><span class="badge b">B</span> Version B</div>
-          <div id="patternStripB" class="pattern-strip"></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- 04 / THE SIGNAL -->
-  <section class="section" aria-labelledby="sec04-title">
-    <div class="section-header">
-      <div class="section-num"><strong>04</strong> / THE SIGNAL</div>
-      <h2 id="sec04-title" class="section-title">Dimension <em>comparison</em></h2>
-    </div>
-    <section id="comparisonChartSection" class="cmp-section panel"></section>
-  </section>
-
-  <!-- 05 / SYSTEMS -->
-  <section class="section" aria-labelledby="sec05-title">
-    <div class="section-header">
-      <div class="section-num"><strong>05</strong> / SYSTEMS</div>
-      <h2 id="sec05-title" class="section-title">Connectivity <em>map</em></h2>
-    </div>
-    <section id="connectivitySection" class="connectivity-section panel"></section>
-  </section>
-
-  <!-- 06 / STRUCTURE -->
-  <section class="section" aria-labelledby="sec06-title">
-    <div class="section-header">
-      <div class="section-num"><strong>06</strong> / STRUCTURE</div>
-      <h2 id="sec06-title" class="section-title">Structural <em>skeleton</em></h2>
-    </div>
-    <section id="skeletonSection" class="skeleton-section panel"></section>
-  </section>
-
-  <!-- 07 / CONTRAST WINDOWS -->
-  <section class="section" aria-labelledby="sec07-title">
-    <div class="section-header">
-      <div class="section-num"><strong>07</strong> / CONTRAST WINDOWS</div>
-      <h2 id="sec07-title" class="section-title">Largest <em>shifts</em></h2>
-    </div>
-    <div class="lower-grid">
-      <div class="panel">
-        <p class="micro">Peak delta moments</p>
-        <div id="moments" class="moment-grid"></div>
-      </div>
-      <div class="panel">
-        <p class="micro">Aligned transcript windows</p>
-        <div id="sceneMap" class="scene-map transcript-map"></div>
-      </div>
-    </div>
-  </section>
-
-</main>
-<script type="module" src="./audio-results.js"></script>
+<body>
+<p>Opening MindReader result…</p>
 </body>
 </html>
