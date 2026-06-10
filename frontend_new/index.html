@@ -363,17 +363,17 @@ h2.section-title em{font-style:italic;color:var(--accent);font-variation-setting
 .rdim-val.neg{color:var(--good)}
 .readout-insight{background:color-mix(in srgb,var(--surface) 70%,var(--bg-2));border:1px solid var(--line);border:1px solid color-mix(in srgb,var(--accent) 20%,transparent);border-left:3px solid var(--accent);border-radius:8px;padding:11px 13px;font-size:12.5px;color:var(--ink-dim);line-height:1.55}
 .readout-insight strong{color:var(--ink)}
-.maya-read-section{padding-top:78px}
-.maya-read-layout{
+.maya-read-section{padding-top:58px;padding-bottom:64px}
+.maya-read-layout{display:grid;gap:18px;margin-top:28px;--moment-color:#5aa2ff}
+.maya-live-stage{
   display:grid;
-  grid-template-columns:minmax(0,1.24fr) minmax(320px,.76fr);
-  gap:26px;
+  grid-template-columns:minmax(0,1.22fr) minmax(300px,.78fr);
+  gap:22px;
   align-items:stretch;
-  margin-top:34px;
 }
 .maya-reader-card,
 .maya-systems-card,
-.maya-live-insight{
+.maya-moment-card{
   position:relative;
   border:1px solid rgba(88,221,255,.16);
   border-radius:16px;
@@ -385,7 +385,7 @@ h2.section-title em{font-style:italic;color:var(--accent);font-variation-setting
 }
 .maya-reader-card::before,
 .maya-systems-card::before,
-.maya-live-insight::before{
+.maya-moment-card::before{
   content:"";
   position:absolute;
   inset:0;
@@ -396,7 +396,7 @@ h2.section-title em{font-style:italic;color:var(--accent);font-variation-setting
   opacity:.54;
   pointer-events:none;
 }
-.maya-reader-card{min-height:390px;padding:34px;display:flex;flex-direction:column;justify-content:center}
+.maya-reader-card{min-height:clamp(300px,42vh,390px);padding:32px;display:flex;flex-direction:column;justify-content:center;transition:opacity .24s ease,transform .24s ease,border-color .24s ease}
 .maya-reading-top{
   position:absolute;
   left:34px;
@@ -444,10 +444,11 @@ h2.section-title em{font-style:italic;color:var(--accent);font-variation-setting
   max-width:760px;
   margin-top:52px;
   color:#edf5ff;
-  font-size:clamp(28px,3.25vw,46px);
+  font-size:clamp(27px,3vw,44px);
   line-height:1.55;
   font-weight:780;
   letter-spacing:-.025em;
+  transition:opacity .24s ease,transform .24s ease;
 }
 .maya-reader-text .muted{color:rgba(141,160,188,.34)}
 .maya-reader-text .pre{color:rgba(235,244,255,.92)}
@@ -455,7 +456,7 @@ h2.section-title em{font-style:italic;color:var(--accent);font-variation-setting
   color:#fff;
   text-shadow:0 0 22px color-mix(in srgb,var(--moment-color,#58ddff) 46%,transparent);
 }
-.maya-systems-card{padding:30px}
+.maya-systems-card{padding:30px;transition:opacity .24s ease,transform .24s ease,border-color .24s ease}
 .maya-systems-head{
   display:flex;
   align-items:center;
@@ -498,80 +499,72 @@ h2.section-title em{font-style:italic;color:var(--accent);font-variation-setting
   text-align:right;
   font:700 12px/1 'JetBrains Mono',monospace;
 }
-.maya-transport{
-  grid-column:1 / -1;
+.maya-moment-rail{
   display:grid;
-  grid-template-columns:auto minmax(0,1fr) auto;
-  gap:18px;
-  align-items:center;
-  margin-top:2px;
+  grid-auto-flow:column;
+  grid-auto-columns:minmax(280px,1fr);
+  gap:14px;
+  overflow-x:auto;
+  overscroll-behavior-x:contain;
+  scroll-snap-type:x mandatory;
+  scroll-padding-inline:2px;
+  padding:2px 2px 8px;
+  scrollbar-width:thin;
 }
-.maya-play{
-  width:46px;
-  height:46px;
-  border-radius:50%;
-  border:1px solid rgba(88,221,255,.28);
-  background:rgba(88,221,255,.14);
-  color:#58ddff;
-  box-shadow:0 0 22px rgba(88,221,255,.18);
-  font:800 16px/1 Inter,system-ui,sans-serif;
+.maya-moment-card{
+  --card-color:#58ddff;
+  min-height:136px;
+  padding:18px 18px 17px;
+  text-align:left;
+  color:#d9e8ff;
   cursor:pointer;
+  scroll-snap-align:start;
+  border-color:color-mix(in srgb,var(--card-color) 18%,rgba(88,221,255,.12));
+  transition:border-color .22s ease,box-shadow .22s ease,transform .22s ease,background .22s ease,opacity .22s ease;
 }
-.maya-progress{
+.maya-moment-card:hover,
+.maya-moment-card.is-active{
+  border-color:color-mix(in srgb,var(--card-color) 70%,rgba(255,255,255,.18));
+  box-shadow:0 0 34px color-mix(in srgb,var(--card-color) 15%,transparent),0 24px 80px rgba(0,0,0,.28);
+  transform:translateY(-2px);
+}
+.maya-moment-card.is-active{
+  background:
+    linear-gradient(180deg,color-mix(in srgb,var(--card-color) 12%,rgba(8,20,42,.9)),rgba(5,11,25,.78)),
+    rgba(3,8,20,.86);
+}
+.maya-moment-kicker{
   position:relative;
-  height:5px;
-  border-radius:999px;
-  background:rgba(255,255,255,.12);
-  overflow:visible;
+  z-index:1;
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  color:var(--card-color);
+  font:800 10px/1 'JetBrains Mono',monospace;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  margin-bottom:13px;
 }
-.maya-progress-fill{
-  position:absolute;
-  inset:0 auto 0 0;
-  width:var(--progress,0%);
-  border-radius:999px;
-  background:#58ddff;
-  box-shadow:0 0 18px rgba(88,221,255,.45);
+.maya-moment-card h3{
+  position:relative;
+  z-index:1;
+  margin:0 0 8px;
+  color:#fff;
+  font:750 18px/1.08 Inter,system-ui,sans-serif;
+  letter-spacing:-.025em;
 }
-.maya-progress-dot{
-  position:absolute;
-  top:50%;
-  left:var(--progress,0%);
-  width:13px;
-  height:13px;
-  border-radius:50%;
-  transform:translate(-50%,-50%);
-  background:#fff;
-  box-shadow:0 0 24px rgba(255,255,255,.55);
-}
-.maya-progress-mark{
-  --mark-color:#58ddff;
-  position:absolute;
-  top:50%;
-  left:var(--x);
-  width:3px;
-  height:18px;
-  border-radius:99px;
-  transform:translate(-50%,-50%);
-  background:var(--mark-color);
-  box-shadow:0 0 15px color-mix(in srgb,var(--mark-color) 44%,transparent);
-}
-.maya-clock{color:#b8c8df;font:600 12px/1 'JetBrains Mono',monospace;white-space:nowrap}
-.maya-live-insight{
-  grid-column:1 / -1;
-  max-width:760px;
-  padding:18px 22px;
-  border-left:3px solid var(--moment-color,#58ddff);
-}
-.maya-live-insight strong{
-  color:var(--moment-color,#58ddff);
-  font-weight:800;
-}
-.maya-live-insight span{
+.maya-moment-card p{
   position:relative;
   z-index:1;
   color:#cad8ee;
-  font-size:15px;
-  line-height:1.55;
+  margin:0;
+  font-size:13px;
+  line-height:1.45;
+}
+.maya-read-layout.is-transitioning .maya-reader-text,
+.maya-read-layout.is-transitioning .maya-systems-card{
+  opacity:.24;
+  transform:translateY(8px);
 }
 .citation-badge-header{display:flex;align-items:center;gap:8px;margin-bottom:4px}
 .citation-logo{flex-shrink:0;display:block}
@@ -924,8 +917,7 @@ body.landing-reveal .hero-stage::before{
   .hero-stage{height:clamp(340px,48vh,440px)}
   .hero-dim-card{top:14px;left:14px;right:14px;max-width:none}
   .compare-grid{grid-template-columns:1fr;gap:14px}
-  .maya-read-layout{grid-template-columns:1fr;gap:16px}
-  .maya-transport,.maya-live-insight{grid-column:auto}
+  .maya-live-stage{grid-template-columns:1fr;gap:16px}
   /* Tablet / small-laptop: stack the card vertically, separator flips horizontal */
   .case-head{grid-template-columns:1fr;gap:16px}
   .case-card{grid-template-columns:1fr}
@@ -968,13 +960,19 @@ body.landing-reveal .hero-stage::before{
   .case-bar-label{font-size:9.5px}
   .case-inst{padding:8px 10px;gap:10px}
   .case-inst-line1{font-size:13px}
-  .maya-reader-card{min-height:340px;padding:26px 22px}
-  .maya-reading-top{left:22px;right:22px;top:20px}
-  .maya-reader-text{font-size:clamp(23px,7vw,32px);margin-top:46px}
-  .maya-systems-card{padding:22px}
-  .maya-system-row{grid-template-columns:1fr 70px 38px}
-  .maya-transport{grid-template-columns:auto 1fr;gap:12px}
-  .maya-clock{grid-column:2}
+  .maya-read-section{padding-top:36px;padding-bottom:38px}
+  .maya-read-layout{margin-top:20px;gap:12px}
+  .maya-live-stage{gap:12px}
+  .maya-reader-card{min-height:280px;padding:22px 20px}
+  .maya-reading-top{left:20px;right:20px;top:18px}
+  .maya-reader-text{font-size:clamp(22px,6.4vw,29px);line-height:1.42;margin-top:42px}
+  .maya-systems-card{padding:19px 20px}
+  .maya-system-row{grid-template-columns:1fr 70px 38px;padding:11px 0}
+  .maya-moment-rail{grid-auto-columns:minmax(236px,82vw);gap:12px}
+  .maya-moment-card{min-height:122px;padding:15px}
+  .maya-moment-kicker{margin-bottom:10px}
+  .maya-moment-card h3{font-size:17px}
+  .maya-moment-card p{font-size:12.5px;line-height:1.38}
 }
 
 /* Very narrow phones — allow horizontal scroll on the nav row instead of hiding it fully. */
@@ -1075,35 +1073,40 @@ body.landing-reveal .hero-stage::before{
       <p class="section-lead">Maya's discovery call, played back at the speed of thought. The model reads each line and shows which words pulled attention, felt personal, or fired a gut reaction.</p>
     </div>
     <div class="maya-read-layout reveal" id="mayaReadout" style="--moment-color:#5aa2ff">
-      <div class="maya-reader-card">
-        <div class="maya-reading-top">
-          <div class="maya-reading-status">Reading call</div>
-          <div class="maya-signal-chip" id="mayaSignalChip"><span>Attention</span> · 0.89</div>
+      <div class="maya-live-stage">
+        <div class="maya-reader-card">
+          <div class="maya-reading-top">
+            <div class="maya-reading-status">Reading call</div>
+            <div class="maya-signal-chip" id="mayaSignalChip"><span>Attention</span> · 0.89</div>
+          </div>
+          <div class="maya-reader-text" id="mayaReaderText">
+            <span class="pre">Usually when those two things happen together, someone is trying to ramp reps faster </span><span class="hot">without making managers listen to every call manually.</span> <span class="muted">Is that close?</span>
+          </div>
         </div>
-        <div class="maya-reader-text" id="mayaReaderText">
-          <span class="pre">Usually when those two things happen together, someone is trying to ramp reps faster </span><span class="hot">without making managers listen to every call manually.</span> <span class="muted">Is that close?</span>
+        <div class="maya-systems-card">
+          <div class="maya-systems-head">
+            <div class="maya-systems-title">Three systems · live</div>
+            <div class="maya-systems-time" id="mayaSystemsTime">01:04</div>
+          </div>
+          <div id="mayaSystemsList"></div>
         </div>
       </div>
-      <div class="maya-systems-card">
-        <div class="maya-systems-head">
-          <div class="maya-systems-title">Three systems · live</div>
-          <div class="maya-systems-time" id="mayaSystemsTime">01:04</div>
-        </div>
-        <div id="mayaSystemsList"></div>
-      </div>
-      <div class="maya-transport" aria-label="Maya call preview controls">
-        <button class="maya-play" id="mayaPlay" type="button" aria-label="Pause preview">Ⅱ</button>
-        <div class="maya-progress" id="mayaProgress" style="--progress:16%">
-          <span class="maya-progress-fill"></span>
-          <span class="maya-progress-dot"></span>
-          <span class="maya-progress-mark" style="--x:16%;--mark-color:#5aa2ff"></span>
-          <span class="maya-progress-mark" style="--x:32%;--mark-color:#ff6f8e"></span>
-          <span class="maya-progress-mark" style="--x:37%;--mark-color:#7af4de"></span>
-        </div>
-        <div class="maya-clock" id="mayaClock">01:04 / 06:31</div>
-      </div>
-      <div class="maya-live-insight" id="mayaLiveInsight">
-        <span><strong>Attention peak · 01:04</strong> Attention spiked when Maya named the exact manager burden: listening to every call manually.</span>
+      <div class="maya-moment-rail" id="mayaMomentRail" aria-label="Maya call insight moments">
+        <button class="maya-moment-card is-active" type="button" data-moment="0" aria-pressed="true" style="--card-color:#5aa2ff">
+          <div class="maya-moment-kicker"><span>01 · Attention</span><span>01:04</span></div>
+          <h3>Did it grab focus?</h3>
+          <p>Maya named the exact manager burden: listening to every call manually.</p>
+        </button>
+        <button class="maya-moment-card" type="button" data-moment="1" aria-pressed="false" style="--card-color:#ff6f8e">
+          <div class="maya-moment-kicker"><span>02 · Gut Reaction</span><span>02:08</span></div>
+          <h3>Did it feel real?</h3>
+          <p>The value prop stayed tied to concrete call friction instead of generic product language.</p>
+        </button>
+        <button class="maya-moment-card" type="button" data-moment="2" aria-pressed="false" style="--card-color:#7af4de">
+          <div class="maya-moment-kicker"><span>03 · Personal Resonance</span><span>02:29</span></div>
+          <h3>Did it feel familiar?</h3>
+          <p>Named sales tools made the listener map the question to their own workflow.</p>
+        </button>
       </div>
     </div>
   </section>
@@ -2565,7 +2568,6 @@ const MAYA_MOMENTS = [
     label: 'Attention',
     value: 0.89,
     time: '01:04',
-    progress: 16,
     color: '#5aa2ff',
     text: '<span class="pre">Usually when those two things happen together, someone is trying to ramp reps faster </span><span class="hot">without making managers listen to every call manually.</span> <span class="muted">Is that close?</span>',
     systems: [
@@ -2573,13 +2575,11 @@ const MAYA_MOMENTS = [
       ['Personal Resonance', 0.55, '#7af4de'],
       ['Brain Effort', 0.38, '#a994ff'],
     ],
-    insight: '<strong>Attention peak · 01:04</strong> Attention spiked when Maya named the exact manager burden: listening to every call manually.'
   },
   {
     label: 'Gut Reaction',
     value: 0.74,
     time: '02:08',
-    progress: 32,
     color: '#ff6f8e',
     text: '<span class="muted">Not just summaries, but where the buyer got confused, where trust improved, where the rep over-explained, and </span><span class="hot">where the next step became easier or harder.</span>',
     systems: [
@@ -2587,13 +2587,11 @@ const MAYA_MOMENTS = [
       ['Personal Resonance', 0.62, '#7af4de'],
       ['Social Thinking', 0.50, '#ff914d'],
     ],
-    insight: '<strong>Gut reaction holds · 02:08</strong> The line stays tied to real call friction instead of becoming a generic product claim.'
   },
   {
     label: 'Personal Resonance',
     value: 0.83,
     time: '02:29',
-    progress: 37,
     color: '#7af4de',
     text: '<span class="muted">Is it mostly </span><span class="hot">manager shadowing, scorecards, Gong snippets,</span> <span class="pre">or just pipeline outcomes showing up later?</span>',
     systems: [
@@ -2601,7 +2599,6 @@ const MAYA_MOMENTS = [
       ['Social Thinking', 0.66, '#ff914d'],
       ['Gut Reaction', 0.60, '#ff6f8e'],
     ],
-    insight: '<strong>Felt relevant · 02:29</strong> Named sales tools made the listener map the question to their own workflow.'
   },
 ];
 
@@ -2612,15 +2609,13 @@ function setupMayaReadout(){
   const chip = document.getElementById('mayaSignalChip');
   const systems = document.getElementById('mayaSystemsList');
   const time = document.getElementById('mayaSystemsTime');
-  const progress = document.getElementById('mayaProgress');
-  const clock = document.getElementById('mayaClock');
-  const insight = document.getElementById('mayaLiveInsight');
-  const play = document.getElementById('mayaPlay');
+  const rail = document.getElementById('mayaMomentRail');
+  const cards = Array.from(root.querySelectorAll('.maya-moment-card'));
   let idx = 0;
-  let paused = false;
   let timer = null;
+  let transitionTimer = null;
 
-  function render(moment){
+  function applyMoment(moment, nextIdx){
     root.style.setProperty('--moment-color', moment.color);
     if (reader) reader.innerHTML = moment.text;
     if (chip) {
@@ -2637,27 +2632,53 @@ function setupMayaReadout(){
       `).join('');
     }
     if (time) time.textContent = moment.time;
-    if (clock) clock.textContent = `${moment.time} / 06:31`;
-    if (progress) progress.style.setProperty('--progress', `${moment.progress}%`);
-    if (insight) insight.innerHTML = `<span>${moment.insight}</span>`;
-  }
-
-  function tick(){
-    if (paused) return;
-    idx = (idx + 1) % MAYA_MOMENTS.length;
-    render(MAYA_MOMENTS[idx]);
-  }
-
-  if (play) {
-    play.addEventListener('click', () => {
-      paused = !paused;
-      play.textContent = paused ? '▶' : 'Ⅱ';
-      play.setAttribute('aria-label', paused ? 'Play preview' : 'Pause preview');
+    cards.forEach((card, cardIdx) => {
+      const active = cardIdx === nextIdx;
+      card.classList.toggle('is-active', active);
+      card.setAttribute('aria-pressed', active ? 'true' : 'false');
     });
+    const activeCard = cards[nextIdx];
+    if (activeCard && rail) {
+      activeCard.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+    }
   }
-  render(MAYA_MOMENTS[idx]);
-  timer = setInterval(tick, 4400);
-  window.addEventListener('pagehide', () => clearInterval(timer), { once: true });
+
+  function render(moment, nextIdx, opts={}){
+    window.clearTimeout(transitionTimer);
+    if (opts.instant) {
+      applyMoment(moment, nextIdx);
+      return;
+    }
+    root.classList.add('is-transitioning');
+    transitionTimer = window.setTimeout(() => {
+      applyMoment(moment, nextIdx);
+      requestAnimationFrame(() => root.classList.remove('is-transitioning'));
+    }, 140);
+  }
+
+  function go(nextIdx, opts={}){
+    idx = (nextIdx + MAYA_MOMENTS.length) % MAYA_MOMENTS.length;
+    render(MAYA_MOMENTS[idx], idx, opts);
+  }
+
+  function restartTimer(){
+    window.clearInterval(timer);
+    timer = window.setInterval(() => go(idx + 1), 5600);
+  }
+
+  cards.forEach((card) => {
+    card.addEventListener('click', () => {
+      go(Number(card.dataset.moment || 0));
+      restartTimer();
+    });
+  });
+
+  go(idx, { instant: true });
+  restartTimer();
+  window.addEventListener('pagehide', () => {
+    window.clearInterval(timer);
+    window.clearTimeout(transitionTimer);
+  }, { once: true });
 }
 setupMayaReadout();
 

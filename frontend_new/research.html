@@ -1768,61 +1768,65 @@ path[stroke="#2a2a3e"] { stroke: var(--line); }
    hero class, so this must load after it and keep !important. */
 .cold-open {
   min-height: min(760px, calc(100vh - 90px)) !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 360px) !important;
+  align-items: end !important;
+  gap: clamp(22px, 5vw, 72px) !important;
+  padding: clamp(86px, 13vh, 132px) clamp(24px, 6vw, 88px) clamp(58px, 10vh, 94px) !important;
   background:
-    radial-gradient(circle at 76% 38%, rgba(88, 221, 255, 0.18), transparent 34%),
-    linear-gradient(90deg, rgba(3, 7, 21, 0.99) 0%, rgba(3, 7, 21, 0.93) 41%, rgba(3, 7, 21, 0.62) 67%, rgba(3, 7, 21, 0.22) 100%),
-    linear-gradient(180deg, rgba(3, 7, 21, 0.22), rgba(3, 7, 21, 0.72)),
-    linear-gradient(120deg, #030715 0%, #061737 100%) !important;
+    linear-gradient(90deg, rgba(3, 7, 21, 0.88) 0%, rgba(3, 7, 21, 0.58) 42%, rgba(3, 7, 21, 0.18) 100%),
+    linear-gradient(180deg, rgba(3, 7, 21, 0.16), rgba(3, 7, 21, 0.66)),
+    url("/assets/research-cover-brain.png") center center / cover no-repeat !important;
 }
 
 .cold-open::after {
-  content: "";
-  position: absolute;
-  z-index: 0;
-  left: clamp(18px, 5vw, 72px);
-  top: clamp(118px, 17vh, 166px);
-  bottom: clamp(62px, 10vh, 94px);
-  width: min(700px, calc(100% - clamp(36px, 10vw, 144px)));
-  border: 1px solid rgba(88, 221, 255, 0.18);
-  border-radius: 18px;
-  background:
-    linear-gradient(180deg, rgba(2, 5, 14, 0.94), rgba(2, 5, 14, 0.86)),
-    linear-gradient(rgba(88, 221, 255, 0.035) 1px, transparent 1px);
-  background-size: auto, 100% 7px;
-  box-shadow: 0 34px 90px rgba(0, 0, 0, 0.54);
-  backdrop-filter: blur(10px);
-  pointer-events: none;
+  content: none !important;
 }
 
 .research-hero-art {
-  position: absolute;
-  z-index: 0 !important;
-  inset: 0 0 0 auto;
-  width: min(72vw, 1060px);
-  height: 100%;
-  background: url("/assets/research-cover-brain-clean.png") center center / cover no-repeat;
-  opacity: 0.92;
-  filter: saturate(1.08) contrast(1.04);
-  pointer-events: none;
+  display: none !important;
 }
 
 .research-hero-chip {
-  position: absolute;
-  left: clamp(22px, 5vw, 70px);
-  bottom: clamp(64px, 10vh, 100px);
-  padding: 10px 16px;
-  border-radius: 14px;
-  border: 1px solid rgba(255, 187, 74, 0.28);
-  background: rgba(5, 9, 24, 0.78);
-  color: rgba(255, 187, 74, 0.96);
-  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.32);
-  font: 600 12px/1 "JetBrains Mono", monospace;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
+  display: none !important;
 }
 
 .cold-open .cold-frame {
-  background: rgba(6, 17, 36, 0.78) !important;
+  align-self: end !important;
+  justify-self: end !important;
+  max-width: 330px !important;
+  margin: 0 !important;
+  padding: 15px 17px !important;
+  border: 1px solid rgba(110, 205, 255, 0.22) !important;
+  border-radius: 12px !important;
+  background: rgba(2, 7, 18, 0.62) !important;
+  box-shadow: 0 22px 70px rgba(0, 0, 0, 0.32) !important;
+  backdrop-filter: blur(12px) !important;
+}
+
+.cold-open .cold-frame p {
+  max-width: none !important;
+  margin: 0 !important;
+  color: rgba(220, 234, 255, 0.78) !important;
+  font-size: 11px !important;
+  line-height: 1.65 !important;
+}
+
+.cold-eyebrow,
+.scroll-cue,
+.hero-brain-bg {
+  display: none !important;
+}
+
+.cold-question {
+  align-self: end !important;
+  max-width: min(760px, 58vw) !important;
+  margin: 0 !important;
+  color: #f3f8ff !important;
+  font-size: clamp(54px, 8vw, 112px) !important;
+  line-height: 0.96 !important;
+  letter-spacing: -0.055em !important;
+  text-shadow: 0 18px 60px rgba(0, 0, 0, 0.38) !important;
 }
 
 .cold-open > * {
@@ -1844,25 +1848,25 @@ path[stroke="#2a2a3e"] { stroke: var(--line); }
 @media (max-width: 700px) {
   .cold-open {
     min-height: min(720px, calc(100vh - 82px)) !important;
+    display: flex !important;
+    align-items: flex-start !important;
+    justify-content: flex-end !important;
+    padding: 96px 22px 44px !important;
     background:
-      linear-gradient(180deg, rgba(3, 7, 21, 0.78), rgba(3, 7, 21, 0.97)),
-      linear-gradient(120deg, #030715 0%, #061737 100%) !important;
+      linear-gradient(180deg, rgba(3, 7, 21, 0.44), rgba(3, 7, 21, 0.94)),
+      url("/assets/research-cover-brain.png") center center / cover no-repeat !important;
   }
-  .research-hero-art {
-    inset: 0;
-    width: 100%;
-    opacity: 0.42;
-    background-size: cover;
+  .cold-question {
+    max-width: 100% !important;
+    font-size: clamp(48px, 14vw, 74px) !important;
   }
-  .research-hero-chip {
-    display: none;
+  .cold-open .cold-frame {
+    justify-self: auto !important;
+    max-width: 100% !important;
+    margin-top: 18px !important;
   }
   .cold-open::after {
-    left: 14px;
-    right: 14px;
-    top: 66px;
-    bottom: 42px;
-    width: auto;
+    content: none !important;
   }
 }
 </style>
@@ -1890,45 +1894,13 @@ path[stroke="#2a2a3e"] { stroke: var(--line); }
 <!-- COLD OPEN -->
 <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
 <section class="cold-open">
-  <div class="research-hero-art" aria-hidden="true">
-    <span class="research-hero-chip">Gut Reaction 0.94</span>
-  </div>
-  <!-- Rotating brain outline behind hero, low-contrast, ambient -->
-  <div class="hero-brain-bg" aria-hidden="true">
-    <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
-      <!-- Outer cortical outline (top-down) -->
-      <path class="brain-outline" d="M 200 40
-            C 110 40, 50 110, 48 200
-            C 46 290, 100 360, 200 370
-            C 300 360, 354 290, 352 200
-            C 350 110, 290 40, 200 40 Z"/>
-      <!-- Central sulcus -->
-      <path class="brain-outline" d="M 200 50 Q 198 200, 202 360"/>
-      <!-- Lateral sulci -->
-      <path class="brain-outline" d="M 80 180 Q 130 195, 175 185"/>
-      <path class="brain-outline" d="M 320 180 Q 270 195, 225 185"/>
-      <!-- Subtle gyri -->
-      <path class="brain-outline" d="M 95 130 Q 145 145, 195 130"/>
-      <path class="brain-outline" d="M 305 130 Q 255 145, 205 130"/>
-      <path class="brain-outline" d="M 80 250 Q 140 270, 195 255"/>
-      <path class="brain-outline" d="M 320 250 Q 260 270, 205 255"/>
-      <!-- Pulsing ring (gentle breath) -->
-      <ellipse class="brain-pulse" cx="200" cy="200" rx="172" ry="168"/>
-      <ellipse class="brain-pulse" cx="200" cy="200" rx="148" ry="146" style="animation-delay:1.5s"/>
-    </svg>
-  </div>
-
-  <div class="cold-eyebrow">A MindReader Research Note</div>
-
-  <h1 class="cold-question">Mind reading 101</h1>
+  <h1 class="cold-question">Mind Reading 101</h1>
 
   <div class="cold-frame">
-    <p style="font-size:14px;color:var(--text-soft);font-family:'JetBrains Mono',monospace;letter-spacing:0.04em;line-height:1.7;text-align:left;max-width:600px;margin:0 auto">
+    <p>
       Note: MindReader models the <strong style="color:var(--text)">cortex</strong>, not the whole brain. That is the outer surface where attention, memory encoding etc are represented in TRIBE v2.
     </p>
   </div>
-
-  <div class="scroll-cue">↓ Begin</div>
 </section>
 
 <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
