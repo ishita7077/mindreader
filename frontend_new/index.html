@@ -2615,7 +2615,7 @@ function setupMayaReadout(){
   let timer = null;
   let transitionTimer = null;
 
-  function applyMoment(moment, nextIdx){
+  function applyMoment(moment, nextIdx, opts={}){
     root.style.setProperty('--moment-color', moment.color);
     if (reader) reader.innerHTML = moment.text;
     if (chip) {
@@ -2639,19 +2639,26 @@ function setupMayaReadout(){
     });
     const activeCard = cards[nextIdx];
     if (activeCard && rail) {
-      activeCard.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+      const railRect = rail.getBoundingClientRect();
+      const cardRect = activeCard.getBoundingClientRect();
+      const targetLeft = rail.scrollLeft + cardRect.left - railRect.left - ((rail.clientWidth - cardRect.width) / 2);
+      const maxLeft = rail.scrollWidth - rail.clientWidth;
+      rail.scrollTo({
+        left: Math.max(0, Math.min(targetLeft, maxLeft)),
+        behavior: opts.instant ? 'auto' : 'smooth',
+      });
     }
   }
 
   function render(moment, nextIdx, opts={}){
     window.clearTimeout(transitionTimer);
     if (opts.instant) {
-      applyMoment(moment, nextIdx);
+      applyMoment(moment, nextIdx, opts);
       return;
     }
     root.classList.add('is-transitioning');
     transitionTimer = window.setTimeout(() => {
-      applyMoment(moment, nextIdx);
+      applyMoment(moment, nextIdx, opts);
       requestAnimationFrame(() => root.classList.remove('is-transitioning'));
     }, 140);
   }
