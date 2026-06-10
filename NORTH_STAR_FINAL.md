@@ -1,14 +1,14 @@
-# BrainDiff — North Star & Goals (FINAL)
+# MindReader — North Star & Goals (FINAL)
 
 ## North Star
 Build a product that goes viral, is genuinely useful, and looks professional.
 
 ## The Product
-Drop in two versions of anything — two tweets, two headlines, two pitches — and see the predicted brain difference as a visual heatmap with plain-English explanation.
+Drop in one piece of content and see the predicted brain response as a visual map with plain-English explanation. When useful, compare two versions and see what changed.
 
 ## Three Success Criteria
 1. **Useful** — helps someone make a better decision about their content before they publish/spend
-2. **Viral** — every output is an inherently shareable artifact (the brain diff map + scores)
+2. **Viral** — every output is an inherently shareable artifact (the MindReader map + scores)
 3. **Professional** — aesthetics and credibility signal real science, not a toy
 
 ## Who It's For

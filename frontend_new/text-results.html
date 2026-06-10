@@ -1128,7 +1128,7 @@ function applyReportRepairs(json){
   va.display_name = labels.a;
   vb.display_name = labels.b;
   json.report_label_repair = labels.repaired ? {
-    schema_version: 'braindiff_label_repair.v1',
+    schema_version: 'mindreader_label_repair.v1',
     reason: 'duplicate_display_names',
     original_a: labels.rawA,
     original_b: labels.rawB,
@@ -1328,7 +1328,7 @@ function exportBaseName(){
     (CONTENT && CONTENT.comparison_id) ||
     JOB_ID ||
     COMPARISON_ID ||
-    'braindiff-report'
+    'mindreader-report'
   );
 }
 
@@ -1338,7 +1338,7 @@ function buildInputsExport(){
   const va = videos.video_a || {};
   const vb = videos.video_b || {};
   return {
-    schema_version: 'braindiff_inputs_export.v1',
+    schema_version: 'mindreader_inputs_export.v1',
     exported_at: new Date().toISOString(),
     page_url: window.location.href,
     job_id: JOB_ID || meta.job_id || null,
@@ -1370,7 +1370,7 @@ function textSource(value){
 
 function buildReportExport(){
   return {
-    schema_version: 'braindiff_report_export.v1',
+    schema_version: 'mindreader_report_export.v1',
     exported_at: new Date().toISOString(),
     page_url: window.location.href,
     job_id: JOB_ID || (RESULT && RESULT.meta && RESULT.meta.job_id) || null,

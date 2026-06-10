@@ -1,4 +1,4 @@
-# Run BrainDiff locally
+# Run MindReader locally
 
 1. Create the local environment and install everything:
 

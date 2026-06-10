@@ -6,7 +6,7 @@
 
 ## 1. What you are building
 
-BrainDiff currently compares two **text** stimuli by running them through a text→speech→TRIBEv2 pipeline. Users want to compare **audio** and **video** directly. TRIBEv2 already supports all three modalities natively — the work is wiring the backend and frontend for file uploads and modality-aware routing.
+MindReader currently compares two **text** stimuli by running them through a text→speech→TRIBEv2 pipeline. Users want to compare **audio** and **video** directly. TRIBEv2 already supports all three modalities natively — the work is wiring the backend and frontend for file uploads and modality-aware routing.
 
 ## 2. Ground rules (read before touching code)
 
@@ -1185,12 +1185,12 @@ cd "/Users/ishita/Downloads/Work code/Brain Diff - all in/braindiff_v2"
 git remote -v
 ```
 
-If `origin` does not point at `https://github.com/ishita7077/braindiff-all-in.git`, set it:
+If `origin` does not point at `https://github.com/ishita7077/mindreader.git`, set it:
 
 ```bash
-git remote set-url origin https://github.com/ishita7077/braindiff-all-in.git
+git remote set-url origin https://github.com/ishita7077/mindreader.git
 # If origin does not exist:
-# git remote add origin https://github.com/ishita7077/braindiff-all-in.git
+# git remote add origin https://github.com/ishita7077/mindreader.git
 ```
 
 **Step 11.2** — Push feature branch:

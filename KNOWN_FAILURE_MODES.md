@@ -1,4 +1,4 @@
-# BrainDiff / TRIBEv2 — known failure modes & UI guardrails
+# MindReader / TRIBEv2 — known failure modes & UI guardrails
 
 This is the single canonical list of things that can go wrong with a text → text
 diff run, why they happen, and how each one is surfaced to the user. Keep this
@@ -13,7 +13,7 @@ in sync with:
 
 ## Product decision: English only
 
-BrainDiff only accepts English text. The rationale:
+MindReader only accepts English text. The rationale:
 
 - `tribev2.eventstransforms.ExtractWordsFromAudio.language` is hard-coded to
   `"english"` — non-English transcription would be wrong anyway.
@@ -57,7 +57,7 @@ banner but still let the user proceed.
 |---------:|-----------------------|--------------------------------------------------------------------|------------------------------------------------------------------------------------|
 | **hard** | `EMPTY`               | textarea is blank or whitespace-only after trim                    | "Both versions need some text."                                                   |
 | **hard** | `OVER_LIMIT`          | char count > 5000 (also enforced by `maxlength` attribute)         | "Max 5,000 characters per version."                                               |
-| **hard** | `NON_ENGLISH`         | < 60% of non-space chars are ASCII letters (given ≥ 20 chars)      | "BrainDiff currently supports English text only. Please paste English for both versions." |
+| **hard** | `NON_ENGLISH`         | < 60% of non-space chars are ASCII letters (given ≥ 20 chars)      | "MindReader currently supports English text only. Please paste English for both versions." |
 | soft     | `TOO_SHORT`           | `< 15 chars` **or** `< 3 words` in either version                  | "Very short text produces noisy contrasts. Add a couple more sentences."          |
 | soft     | `LIGHT`               | `3–8 words` in either version                                      | "Short inputs work but amplify randomness. Consider 15+ words per side."          |
 | soft     | `LENGTH_SKEW`         | `max(lenA, lenB) / min(lenA, lenB) >= 10`                          | "One version is much longer than the other — the contrast will be length-biased." |
@@ -117,7 +117,7 @@ letting the user stare at a flat map.
 ## 4. Hidden WhisperX language assumption (now consistent with product)
 
 `tribev2.eventstransforms.ExtractWordsFromAudio.language` is hard-coded to
-`"english"`. Since BrainDiff is English-only (§ product decision above), this
+`"english"`. Since MindReader is English-only (§ product decision above), this
 is fine — we never mismatch the TTS language against the transcription
 language. The `NON_ENGLISH` hard rule on `input.html` enforces it.
 

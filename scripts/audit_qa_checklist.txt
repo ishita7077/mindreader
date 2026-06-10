@@ -1,4 +1,4 @@
-Brain Diff — QA checklist (maps to audit workbook P2–P6)
+MindReader — QA checklist (maps to audit workbook P2–P6)
 Run before release; tick when verified.
 
 P2 Layout shell
@@ -6,7 +6,7 @@ P2 Layout shell
 [ ] App header uses site-shell; main content aligns; no horizontal scroll at 1440 and 390 widths.
 
 P3 Navigation
-[ ] /: How it works, Methodology link, Launch Brain Diff CTA resolve correctly.
+[ ] /: How it works, Methodology link, Launch MindReader CTA resolve correctly.
 [ ] /launch → /run → /results: inputs / run progress / results flow, Diagnostics drawer open/close.
 
 P4 Sections

@@ -1179,7 +1179,7 @@ body.reveal .tradeoff-takeaway   { animation-delay: 5.55s; }
   <section class="dim-graphs">
     <div class="section-head">
       <h2>Dimension <em>graphs</em></h2>
-      <p id="dimGraphIntro">Each line is the activation of one cortical system <em>across the duration of the sample</em>. TRIBE v2 predicts 20,484 vertex values per second; we average the ones in that system's mask.</p>
+      <p id="dimGraphIntro">Each line is the activation of one cortical system <em>across the duration of the sample</em>. TRIBE v2 returns 20,484 vertex values per second; we average the ones in that system's mask.</p>
     </div>
     <div class="view-group" role="tablist" id="dimGraphViewGroup">
       <button class="active" data-view="diff">B − A</button>
@@ -1561,7 +1561,7 @@ else subEl.style.display = 'none';
 
 const dimGraphIntro = document.getElementById('dimGraphIntro');
 if (dimGraphIntro && IS_MEDIA) {
-  dimGraphIntro.innerHTML = "Each line is the activation of one cortical system <em>across the duration of the uploaded " + SAMPLE_KIND_PLURAL + "</em>. TRIBE v2 predicts 20,484 vertex values per second; we average the ones in that system's mask.";
+  dimGraphIntro.innerHTML = "Each line is the activation of one cortical system <em>across the duration of the uploaded " + SAMPLE_KIND_PLURAL + "</em>. TRIBE v2 returns 20,484 vertex values per second; we average the ones in that system's mask.";
 }
 
 // Biggest shift card

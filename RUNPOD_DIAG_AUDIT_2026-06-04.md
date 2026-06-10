@@ -6,7 +6,7 @@ Scope: diagnosis only. No code changes should be made during this phase.
 
 - User reported production runs were working before the last two or three GitHub pushes and are now not running.
 - Current branch: `main`
-- Remote: `https://github.com/ishita7077/runpod_braindiff_test.git`
+- Remote: `https://github.com/ishita7077/mindreader.git`
 - Recent commits observed:
   - `5ad6573 Add neon rep message analyst report`
   - `7646f3d fix: show expired run state clearly`
@@ -17,7 +17,7 @@ Scope: diagnosis only. No code changes should be made during this phase.
 Initial live run under observation:
 
 - Job ID: `f4df4423-1a6c-4f8e-994b-d4c59c20cb6d-u1`
-- Production endpoint: `https://braindiffv2.vercel.app/api/diff/status/f4df4423-1a6c-4f8e-994b-d4c59c20cb6d-u1`
+- Production endpoint: `https://mindreaderai.vercel.app/api/diff/status/f4df4423-1a6c-4f8e-994b-d4c59c20cb6d-u1`
 - Observed status before this audit: `queued`, `runpod_status: IN_QUEUE`, no worker output.
 
 Next steps:
@@ -55,7 +55,7 @@ Current uncommitted/deployed code path findings:
 
 Submitted a minimal production text run to avoid media/upload variables.
 
-- Endpoint: `POST https://braindiffv2.vercel.app/api/diff/start`
+- Endpoint: `POST https://mindreaderai.vercel.app/api/diff/start`
 - Response: HTTP 200
 - Job ID: `97fd6f56-4b1a-4a85-8629-7b9810c38891-u2`
 - Initial interpretation: Vercel start API can still submit to RunPod and receive a job id.
@@ -129,11 +129,11 @@ Relevant workflow history:
 
 - `0f5465a ci: auto-sync prod RunPod template + remove ttl.sh dependency`
   - Removed `ttl.sh` image usage.
-  - Added comments saying `ttl.sh/braindiff-<sha>:24h` self-deletes after 24h and previously caused production jobs to hang.
+  - Added comments saying `ttl.sh/mindreader-<sha>:24h` self-deletes after 24h and previously caused production jobs to hang.
   - Added prod RunPod template sync logic.
 - `63288e5 fix: restore RunPod production endpoint wiring`
   - Removed the prod template sync logic.
-  - Reintroduced `ttl.sh/braindiff-${GITHUB_SHA::12}:24h`.
+  - Reintroduced `ttl.sh/mindreader-${GITHUB_SHA::12}:24h`.
 - `e53b450 fix: remove input size caps`
   - Changed `runpod_worker/worker_impl.py`, so the workflow ran again.
 
@@ -141,21 +141,21 @@ GitHub Actions evidence:
 
 - Run `26558054826` for commit `e53b450` succeeded.
 - It pushed:
-  - `ghcr.io/ishita7077/runpod_braindiff_test:runpod-latest`
-  - `ghcr.io/ishita7077/runpod_braindiff_test:runpod-e53b450`
-  - `ttl.sh/braindiff-e53b4507bfcf:24h`
+  - `ghcr.io/ishita7077/mindreader:runpod-latest`
+  - `ghcr.io/ishita7077/mindreader:runpod-e53b450`
+  - `ttl.sh/mindreader-e53b4507bfcf:24h`
 - Run `26504291852` for commit `63288e5` succeeded.
 - It pushed:
-  - `ghcr.io/ishita7077/runpod_braindiff_test:runpod-latest`
-  - `ghcr.io/ishita7077/runpod_braindiff_test:runpod-63288e5`
-  - `ttl.sh/braindiff-63288e54afc0:24h`
+  - `ghcr.io/ishita7077/mindreader:runpod-latest`
+  - `ghcr.io/ishita7077/mindreader:runpod-63288e5`
+  - `ttl.sh/mindreader-63288e54afc0:24h`
 
 Registry checks:
 
-- `https://ttl.sh/v2/braindiff-e53b4507bfcf/manifests/24h`
+- `https://ttl.sh/v2/mindreader-e53b4507bfcf/manifests/24h`
   - HTTP `404`
   - `MANIFEST_UNKNOWN`
-- `https://ttl.sh/v2/braindiff-63288e54afc0/manifests/24h`
+- `https://ttl.sh/v2/mindreader-63288e54afc0/manifests/24h`
   - HTTP `404`
   - `MANIFEST_UNKNOWN`
 
@@ -212,7 +212,7 @@ Prior failure inspection:
 Patch applied locally:
 
 - Edited `.github/workflows/runpod-worker-docker.yml`.
-- Removed `ttl.sh/braindiff-${GITHUB_SHA::12}:24h` push.
+- Removed `ttl.sh/mindreader-${GITHUB_SHA::12}:24h` push.
 - Restored production template sync after worker image build.
 - Made the sync step fail loudly if:
   - `RUNPOD_API_KEY` is missing or clearly invalid.
@@ -245,7 +245,7 @@ Files in commit:
 GitHub Actions run triggered:
 
 - Run ID: `26953422239`
-- URL: `https://github.com/ishita7077/runpod_braindiff_test/actions/runs/26953422239`
+- URL: `https://github.com/ishita7077/mindreader/actions/runs/26953422239`
 - Initial state: `in_progress`
 - Current observed step at 13:04 UTC: `Build and push`
 - Prod template sync step has not started yet.
@@ -262,8 +262,8 @@ Step results:
 Image build evidence:
 
 - The workflow produced permanent GHCR tags for commit `d8d9f33`:
-  - `ghcr.io/ishita7077/runpod_braindiff_test:runpod-latest`
-  - `ghcr.io/ishita7077/runpod_braindiff_test:runpod-d8d9f33`
+  - `ghcr.io/ishita7077/mindreader:runpod-latest`
+  - `ghcr.io/ishita7077/mindreader:runpod-d8d9f33`
 - The workflow no longer pushed a `ttl.sh/*:24h` image.
 
 Failure log:
@@ -334,7 +334,7 @@ Key log lines from screenshot:
 Interpretation update:
 
 - RunPod is now starting a worker.
-- The worker is dying before it reaches BrainDiff application code.
+- The worker is dying before it reaches MindReader application code.
 - The failure is RunPod/PyTorch/CUDA compatibility: the image's PyTorch build does not support the assigned Blackwell `sm_120` GPU.
 - This is a stronger direct cause than the earlier queue-only hypothesis.
 
@@ -356,8 +356,8 @@ Current worker-build timeline:
 - `d8d9f33 fix: restore durable RunPod worker image sync` was pushed at `2026-06-04T20:02:30+07:00`.
 - GitHub Actions run `26953422239` built the worker image from `d8d9f33`.
 - The action pushed:
-  - `ghcr.io/ishita7077/runpod_braindiff_test:runpod-latest`
-  - `ghcr.io/ishita7077/runpod_braindiff_test:runpod-d8d9f33`
+  - `ghcr.io/ishita7077/mindreader:runpod-latest`
+  - `ghcr.io/ishita7077/mindreader:runpod-d8d9f33`
   - digest `sha256:1ec89b34c82ff4dad56924165d46be1f9d07b6c729c13a4b7f69c1110f2a0ec6`
 - The image push completed at `2026-06-04T13:12:57Z`.
 - RunPod worker logs show the Blackwell/PyTorch failure at `2026-06-04T13:16:48Z`.
@@ -386,12 +386,12 @@ Current status of those patches:
 
 - They are still present in `runpod_worker/handler.py` and `runpod_worker/worker_impl.py`.
 - The current handler still imports only stdlib + RunPod SDK before registering the worker.
-- Heavy BrainDiff imports still happen after the worker receives its first job.
+- Heavy MindReader imports still happen after the worker receives its first job.
 - Therefore, this is not a missing-reapply of the old bootstrap patch.
 
 Difference in the new failure:
 
-- The new screenshot failure is inside RunPod's own serverless fitness check before BrainDiff reaches its job handler.
+- The new screenshot failure is inside RunPod's own serverless fitness check before MindReader reaches its job handler.
 - The log names the incompatible GPU directly: `NVIDIA RTX PRO 6000 Blackwell Server Edition MIG 1g.24gb` (`sm_120`).
 - The image still pins `torch==2.6.0`, and the log confirms that install supports only up to `sm_90`.
 
@@ -410,7 +410,7 @@ Conclusion:
 
 Input reviewed:
 
-- `/Users/ishita/Downloads/logs-runpod_braindiff_test (1).txt`
+- User-supplied RunPod log export from Downloads
 - 998 log lines.
 
 Key finding from the full log:
@@ -447,7 +447,7 @@ Code/deploy fix applied:
 Reason:
 
 - PyTorch 2.7 CUDA 12.8 wheels are the smallest image-level move from the existing PyTorch 2.6 stack toward Blackwell compatibility.
-- If this starts successfully on Blackwell but TRIBE has a runtime incompatibility with torch 2.7, the worker should now reach BrainDiff logs instead of dying inside RunPod's pre-job fitness check.
+- If this starts successfully on Blackwell but TRIBE has a runtime incompatibility with torch 2.7, the worker should now reach MindReader logs instead of dying inside RunPod's pre-job fitness check.
 
 ## 2026-06-04 14:15 UTC - Worker Image Build Log Result
 
@@ -463,8 +463,8 @@ Build result from log:
 - PyTorch reinstall step ran and passed the explicit build-time assertion:
   - `PyTorch Blackwell-ready wheel: 2.7.0+cu128 CUDA 12.8`
 - Image pushed:
-  - `ghcr.io/ishita7077/runpod_braindiff_test:runpod-latest`
-  - `ghcr.io/ishita7077/runpod_braindiff_test:runpod-103e512`
+  - `ghcr.io/ishita7077/mindreader:runpod-latest`
+  - `ghcr.io/ishita7077/mindreader:runpod-103e512`
   - digest `sha256:b6ae610c1f2da9aa2ec645bcd52b5736935f61efb2a2b0957fa24d49980b3d11`
 
 Dependency warnings from build log:
@@ -483,7 +483,7 @@ Interpretation:
 - This has not yet proven runtime success on RunPod.
 - The next required evidence is a fresh RunPod worker log after this image is used.
 - If the next log still shows `sm_50 ... sm_90`, RunPod is still using the old image.
-- If the next log passes fitness but fails later at `[RP-10]` or `[RP-11]`, the problem has moved from RunPod fitness check to BrainDiff/Tribe runtime compatibility.
+- If the next log passes fitness but fails later at `[RP-10]` or `[RP-11]`, the problem has moved from RunPod fitness check to MindReader/Tribe runtime compatibility.
 
 Deploy blocker from log:
 

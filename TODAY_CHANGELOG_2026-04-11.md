@@ -1,7 +1,7 @@
-# BrainDiff Daily Changelog (2026-04-11)
+# MindReader Daily Changelog (2026-04-11)
 
 ## Scope
-- Stabilized local Apple Silicon execution path for BrainDiff.
+- Stabilized local Apple Silicon execution path for MindReader.
 - Improved backend runtime truthfulness and frontend behavior around long-running jobs.
 - Restructured frontend into a public landing experience plus separate app experience.
 - Added discovery-oriented narrative framing and follow-up experiment guidance.
@@ -18,7 +18,7 @@
 ## Frontend Updates
 - Split architecture into:
   - `index.html` (public landing page),
-  - `app.html` (interactive BrainDiff application).
+  - `app.html` (interactive MindReader application).
 - Added new landing experience:
   - trust-first hero,
   - read-only live demo section,

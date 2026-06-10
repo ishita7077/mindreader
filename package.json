@@ -1,8 +1,8 @@
 {
-  "name": "braindiff-vercel-adapter",
+  "name": "mindreader-vercel-adapter",
   "private": true,
   "version": "1.0.0",
-  "description": "Minimal Vercel adapter for BrainDiff",
+  "description": "Minimal Vercel adapter for MindReader",
   "scripts": {
     "vercel:login": "vercel login",
     "vercel:link": "vercel link",

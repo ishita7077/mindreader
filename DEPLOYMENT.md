@@ -1,6 +1,6 @@
-# BrainDiff Deployment (Vercel + Runpod)
+# MindReader Deployment (Vercel + Runpod)
 
-This repo keeps the existing BrainDiff app/UI and adds:
+This repo keeps the existing MindReader app/UI and adds:
 
 - Vercel adapter API routes (`api/*`)
 - Runpod serverless worker (`runpod_worker/*`)

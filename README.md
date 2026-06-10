@@ -1,3 +1,3 @@
-# BrainDiff
+# MindReader
 
-BrainDiff compares two messages and surfaces cortical shift patterns using TRIBE v2.
+MindReader takes your content and simulates, region by region, how a brain responds to it.

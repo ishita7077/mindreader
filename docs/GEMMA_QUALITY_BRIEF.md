@@ -1,6 +1,6 @@
 # Gemma 3 1B Output Quality — Improvement Brief
 
-**Mission:** Get Gemma 3 1B to produce publication-quality copy for the BrainDiff results page across 8 slot types. Right now most slots fall back to template text because Gemma's output fails strict validators.
+**Mission:** Get Gemma 3 1B to produce publication-quality copy for the MindReader results page across 8 slot types. Right now most slots fall back to template text because Gemma's output fails strict validators.
 
 **Your role:** Read this brief, then propose (a) better prompts per slot, (b) suggested validator changes if any rule is unrealistic, (c) sampling parameter tweaks, (d) anything else that ships better copy fast. Hand the proposals back; I'll wire them in.
 
@@ -94,9 +94,9 @@ Validators don't currently retry — one fail → fallback. There are no per-slo
 
 ### `headline.txt`
 ```
-You are writing the hero headline for a Brain Diff results page.
+You are writing the hero headline for a MindReader results page.
 
-Brain Diff compares two videos by predicting cortical activation in 7 systems
+MindReader compares two videos by predicting cortical activation in 7 systems
 and identifying their cognitive recipes. Every page is a STRATEGY comparison.
 Never winner-vs-loser. Never "X wins Y" framing.
 
@@ -130,7 +130,7 @@ No explanation. No quotes around it.
 
 ### `body.txt`
 ```
-You are writing the body paragraph below the hero headline on a Brain Diff
+You are writing the body paragraph below the hero headline on a MindReader
 results page.
 
 The headline has just landed a sharp claim drawn from the strongest coupling
@@ -169,10 +169,10 @@ No explanation.
 
 ### `recipe_description.txt`
 ```
-You are writing the description paragraph for one video's recipe in a Brain Diff
+You are writing the description paragraph for one video's recipe in a MindReader
 strategy insight panel.
 
-Brain Diff is a STRATEGY comparison. The description's job: take the matched
+MindReader is a STRATEGY comparison. The description's job: take the matched
 recipe's general template and customize it with this specific video's actual
 cortical events. The result must feel like it was written about THIS video,
 not the recipe in general.
@@ -207,7 +207,7 @@ No explanation.
 
 ### `recipe_match_rationale.txt`
 ```
-You are writing a one-sentence rationale for a Brain Diff recipe match.
+You are writing a one-sentence rationale for a MindReader recipe match.
 
 The recipe match itself was already determined deterministically by score-based
 matching against a structured library. Your only job: write ONE plain-English
@@ -231,12 +231,12 @@ Output: just the sentence, no quotes, no preamble.
 
 ### `coupling_callout.txt`
 ```
-You are writing one coupling callout for a Brain Diff results page Network
+You are writing one coupling callout for a MindReader results page Network
 Coordination panel.
 
 A "coupling callout" describes how strongly two cortical systems fire together
 within a single video, and what that means for the cortex's cognitive strategy.
-Brain Diff is a STRATEGY comparison — every callout reinforces this framing.
+MindReader is a STRATEGY comparison — every callout reinforces this framing.
 
 Format: 2 sentences, ≤ 38 words total. The first sentence describes what the
 systems DID (rose together / pulled apart / one suppressed the other). The
@@ -302,7 +302,7 @@ meaning. No explanation, no quotes around the output.
 ### `chord_context.txt`
 ```
 You are writing one personalized sentence to append to a chord's general
-meaning in the Brain Diff results page.
+meaning in the MindReader results page.
 
 The chord type's meaning is already explained generically above your sentence.
 Your job: add ONE sentence that grounds this specific firing in this specific
@@ -329,7 +329,7 @@ Output only the selected sentence as a single string. No explanation.
 
 ### `frame2_sub.txt`
 ```
-You are writing the sub-paragraph below the Frame 02 heading on a Brain Diff
+You are writing the sub-paragraph below the Frame 02 heading on a MindReader
 results page.
 
 Frame 02 introduces the chord progression — the sequence of cortical events
