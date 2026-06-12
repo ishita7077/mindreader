@@ -561,6 +561,26 @@ h2.section-title em{font-style:italic;color:var(--accent);font-variation-setting
   font-size:13px;
   line-height:1.45;
 }
+.maya-result-cta{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:12px;
+  margin:18px 0 2px;
+}
+.maya-result-cta .btn{
+  background:#58ddff;
+  color:#031020;
+  box-shadow:0 0 34px rgba(88,221,255,.22),0 18px 42px rgba(0,0,0,.22);
+}
+.maya-result-cta .btn:hover{
+  background:#7de6ff;
+  transform:translateY(-1px);
+}
+.maya-result-cta span{
+  color:#9fb2cc;
+  font:500 13px/1.45 'Inter Tight',system-ui,sans-serif;
+}
 .maya-read-layout.is-transitioning .maya-reader-text,
 .maya-read-layout.is-transitioning .maya-systems-card{
   opacity:.24;
@@ -1071,6 +1091,10 @@ body.landing-reveal .hero-stage::before{
       <div class="section-eyebrow">See it in action</div>
       <h2 class="section-title">Watch it read <em>every word.</em></h2>
       <p class="section-lead">Maya's discovery call, played back at the speed of thought. The model reads each line and shows which words pulled attention, felt personal, or fired a gut reaction.</p>
+      <div class="maya-result-cta">
+        <a class="btn btn-primary" href="/rep-message-analyst-neon.html?id=maya&amp;reveal=1">View Maya's preloaded result <span aria-hidden="true">→</span></a>
+        <span>Open a finished report without waiting for a new run.</span>
+      </div>
     </div>
     <div class="maya-read-layout reveal" id="mayaReadout" style="--moment-color:#5aa2ff">
       <div class="maya-live-stage">
