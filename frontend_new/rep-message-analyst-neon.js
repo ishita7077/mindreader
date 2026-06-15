@@ -38,7 +38,6 @@ const DIMENSION_TAGLINES = {
 const DIMENSION_ORDER = Object.keys(DIMENSION_LABELS).sort((a, b) => DIMENSION_LABELS[a].localeCompare(DIMENSION_LABELS[b]));
 
 const PLAYBACK_SECONDS_PER_SECOND = 2.15;
-const LONG_TRANSCRIPT_WORD_LIMIT = 58;
 
 const params = new URLSearchParams(location.search);
 const jobId = params.get("jobId") || params.get("job_id") || params.get("job");
@@ -118,6 +117,12 @@ async function loadReport() {
 }
 
 async function loadJobReport(id, side) {
+  const generated = await fetch(`/data/rep-message-analyst/${encodeURIComponent(id)}.json`, { cache: "no-store" });
+  if (generated.ok) return generated.json();
+
+  const recovered = await fetch(`/data/rep-message-impact/${encodeURIComponent(id)}.json`, { cache: "no-store" });
+  if (recovered.ok) return buildRepMessageAnalystReport(await recovered.json());
+
   const response = await fetch(`/api/diff/status/${encodeURIComponent(id)}`, { cache: "no-store" });
   if (!response.ok) throw new Error(`Could not load job '${id}' (HTTP ${response.status}).`);
   const job = await response.json();
@@ -456,7 +461,7 @@ function render() {
         <div class="hero-copy">
           <p class="eyebrow"><span class="eyebrow-dot"></span> MindReader · Neural response engine</p>
           <h1>What the <span>brain</span> heard.</h1>
-          <h2 class="hero-subtitle">${esc(active?.analyst.title || "Whole-call response trace")}</h2>
+          <h2 class="hero-subtitle">${esc(heroInsightTitle(active))}</h2>
           <p class="hero-metric"><span data-scrub-dimension>${esc(DIMENSION_LABELS[activeDimension])}</span> · score <b data-scrub-score>${active?.event.brainScore.toFixed(2) || "--"}</b> · <span data-scrub-shape>${esc(active?.event.eventShape.replaceAll("_", " ") || "signal")}</span></p>
           ${renderDimensionControls()}
           ${renderHeroScrubber(active)}
@@ -506,7 +511,7 @@ function render() {
         ${renderAppendixActivity()}
         <div class="section-head compact">
           <div><p class="eyebrow">Signal Pairing</p><h2>Which reactions moved together?</h2></div>
-          <p>This shows which brain signals rose together during the call.</p>
+          <p>This is a full-call pattern. The card names the clearest example only as a reference point.</p>
         </div>
         ${renderNetworkGraph()}
       </section>
@@ -520,7 +525,7 @@ function renderHeroSignalCard(active) {
   return `
     <div class="hero-signal-card">
       <div>
-        <strong>${esc(active.analyst.title)}</strong>
+        <strong>${esc(heroInsightTitle(active))}</strong>
         <span>${esc(DIMENSION_LABELS[active.event.signalName])} · score ${active.event.brainScore.toFixed(2)} · ${active.event.eventShape.replaceAll("_", " ")}</span>
       </div>
       <p>${esc(active.analyst.quote || active.analyst.signal_read || "")}</p>
@@ -549,8 +554,7 @@ function renderInsight(item, index) {
         <h3>${esc(item.analyst.title)}</h3>
         <p class="interpretation">${esc(plainInsightLead(item))}</p>
         <div class="transcript-evidence">
-          <blockquote>${esc(evidence.shortText || item.analyst.quote)}</blockquote>
-          ${evidence.hasMore ? `<details><summary>Show full transcript context</summary><p>${esc(evidence.fullText)}</p></details>` : ""}
+          <blockquote>${highlightTranscriptPhrase(evidence.shortText || item.analyst.quote, evidence.highlightText || item.analyst.quote)}</blockquote>
         </div>
         <div class="note-grid">
           <div class="note"><b>Why it moved</b><span>${esc(simpleDriver(item, evidence.fullText))}</span></div>
@@ -592,8 +596,7 @@ function renderSpineMoment(item, index) {
         <p class="spine-kicker"><i></i> Signal ${String(index + 1).padStart(2, "0")} · ${esc(DIMENSION_LABELS[item.event.signalName])} <span>${isTrough ? "Trough" : "Peak"} · ${formatTime(item.event.peakTime)}</span></p>
         <h3>${esc(item.analyst.title)}</h3>
         <p class="spine-lead">${esc(plainInsightLead(item))}</p>
-        <blockquote class="spine-quote">${highlightTranscriptPhrase(evidence.shortText || item.analyst.quote, item.analyst.quote)}</blockquote>
-        ${evidence.hasMore ? `<details class="spine-details"><summary>Show full transcript context</summary><p>${esc(evidence.fullText)}</p></details>` : ""}
+        <blockquote class="spine-quote">${highlightTranscriptPhrase(evidence.shortText || item.analyst.quote, evidence.highlightText || item.analyst.quote)}</blockquote>
         <div class="spine-reads">
           <div><b>Why it moved</b><span>${esc(simpleDriver(item, evidence.fullText))}</span></div>
           <div><b>What it means</b><span>${esc(simpleWhy(item))}</span></div>
@@ -794,6 +797,17 @@ function plainInsightLead(item) {
     return low ? "This is where the explanation becomes lighter." : "This is where the wording asks the listener to process the meaning more deeply.";
   }
   return `${dim} changes most clearly at this point in the call.`;
+}
+
+function heroInsightTitle(item) {
+  const title = String(item?.analyst?.title || "").trim();
+  if (!title) return "Whole-call response trace";
+  return title
+    .replace(/\bburden grabs the room\b/i, "pain point lands")
+    .replace(/\bgrabs the room\b/i, "lands")
+    .replace(/\bland deeper than the category claim\b/i, "feel more concrete")
+    .replace(/\bproduces a sharp gut read\b/i, "creates a gut reaction")
+    .replace(/\bgut read\b/i, "gut reaction");
 }
 
 function simpleDriver(item, sentenceText) {
@@ -1210,20 +1224,16 @@ function renderNetworkGraph() {
       <div class="network-list">
         ${visible.map((link, index) => {
           const moment = coordinationMoment(link);
-          const transcript = sentenceAtSignalTime(moment.time, 5);
           const isAnti = link.type === "anti";
           const label = isAnti ? "Anti-coupling" : "Strongest coupling";
           const motion = isAnti ? "Moved opposite" : "Moved together";
-          const read = networkMomentInsight(link, transcript.text);
+          const read = networkMomentInsight(link);
           return `
           <button class="network-item ${index === 0 ? "is-active" : ""} ${link.type === "anti" ? "is-anti" : ""}" type="button" data-network-index="${index}" data-a="${escAttr(link.a)}" data-b="${escAttr(link.b)}">
             <span class="network-type">${label}<small>${motion}</small></span>
             <b>${esc(DIMENSION_LABELS[link.a])} + ${esc(DIMENSION_LABELS[link.b])}</b>
             <p>${esc(read)}</p>
-            <div class="network-transcript">
-              <strong>Transcript</strong>
-              <small>${esc(transcript.text || "No aligned transcript words in this window.")}</small>
-            </div>
+            <small class="network-example">Clearest example · ${formatTime(moment.time)}</small>
           </button>
         `;}).join("")}
         ${summary.hasAnti ? "" : `
@@ -1269,25 +1279,25 @@ function networkFallbackExplanation(link) {
   return `${DIMENSION_LABELS[link.a]} and ${DIMENSION_LABELS[link.b]} rose together. When one became active, the other tended to come with it.`;
 }
 
-function networkMomentInsight(link, sentenceText) {
+function networkMomentInsight(link) {
   const a = DIMENSION_LABELS[link.a];
   const b = DIMENSION_LABELS[link.b];
   if (link.type === "anti") {
     if ((link.a === "gut_reaction" && link.b === "language_depth") || (link.a === "language_depth" && link.b === "gut_reaction")) {
-      return "The gut reaction did not come from dense language here. The instinctive hit is probably carried by the claim itself, not by complex wording.";
+      return "Across the call, gut reaction and language depth tended to separate. The immediate hit did not depend on dense wording.";
     }
-    return `${a} and ${b} moved apart here. The call created one kind of response without turning it into the other.`;
+    return `Across the call, ${a} and ${b} tended to move in opposite directions. When one got louder, the other was usually quieter.`;
   }
   if ((link.a === "language_depth" && link.b === "memory_encoding") || (link.a === "memory_encoding" && link.b === "language_depth")) {
-    return "The fuller explanation also became easier to retain. In simple terms: the part with more meaning was also the part most likely to stick.";
+    return "Across the call, fuller meaning and memory tended to rise together. The parts with more to process were also more likely to stick.";
   }
   if ((link.a === "attention" && link.b === "gut_reaction") || (link.a === "gut_reaction" && link.b === "attention")) {
-    return "The line that pulled focus also produced a fast gut response. It did not just get noticed; it felt immediate.";
+    return "Across the call, focus and gut reaction often came as a pair. What got noticed also tended to feel immediate.";
   }
   if (link.a === "personal_resonance" && link.b === "social_thinking") {
-    return "The line felt relevant while also making the listener think about people, roles, and trust. In simple terms: it connected the problem to their world.";
+    return "Across the call, relevance and people-reading moved together. The message felt most active when it connected the situation to people, roles, or trust.";
   }
-  return `${a} and ${b} rose together. This part of the call pulled both reactions at once, so the two signals should be read as one moment.`;
+  return `Across the call, ${a} and ${b} tended to rise together. Read this as a repeated pairing, not one isolated spike.`;
 }
 
 function bindInteractions() {
@@ -1416,14 +1426,14 @@ function bindInteractions() {
 
 function updateHeroActiveCopy(active) {
   const heroSubtitle = document.querySelector(".hero-subtitle");
-  if (heroSubtitle) heroSubtitle.textContent = active?.analyst.title || "Whole-call response trace";
+  if (heroSubtitle) heroSubtitle.textContent = heroInsightTitle(active);
   const activeTitle = document.querySelector(".active-read strong");
   const activeMeta = document.querySelector(".active-read span");
-  if (activeTitle) activeTitle.textContent = active?.analyst.title || "Brain activity";
+  if (activeTitle) activeTitle.textContent = active ? heroInsightTitle(active) : "Brain activity";
   if (activeMeta) activeMeta.textContent = active ? `${DIMENSION_LABELS[active.event.signalName]} · score ${active.event.brainScore.toFixed(2)} · ${active.event.eventShape.replaceAll("_", " ")}` : "";
   const card = document.querySelector(".hero-signal-card");
   if (!card || !active) return;
-  card.querySelector("strong").textContent = active.analyst.title;
+  card.querySelector("strong").textContent = heroInsightTitle(active);
   card.querySelector("span").textContent = `${DIMENSION_LABELS[active.event.signalName]} · score ${active.event.brainScore.toFixed(2)} · ${active.event.eventShape.replaceAll("_", " ")}`;
   card.querySelector("p").textContent = active.analyst.quote || active.analyst.signal_read || "";
 }
@@ -1644,46 +1654,100 @@ function sentenceWindowAtSignalTime(signalTime, sentenceTarget = 2) {
 function transcriptEvidenceForInsight(item) {
   const hrfLag = report.input.alignment.hrfLagSec || 0;
   const center = item.transcript.stimulusPeak ?? Math.max(0, item.event.peakTime - hrfLag);
-  const startTime = Math.max(0, center - 5);
   const words = report.input.transcriptWords || [];
   if (!words.length) {
     const fallback = transcriptWindow(item, 7);
-    return { ...fallback, shortText: fallback.text, fullText: fallback.text, hasMore: false };
+    const shortText = truncateWords(fallback.text || item.analyst.quote, 14);
+    return { ...fallback, shortText, fullText: shortText, highlightText: truncateWords(item.analyst.quote || shortText, 10), hasMore: false };
   }
 
-  let startIndex = words.findIndex((word) => (word.end ?? word.start ?? 0) >= startTime);
-  if (startIndex < 0) startIndex = 0;
+  let range = quoteWordRange(words, item.analyst.quote, center);
+  if (!range) range = timedQuoteWordRange(words, item.transcript.quoteStart, item.transcript.quoteEnd, center);
 
-  let targetIndex = startIndex;
+  if (!range) {
+    const targetIndex = nearestWordIndex(words, center);
+    range = { startIndex: targetIndex, endIndex: targetIndex };
+  }
+
+  if (range.endIndex - range.startIndex + 1 > 10) {
+    const targetIndex = nearestWordIndex(words.slice(range.startIndex, range.endIndex + 1), center) + range.startIndex;
+    range = {
+      startIndex: Math.max(range.startIndex, targetIndex - 4),
+      endIndex: Math.min(range.endIndex, targetIndex + 5),
+    };
+  }
+
+  const startIndex = Math.max(0, range.startIndex - 3);
+  const endIndex = Math.min(words.length - 1, range.endIndex + 3);
+  const selectedWords = words.slice(startIndex, endIndex + 1);
+  const coreWords = words.slice(range.startIndex, range.endIndex + 1);
+  const shortText = cleanTranscriptText(selectedWords.map((word) => word.word).join(" "));
+  const highlightText = cleanTranscriptText(coreWords.map((word) => word.word).join(" "));
+
+  return {
+    start: selectedWords[0]?.start ?? Math.max(0, center - 3),
+    end: selectedWords.at(-1)?.end ?? center,
+    fullText: shortText,
+    shortText,
+    highlightText,
+    hasMore: false,
+  };
+}
+
+function quoteWordRange(words, quote, center) {
+  const quoteTokens = tokenizeTranscript(quote);
+  if (!quoteTokens.length) return null;
+  let best = null;
+  for (let index = 0; index <= words.length - quoteTokens.length; index += 1) {
+    const windowTokens = words.slice(index, index + quoteTokens.length).map((word) => normalizeWord(word.word));
+    if (!quoteTokens.every((token, offset) => token === windowTokens[offset])) continue;
+    const startWord = words[index];
+    const endWord = words[index + quoteTokens.length - 1];
+    const mid = ((startWord.start || 0) + (endWord.end || endWord.start || 0)) / 2;
+    const distance = Math.abs(mid - center);
+    if (!best || distance < best.distance) {
+      best = { startIndex: index, endIndex: index + quoteTokens.length - 1, distance };
+    }
+  }
+  return best ? { startIndex: best.startIndex, endIndex: best.endIndex } : null;
+}
+
+function timedQuoteWordRange(words, quoteStart, quoteEnd, center) {
+  if (!Number.isFinite(quoteStart) || !Number.isFinite(quoteEnd) || quoteEnd <= quoteStart) return null;
+  const indexes = words
+    .map((word, index) => ({ word, index }))
+    .filter(({ word }) => (word.end ?? word.start ?? 0) >= quoteStart && (word.start ?? word.end ?? 0) <= quoteEnd)
+    .map(({ index }) => index);
+  if (!indexes.length) return null;
+  return { startIndex: Math.min(...indexes), endIndex: Math.max(...indexes) };
+}
+
+function nearestWordIndex(words, center) {
+  let targetIndex = 0;
   let bestDistance = Infinity;
   words.forEach((word, index) => {
-    const wordCenter = ((word.start || 0) + (word.end || 0)) / 2;
+    const wordCenter = ((word.start || 0) + (word.end || word.start || 0)) / 2;
     const distance = Math.abs(wordCenter - center);
     if (distance < bestDistance) {
       bestDistance = distance;
       targetIndex = index;
     }
   });
+  return targetIndex;
+}
 
-  let endIndex = targetIndex;
-  while (endIndex < words.length - 1 && !endsSentence(words[endIndex].word)) endIndex += 1;
+function tokenizeTranscript(text) {
+  return cleanTranscriptText(text)
+    .split(/\s+/)
+    .map(normalizeWord)
+    .filter(Boolean);
+}
 
-  let sentenceCount = words.slice(startIndex, endIndex + 1).filter((word) => endsSentence(word.word)).length;
-  while (sentenceCount < 2 && endIndex < words.length - 1 && endIndex - startIndex < 56) {
-    endIndex += 1;
-    if (endsSentence(words[endIndex].word)) sentenceCount += 1;
-  }
-
-  const selectedWords = words.slice(startIndex, endIndex + 1);
-  const fullText = cleanTranscriptText(selectedWords.map((word) => word.word).join(" "));
-  const tooLong = selectedWords.length > LONG_TRANSCRIPT_WORD_LIMIT || sentenceCount > 3;
-  return {
-    start: selectedWords[0]?.start ?? startTime,
-    end: selectedWords.at(-1)?.end ?? center,
-    fullText,
-    shortText: tooLong ? `${truncateWords(fullText, 42)}...` : fullText,
-    hasMore: tooLong,
-  };
+function normalizeWord(word) {
+  return String(word || "")
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}'-]+/gu, "")
+    .trim();
 }
 
 function truncateWords(text, limit) {
