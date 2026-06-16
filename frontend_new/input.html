@@ -218,6 +218,14 @@ h1.page-title em{font-style:italic;color:var(--accent);font-variation-settings:"
 }
 .mode-pill:hover{border-color:var(--accent);color:var(--ink)}
 .mode-pill.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.mode-note{
+  max-width:680px;
+  margin:-4px 0 18px 88px;
+  color:var(--ink-mute);
+  font-size:12.5px;
+  line-height:1.55;
+}
+.mode-note strong{color:var(--ink)}
 .dropzone{
   display:none;
   border:1px dashed var(--line-2);border-radius:10px;background:var(--panel-2);
@@ -325,6 +333,7 @@ textarea::placeholder{color:var(--ink-mute);opacity:0.7}
   .topbar{padding:14px var(--shell-pad-x)}
   .topbar-right{gap:10px;font-size:12px}
   .topbar-right a:not(:last-child){display:none}
+  .mode-note{margin-left:0}
 }
 </style>
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Crimson+Pro:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Caveat:wght@400;500;700&family=Kalam:wght@300;400;700&family=Inter+Tight:wght@400;500;600&display=swap" rel="stylesheet">
@@ -389,6 +398,37 @@ textarea::placeholder{color:var(--ink-mute);opacity:0.7}
     0 0 0 1px rgba(255, 255, 255, 0.22) inset,
     0 0 18px rgba(88, 221, 255, 0.28) !important;
 }
+.mode-pill:disabled,
+.mode-pill[aria-disabled="true"] {
+  cursor: not-allowed !important;
+  opacity: 0.58 !important;
+  border-color: rgba(140, 166, 207, 0.22) !important;
+  color: rgba(184, 203, 234, 0.58) !important;
+  background: rgba(8, 18, 42, 0.45) !important;
+  box-shadow: none !important;
+}
+.mode-pill:disabled:hover,
+.mode-pill[aria-disabled="true"]:hover {
+  transform: none !important;
+}
+.mode-status {
+  margin-left: 6px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.72;
+}
+.mode-pill.active .mode-status {
+  opacity: 0.9;
+}
+button:focus-visible,
+a:focus-visible,
+textarea:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
 .btn-primary {
   color: #031229 !important;
   background: linear-gradient(180deg, #58ddff, #2f89ff) !important;
@@ -444,7 +484,7 @@ textarea::placeholder{color:var(--ink-mute);opacity:0.7}
     </div>
     <div class="tip">
       <span class="tip-num">02</span>
-      <span class="tip-text"><strong>No fixed character cap.</strong> Richer samples produce cleaner readings; longer runs take more time.</span>
+      <span class="tip-text"><strong>Best range.</strong> Use roughly 150–900 words. Longer text works, but takes more time.</span>
     </div>
     <div class="tip">
       <span class="tip-num">03</span>
@@ -460,10 +500,11 @@ textarea::placeholder{color:var(--ink-mute);opacity:0.7}
     </div>
     <div class="mode-row" role="tablist" aria-label="Select modality">
       <span class="mode-label">Modality</span>
-      <button type="button" class="mode-pill active" data-mode="text" role="tab" aria-selected="true">Text</button>
-      <button type="button" class="mode-pill" data-mode="audio" role="tab" aria-selected="false">Audio</button>
-      <button type="button" class="mode-pill" data-mode="video" role="tab" aria-selected="false">Video</button>
+      <button type="button" class="mode-pill active" data-mode="text" role="tab" aria-selected="true">Text <span class="mode-status">Best supported</span></button>
+      <button type="button" class="mode-pill" data-mode="audio" role="tab" aria-selected="false" aria-disabled="true" disabled title="Audio readouts are temporarily paused while we harden this pipeline.">Audio <span class="mode-status">Paused</span></button>
+      <button type="button" class="mode-pill" data-mode="video" role="tab" aria-selected="false" aria-disabled="true" disabled title="Video readouts are temporarily paused while we harden this pipeline.">Video <span class="mode-status">Paused</span></button>
     </div>
+    <p class="mode-note"><strong>Text readouts are live.</strong> Audio and video are temporarily paused while we harden the pipeline for public use.</p>
     <div class="input-grid is-single" id="inputGrid">
       <div class="input-card" id="cardA">
         <div class="input-head">
@@ -612,15 +653,15 @@ function toggleTheme(){
     single: {
       'sales-call': {
         label: 'Sales call',
-        a: "Thanks for taking the time today. The problem we keep hearing is not that teams lack data, it's that they cannot see which moments actually change a buyer's mind. MindReader gives your team a second-by-second readout of attention, memory encoding, and personal relevance so you can improve the message before it goes live."
+        a: "Thanks for taking the time today. The problem we keep hearing is not that teams lack data, it is that they cannot see which moments actually change a buyer's mind. Managers listen to a few calls, skim summaries from the rest, and then have to guess where the message is working. MindReader gives your team a second-by-second readout of attention, memory encoding, gut reaction, and personal relevance, so you can see which words made the buyer lean in, which parts created effort, and which moments are worth reviewing before the message goes live."
       },
       'founder-update': {
         label: 'Founder update',
-        a: "This quarter was about focus. We shipped the core workflow, cut the features that were slowing us down, and moved our reliability numbers in the right direction. The next milestone is simple: make the product feel faster, clearer, and easier to trust for every team using it daily."
+        a: "This quarter was about focus. We shipped the core workflow, cut the features that were slowing us down, and moved our reliability numbers in the right direction. The product is no longer a collection of promising parts; it is becoming a single dependable path from first setup to daily use. The next milestone is simple: make every screen feel faster, clearer, and easier to trust. If we do that well, customers will not need a long explanation to understand why the product matters."
       },
       'public-health': {
         label: 'Public health PSA',
-        a: "A short walk after dinner can lower blood sugar, improve sleep, and reduce stress. You do not need a perfect routine to start. Ten minutes tonight is enough to give your body a signal that tomorrow can be easier."
+        a: "A short walk after dinner can lower blood sugar, improve sleep, and reduce stress. You do not need a perfect routine, a gym membership, or a dramatic reset to start. The useful first step is smaller than most people think: ten quiet minutes tonight, after your meal, at a pace that still lets you talk. That is enough to give your body a clear signal. Repeat it a few nights this week, and tomorrow can start to feel a little easier."
       }
     },
     diff: {
@@ -780,8 +821,7 @@ function toggleTheme(){
 
   function canSubmit(){
     if (mode !== 'text'){
-      if (runType === 'single') return Boolean(fileA.files && fileA.files[0]);
-      return Boolean(fileA.files && fileA.files[0] && fileB.files && fileB.files[0]);
+      return false;
     }
     const la = a.value.trim().length;
     if (runType === 'single') {
@@ -1156,6 +1196,13 @@ function toggleTheme(){
 
   async function start(){
     await publicConfigPromise;
+    if (mode !== 'text'){
+      showToast(
+        '<strong>Text readouts are live right now.</strong> Audio and video are temporarily paused while we harden the pipeline.',
+        {kind:'warn', durationMs:6500, key:'media-paused'}
+      );
+      return;
+    }
     if (turnstileRequired && !String(turnstileToken).trim()){
       if (turnstileWidgetId === null){
         showError('Bot check is not ready yet (or failed to load). Check the notice above or refresh the page.', 'TURNSTILE_NOT_READY');
@@ -1311,6 +1358,13 @@ function toggleTheme(){
   });
   modePills.forEach(function(pill){
     pill.addEventListener('click', function(){
+      if (pill.disabled || pill.getAttribute('aria-disabled') === 'true'){
+        showToast(
+          '<strong>' + pill.textContent.trim().replace(/\s+/g, ' ') + ' is paused.</strong> Text readouts are live while we harden audio and video.',
+          {kind:'info', durationMs:5000, key:'media-paused'}
+        );
+        return;
+      }
       mode = pill.dataset.mode || 'text';
       modePills.forEach(function(other){
         const active = other === pill;

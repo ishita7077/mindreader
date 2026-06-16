@@ -628,6 +628,7 @@
 
   /* Hide cancel area after completion */
   body.run-done .cancel-area { display: none; }
+  body.run-done .sample-result-card { display: none; }
   body.run-done .deep-scope,
   body.run-done .honest-eta { display: none; }
 
@@ -760,6 +761,102 @@
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Crimson+Pro:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Caveat:wght@400;500;700&family=Kalam:wght@300;400;700&family=Inter+Tight:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/theme.css">
 <link rel="stylesheet" href="/assets/neon-site.css?v=1">
+<style id="run-page-neon-overrides">
+  /* Keep the run screen calm: status first, optional sample result second. */
+  .sample-result-card {
+    background:
+      linear-gradient(180deg, rgba(8, 18, 42, 0.64), rgba(4, 10, 24, 0.72)) !important;
+    border-color: rgba(110, 205, 255, 0.20) !important;
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.20) !important;
+  }
+  .sample-result-card strong {
+    color: rgba(242, 248, 255, 0.92) !important;
+  }
+  .sample-result-card p {
+    color: rgba(195, 204, 223, 0.78) !important;
+  }
+  .sample-result-btn {
+    background: rgba(7, 18, 40, 0.92) !important;
+    color: rgba(242, 248, 255, 0.94) !important;
+    border: 1px solid rgba(110, 205, 255, 0.32) !important;
+    box-shadow: 0 0 0 1px rgba(88, 221, 255, 0.05), 0 12px 26px rgba(0, 0, 0, 0.28) !important;
+    text-shadow: none !important;
+  }
+  .sample-result-btn:hover {
+    background: rgba(14, 38, 78, 0.94) !important;
+    border-color: rgba(110, 205, 255, 0.52) !important;
+    color: #ffffff !important;
+  }
+  .notif-nudge {
+    left: auto !important;
+    right: 24px !important;
+    bottom: 24px !important;
+    transform: translateY(120px) !important;
+    width: min(390px, calc(100vw - 32px)) !important;
+    background:
+      linear-gradient(180deg, rgba(8, 18, 42, 0.94), rgba(4, 10, 24, 0.96)) !important;
+    border-color: rgba(110, 205, 255, 0.22) !important;
+    box-shadow: 0 18px 44px rgba(0, 0, 0, 0.38) !important;
+    z-index: 40 !important;
+  }
+  .notif-nudge.visible {
+    transform: translateY(0) !important;
+  }
+  .notif-nudge-title {
+    color: rgba(242, 248, 255, 0.94) !important;
+  }
+  .notif-nudge-sub {
+    color: rgba(195, 204, 223, 0.76) !important;
+  }
+  .notif-btn-primary {
+    background: rgba(13, 31, 66, 0.96) !important;
+    color: rgba(242, 248, 255, 0.94) !important;
+    border: 1px solid rgba(110, 205, 255, 0.34) !important;
+    box-shadow: 0 0 0 1px rgba(88, 221, 255, 0.04), 0 12px 28px rgba(0, 0, 0, 0.24) !important;
+  }
+  .notif-btn-primary:hover {
+    opacity: 1 !important;
+    border-color: rgba(110, 205, 255, 0.56) !important;
+    background: rgba(19, 48, 96, 0.98) !important;
+  }
+  .notif-btn-secondary {
+    color: rgba(195, 204, 223, 0.74) !important;
+    border-color: rgba(110, 205, 255, 0.22) !important;
+  }
+  body.run-error .notif-nudge {
+    display: none !important;
+  }
+  .honest-eta.is-error {
+    display: block !important;
+    background:
+      linear-gradient(180deg, rgba(8, 18, 42, 0.76), rgba(4, 10, 24, 0.82)) !important;
+    border-color: rgba(255, 118, 157, 0.34) !important;
+    color: rgba(195, 204, 223, 0.86) !important;
+  }
+  .honest-eta.is-error strong {
+    color: rgba(242, 248, 255, 0.96) !important;
+  }
+  .honest-eta.is-error a {
+    color: #58ddff !important;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .honest-eta.is-error .error-ref {
+    display: block;
+    margin-top: 10px;
+    color: rgba(143, 165, 201, 0.82);
+    font-family: var(--bd-mono, "JetBrains Mono", ui-monospace, monospace);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+  }
+  @media (max-width: 900px) {
+    .notif-nudge {
+      right: 16px !important;
+      bottom: 16px !important;
+      width: calc(100vw - 32px) !important;
+    }
+  }
+</style>
 </head>
 <body>
 <div class="theme-switcher">
@@ -779,8 +876,8 @@
   <!-- LEFT: Status column -->
   <aside class="status-card">
     <div class="eyebrow" id="statusEyebrow">Run status</div>
-    <h1 class="status-headline" id="statusHeadline">Analysis is in <em>progress.</em></h1>
-    <p class="status-sub" id="statusSub">We are processing your input and preparing the result page.</p>
+    <h1 class="status-headline" id="statusHeadline">Queued on <em>RunPod.</em></h1>
+    <p class="status-sub" id="statusSub">Waiting for RunPod to assign a GPU worker. Analysis has not started yet.</p>
 
     <div class="eta-pill hide" id="etaPill"><span class="dot"></span></div>
 
@@ -803,7 +900,7 @@
 
     <div class="sample-result-card">
       <strong>Want to see the finished product now?</strong>
-      <p>Open Maya's preloaded MindReader report while this run keeps processing here.</p>
+      <p>Open Maya's preloaded MindReader report in a new tab.</p>
       <a class="sample-result-btn" href="/rep-message-analyst-neon.html?id=maya&amp;reveal=1" target="_blank" rel="noopener">View preloaded Maya result <span aria-hidden="true">→</span></a>
     </div>
 
@@ -820,7 +917,7 @@
       <div class="edu-hero">
         <div class="edu-brain-wrap">
           <div class="mesh-badge">Real fsaverage5 · 20,484 vertices</div>
-          <canvas class="edu-brain-canvas" id="eduBrain"></canvas>
+          <canvas class="edu-brain-canvas" id="eduBrain" role="img" aria-label="Animated brain activity preview while the run is queued or processing"></canvas>
           <div class="brain-caption" id="brainCaption">Attention · did this pull focus?</div>
         </div>
         <div class="edu-card">
@@ -983,6 +1080,7 @@ function toggleTheme(){
   const params = new URLSearchParams(location.search);
   const JOB_ID = params.get('job');
   if (!JOB_ID){ window.location.replace('/launch'); return; }
+  const IS_LOCAL_PREVIEW = /^demo-/i.test(JOB_ID);
   const RUN_MODE = (function(){
     try {
       const stored = sessionStorage.getItem('braindiff:modality:' + JOB_ID);
@@ -1017,14 +1115,12 @@ function toggleTheme(){
   }
 
   const jobLbl = document.getElementById('jobIdLabel');
-  if (jobLbl) jobLbl.textContent = 'job · ' + JOB_ID.slice(0, 8);
+  if (jobLbl) jobLbl.textContent = IS_LOCAL_PREVIEW ? 'job · preview' : ('job · ' + JOB_ID.slice(0, 8));
   const viewResultsBtn = document.getElementById('viewResultsBtn');
   if (viewResultsBtn) viewResultsBtn.setAttribute('href', resultsHrefForRun());
   const statusSub = document.getElementById('statusSub');
   if (statusSub) {
-    statusSub.textContent = IS_SINGLE_RUN
-      ? 'We are analyzing this ' + RUN_KIND + ' and preparing the result page.'
-      : 'We are analyzing both ' + RUN_KIND + ' and preparing the comparison page.';
+    statusSub.textContent = 'Waiting for RunPod to assign a GPU worker. Analysis has not started yet.';
   }
 
   // ===== Deep Scope ======================================================
@@ -1033,8 +1129,11 @@ function toggleTheme(){
   // DS.complete(meta.stage_times). Persists per-run timing to localStorage
   // so it can show avg ± stdev next to each step once the user has 20+ runs.
   // -----------------------------------------------------------------------
+  const INPUT_PREP_LABEL = RUN_MODE === 'video'
+    ? 'Worker pickup and video prep'
+    : (RUN_MODE === 'audio' ? 'Worker pickup and audio prep' : 'Worker pickup and text prep');
   const DS_STEPS = [
-    { id:'read',    label: RUN_MODE === 'video' ? (IS_SINGLE_RUN ? 'Reading video' : 'Reading both videos') : (RUN_MODE === 'audio' ? (IS_SINGLE_RUN ? 'Reading audio file' : 'Reading both audio files') : (IS_SINGLE_RUN ? 'Preparing text' : 'Preparing both texts')),
+    { id:'read',    label: INPUT_PREP_LABEL,
       backend: [
         'submitted','queued','worker_booting','worker_received',
         'worker_impl_import_started','worker_impl_import_ready','worker_started',
@@ -1110,14 +1209,14 @@ function toggleTheme(){
     function statsForStep(history, stepIndex, stageKeys){
       const vals = [];
       for (const h of history){
-        if (Array.isArray(h.step_ms) && typeof h.step_ms[stepIndex] === 'number' && isFinite(h.step_ms[stepIndex])){
+        if (Array.isArray(h.step_ms) && typeof h.step_ms[stepIndex] === 'number' && isFinite(h.step_ms[stepIndex]) && h.step_ms[stepIndex] > 250){
           vals.push(h.step_ms[stepIndex]);
           continue;
         }
         const t = h.stage_times || {};
         let sum = 0, ok = false;
         for (const k of stageKeys){ if (typeof t[k] === 'number'){ sum += t[k]; ok = true; } }
-        if (ok) vals.push(sum);
+        if (ok && sum > 250) vals.push(sum);
       }
       if (!vals.length) return null;
       const avg = vals.reduce((a,b)=>a+b, 0) / vals.length;
@@ -1216,6 +1315,7 @@ function toggleTheme(){
     function startStep(i, ms){
       if (i < 0 || i >= state.length) return;
       if (state[i].status === 'done') return;
+      ms = isFiniteNumber(ms) ? Math.min(ms, Date.now()) : Date.now();
       // Mark all previous steps done
       for (let p = 0; p < i; p++){
         if (state[p].status !== 'done'){
@@ -1229,6 +1329,7 @@ function toggleTheme(){
     }
     function completeStep(i, ms){
       if (i < 0 || i >= state.length) return;
+      ms = isFiniteNumber(ms) ? Math.min(ms, Date.now()) : Date.now();
       if (state[i].startMs == null) state[i].startMs = ms;
       state[i].doneMs = ms;
       setStatus(i, 'done');
@@ -1253,18 +1354,22 @@ function toggleTheme(){
         runStartMs = now;
         nextHeartbeatAt = runStartMs + HEARTBEAT_MS;
       }
-      startStep(0, runStartMs);
-      appendLog(runStartMs, 'submitted · waiting for RunPod worker pickup');
       tick();
+    }
+    function setStepLabel(i, label){
+      const row = rowAt(i);
+      const el = row && row.querySelector('.ds-step-label');
+      if (el && label) el.textContent = label;
     }
     function update(events){
       if (!events || !events.length) return;
+      setStepLabel(0, INPUT_PREP_LABEL);
       // Track first observed run start + start the heartbeat countdown.
       const first = events[0];
       if (first){
         const t = eventTimeMs(first, null);
         if (isFiniteNumber(t) && (runStartMs == null || t < runStartMs)){
-          runStartMs = t;
+          runStartMs = Math.min(t, Date.now());
           nextHeartbeatAt = runStartMs + HEARTBEAT_MS;
         }
       }
@@ -1285,11 +1390,16 @@ function toggleTheme(){
       }
       return -1;
     }
+    function activateStatus(status, label){
+      if (label) setStepLabel(0, label);
+      const index = stepIndexForBackend(status);
+      if (index >= 0) startStep(index, Date.now());
+    }
     function tick(){
       const now = Date.now();
       // Total elapsed clock
       if (elapsedEl){
-        const elapsed = runStartMs ? ((runDoneMs || now) - runStartMs) : 0;
+        const elapsed = runStartMs ? Math.max(0, (runDoneMs || now) - runStartMs) : 0;
         elapsedEl.textContent = fmtClock(elapsed);
         if (!slowWarned && elapsed > SLOW_AT_MS && honestEta){
           slowWarned = true;
@@ -1315,7 +1425,7 @@ function toggleTheme(){
         const row = rowAt(i);
         if (!row) continue;
         const s = state[i];
-        const elapsed = s.startMs == null ? null : (s.doneMs || now) - s.startMs;
+        const elapsed = s.startMs == null ? null : Math.max(0, (s.doneMs || now) - s.startMs);
         const expected = (stepStats[i] && stepStats[i].avgMs) || DS_STEPS[i].expectedMs;
         const elEl = row.querySelector('[data-elapsed]');
         const fill = row.querySelector('[data-fill]');
@@ -1341,19 +1451,21 @@ function toggleTheme(){
       const now = isFiniteNumber(completedAtMs) ? completedAtMs : Date.now();
       runDoneMs = now;
       DS_STEPS.forEach(function(s, i){
+        const observed = state[i].startMs != null || state[i].doneMs != null;
         if (state[i].startMs == null) {
           const previousDone = i > 0 ? state[i - 1].doneMs : null;
-          state[i].startMs = previousDone || runStartMs || now;
+          state[i].startMs = previousDone || null;
         }
         if (state[i].doneMs == null) {
           const nextStart = i < state.length - 1 ? state[i + 1].startMs : null;
-          state[i].doneMs = nextStart || now;
+          state[i].doneMs = nextStart || (observed ? now : null);
         }
         setStatus(i, 'done');
       });
       const derivedTotal = runStartMs ? Math.max(0, now - runStartMs) : totalMs;
       const stepMs = state.map(function(s){
-        return s.startMs != null && s.doneMs != null ? Math.max(0, s.doneMs - s.startMs) : null;
+        const elapsed = s.startMs != null && s.doneMs != null ? Math.max(0, s.doneMs - s.startMs) : null;
+        return elapsed && elapsed > 250 ? elapsed : null;
       });
       // Persist run for history.
       RunHistory.push({
@@ -1365,7 +1477,7 @@ function toggleTheme(){
       tick();
     }
     init();
-    return { bootstrap, update, tick, complete, appendLog, stepIndexForBackend };
+    return { bootstrap, update, tick, complete, appendLog, stepIndexForBackend, setStepLabel, activateStatus };
   })();
 
   // 500ms tick keeps the elapsed clock + progress bars live without bothering
@@ -1461,7 +1573,31 @@ function toggleTheme(){
     }
   }
 
-  function applyStatus(status){
+  function applyStatus(job){
+    const status = typeof job === 'string' ? job : (job && job.status);
+    const runpodStatus = job && job.runpod_status ? String(job.runpod_status).toUpperCase() : '';
+    const eb = document.getElementById('statusEyebrow');
+    const h1 = document.getElementById('statusHeadline');
+    const sub = document.getElementById('statusSub');
+    if (status === 'queued'){
+      const label = runpodStatus === 'IN_PROGRESS' ? 'Waiting for worker events' : 'Waiting for RunPod worker';
+      DS.activateStatus('queued', label);
+      if (eb) eb.textContent = 'Queued';
+      if (h1) h1.innerHTML = 'Queued on <em>RunPod.</em>';
+      if (sub) sub.textContent = 'Your job is waiting for an available GPU worker. No analysis has started yet.';
+      return;
+    }
+    if (status === 'worker_booting'){
+      DS.activateStatus('worker_booting', 'Worker is starting');
+      if (eb) eb.textContent = 'Worker assigned';
+      if (h1) h1.innerHTML = 'Worker is <em>starting.</em>';
+      if (sub) sub.textContent = 'RunPod has assigned a worker. MindReader is loading the pipeline before analysis starts.';
+      return;
+    }
+    DS.setStepLabel(0, INPUT_PREP_LABEL);
+    if (eb) eb.textContent = 'Run status';
+    if (h1) h1.innerHTML = 'Analysis is in <em>progress.</em>';
+    if (sub) sub.textContent = 'MindReader is processing your content. The progress below uses real worker checkpoints.';
     if (STATUS_TO_STEP[status] === 0){
       setStep(0, 'active');
     } else if (STATUS_TO_STEP[status] === 1){
@@ -1491,24 +1627,43 @@ function toggleTheme(){
     DIFF_JOB_FAILED:     'The pipeline raised an exception. Try longer, clearly-English inputs (15+ words per side, at least one full sentence).',
     NOT_FOUND:           'This run is no longer available from RunPod, and MindReader could not find a saved result for it.',
   };
+  function escapeHtml(value){
+    return String(value == null ? '' : value).replace(/[<>&"]/g, function(c){
+      return ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'})[c];
+    });
+  }
   function showError(err){
     const msg = (err && err.message) || 'Something went wrong.';
     const code = (err && err.code) || 'DIFF_JOB_FAILED';
     const plain = err && err.plain;
-    const reason = plain && plain.reason ? plain.reason : msg;
-    const tip = plain && plain.action ? plain.action : (ERROR_TIPS[code] || 'Please try again with shorter or different inputs.');
+    const rawReason = plain && plain.reason ? plain.reason : msg;
+    const reason = /^local demo/i.test(String(rawReason || ''))
+      ? 'MindReader could not complete this run.'
+      : rawReason;
+    const supportScenario = encodeURIComponent('What I was testing:\n- Mode: text/audio/video\n- Run type: single/A-B\n- What I pasted or uploaded:\n- What I expected:\n\nScreenshot attached.');
+    const mailHref = 'mailto:ishita@polkafoundation.com?subject=MindReader%20run%20did%20not%20finish&body=' + supportScenario;
     const eb = document.getElementById('statusEyebrow');
     const h1 = document.getElementById('statusHeadline');
     const sub = document.getElementById('statusSub');
     const eta = document.getElementById('etaPill');
-    const banner = document.getElementById('stayBanner');
     const honest = document.querySelector('.honest-eta');
-    if (eb) eb.textContent = 'Stopped';
-    if (h1) h1.innerHTML = 'This run did not finish.';
-    if (sub) sub.textContent = reason;
+    const resourcesTitle = document.querySelector('.resources h3');
+    document.body.classList.add('run-error');
+    dismissNudge();
+    if (eb) eb.textContent = 'Run stopped';
+    if (h1) h1.innerHTML = 'This run stopped before results were ready.';
+    if (sub) sub.textContent = 'MindReader could not complete the analysis. This is usually a worker or model-processing issue, not something you did wrong.';
     if (eta) eta.classList.add('hide');
-    if (banner) banner.innerHTML = '<strong>' + code + '</strong> — ' + tip + (plain && plain.raw_message ? '<br><span style="color:var(--ink-mute)">Raw detail: ' + String(plain.raw_message).replace(/[<>&]/g, function(c){ return ({'<':'&lt;','>':'&gt;','&':'&amp;'})[c]; }) + '</span>' : '');
-    if (honest) honest.style.display = 'none';
+    if (resourcesTitle) resourcesTitle.textContent = 'Useful while we fix this';
+    if (honest) {
+      honest.classList.add('is-error');
+      honest.innerHTML =
+        '<strong>What happened:</strong> ' + escapeHtml(reason) +
+        '<br><br><strong>Help us fix it:</strong> please email a screenshot of this page to ' +
+        '<a href="' + mailHref + '">ishita@polkafoundation.com</a>' +
+        ' with your testing scenario: text/audio/video, single or A/B, and what you pasted or uploaded.' +
+        '<span class="error-ref">Reference: ' + escapeHtml(code) + '</span>';
+    }
   }
 
   let pollTimer = null;
@@ -1558,7 +1713,7 @@ function toggleTheme(){
         showError(job.error || {});
         return;
       }
-      applyStatus(job.status);
+      applyStatus(job);
       const m = job.result && job.result.meta;
       if (m){
         const metaRow = document.querySelector('.meta-row');
@@ -1619,7 +1774,7 @@ function toggleTheme(){
     if (!el || el.classList.contains('hidden')) return;
     // Don't show if permission already granted/denied by this session or
     // if the run is already done.
-    if (document.body.classList.contains('run-done')) return;
+    if (document.body.classList.contains('run-done') || document.body.classList.contains('run-error')) return;
     if (typeof Notification !== 'undefined' && Notification.permission === 'granted'){
       _notifyOnComplete = true;
       return; // already have permission — no need to ask
@@ -1693,7 +1848,7 @@ import { mountCortex } from "./assets/cortex-viewer-neon.js?v=28";
 const DIMENSIONS = [
   { key:"attention",           label:"Attention",           question:"Did this pull focus?",          score:0.82,
     title:'Attention',          region:"Dorsal attention network",
-    body:"Shows when the input is likely to pull the listener into focus. On the result page, this becomes the attention signal over the call." },
+    body:"Shows when the input is likely to pull the listener into focus. On the result page, this becomes the attention signal over the content." },
   { key:"brain_effort",        label:"Brain Effort",        question:"Did this make them think?",     score:0.78,
     title:'Brain Effort',       region:"Dorsolateral prefrontal cortex",
     body:"Shows when the input asks for more mental work. Effort can be useful depth, or it can be friction." },
@@ -1705,7 +1860,7 @@ const DIMENSIONS = [
     body:"Shows when the wording is doing real explanatory work instead of just filling space." },
   { key:"memory_encoding",     label:"Memory Encoding",     question:"Will it stick in memory?",      score:0.81,
     title:'Memory Encoding',    region:"Left ventrolateral prefrontal cortex",
-    body:"Shows moments the listener is more likely to hold onto after the call." },
+    body:"Shows moments the listener is more likely to hold onto after the content." },
   { key:"personal_resonance",  label:"Personal Resonance",  question:"Did this feel personal?",       score:0.79,
     title:'Personal Resonance', region:"Medial prefrontal cortex",
     body:"Shows when the input is likely to feel connected to the listener's own situation." },

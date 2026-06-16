@@ -649,17 +649,6 @@ input::placeholder {
   box-shadow: 0 0 18px rgba(98, 228, 255, 0.72);
 }
 
-.topbar:not(:has(.top-readout-lite))::after,
-.topbar-new:not(:has(.top-readout-lite))::after {
-  content: "LIVE READOUT";
-  margin-left: auto;
-  color: var(--bd-cyan);
-  font-family: var(--bd-mono);
-  font-size: 12px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-}
-
 .action-row,
 .footer,
 footer,

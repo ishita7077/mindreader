@@ -370,6 +370,8 @@ h2.section-title em{font-style:italic;color:var(--accent);font-variation-setting
   grid-template-columns:minmax(0,1.22fr) minmax(300px,.78fr);
   gap:22px;
   align-items:stretch;
+  height:clamp(420px,45vh,500px);
+  min-height:0;
 }
 .maya-reader-card,
 .maya-systems-card,
@@ -396,7 +398,7 @@ h2.section-title em{font-style:italic;color:var(--accent);font-variation-setting
   opacity:.54;
   pointer-events:none;
 }
-.maya-reader-card{min-height:clamp(300px,42vh,390px);padding:32px;display:flex;flex-direction:column;justify-content:center;transition:opacity .24s ease,transform .24s ease,border-color .24s ease}
+.maya-reader-card{height:100%;min-height:0;padding:30px 32px;display:flex;flex-direction:column;justify-content:center;transition:border-color .18s ease,box-shadow .18s ease}
 .maya-reading-top{
   position:absolute;
   left:34px;
@@ -444,11 +446,14 @@ h2.section-title em{font-style:italic;color:var(--accent);font-variation-setting
   max-width:760px;
   margin-top:52px;
   color:#edf5ff;
-  font-size:clamp(27px,3vw,44px);
-  line-height:1.55;
+  font-size:clamp(27px,2.72vw,40px);
+  line-height:1.48;
   font-weight:780;
   letter-spacing:-.025em;
-  transition:opacity .24s ease,transform .24s ease;
+  min-height:calc(1em * 1.48 * 5);
+  max-height:calc(1em * 1.48 * 6);
+  overflow:hidden;
+  transition:color .18s ease;
 }
 .maya-reader-text .muted{color:rgba(141,160,188,.34)}
 .maya-reader-text .pre{color:rgba(235,244,255,.92)}
@@ -456,7 +461,7 @@ h2.section-title em{font-style:italic;color:var(--accent);font-variation-setting
   color:#fff;
   text-shadow:0 0 22px color-mix(in srgb,var(--moment-color,#58ddff) 46%,transparent);
 }
-.maya-systems-card{padding:30px;transition:opacity .24s ease,transform .24s ease,border-color .24s ease}
+.maya-systems-card{height:100%;min-height:0;padding:30px;display:flex;flex-direction:column;transition:border-color .18s ease,box-shadow .18s ease}
 .maya-systems-head{
   display:flex;
   align-items:center;
@@ -480,6 +485,7 @@ h2.section-title em{font-style:italic;color:var(--accent);font-variation-setting
   grid-template-columns:1fr 80px 44px;
   gap:12px;
   align-items:center;
+  min-height:58px;
   padding:10px 0;
   color:#b8c8df;
 }
@@ -501,8 +507,7 @@ h2.section-title em{font-style:italic;color:var(--accent);font-variation-setting
 }
 .maya-moment-rail{
   display:grid;
-  grid-auto-flow:column;
-  grid-auto-columns:minmax(280px,1fr);
+  grid-template-columns:repeat(3,minmax(0,1fr));
   gap:14px;
   overflow-x:auto;
   overscroll-behavior-x:contain;
@@ -513,20 +518,20 @@ h2.section-title em{font-style:italic;color:var(--accent);font-variation-setting
 }
 .maya-moment-card{
   --card-color:#58ddff;
-  min-height:136px;
+  min-height:150px;
+  height:100%;
   padding:18px 18px 17px;
   text-align:left;
   color:#d9e8ff;
   cursor:pointer;
   scroll-snap-align:start;
   border-color:color-mix(in srgb,var(--card-color) 18%,rgba(88,221,255,.12));
-  transition:border-color .22s ease,box-shadow .22s ease,transform .22s ease,background .22s ease,opacity .22s ease;
+  transition:border-color .18s ease,box-shadow .18s ease,background .18s ease,opacity .18s ease;
 }
 .maya-moment-card:hover,
 .maya-moment-card.is-active{
   border-color:color-mix(in srgb,var(--card-color) 70%,rgba(255,255,255,.18));
   box-shadow:0 0 34px color-mix(in srgb,var(--card-color) 15%,transparent),0 24px 80px rgba(0,0,0,.28);
-  transform:translateY(-2px);
 }
 .maya-moment-card.is-active{
   background:
@@ -552,6 +557,7 @@ h2.section-title em{font-style:italic;color:var(--accent);font-variation-setting
   color:#fff;
   font:750 18px/1.08 Inter,system-ui,sans-serif;
   letter-spacing:-.025em;
+  min-height:40px;
 }
 .maya-moment-card p{
   position:relative;
@@ -560,6 +566,7 @@ h2.section-title em{font-style:italic;color:var(--accent);font-variation-setting
   margin:0;
   font-size:13px;
   line-height:1.45;
+  min-height:56px;
 }
 .maya-result-cta{
   display:flex;
@@ -581,11 +588,8 @@ h2.section-title em{font-style:italic;color:var(--accent);font-variation-setting
   color:#9fb2cc;
   font:500 13px/1.45 'Inter Tight',system-ui,sans-serif;
 }
-.maya-read-layout.is-transitioning .maya-reader-text,
-.maya-read-layout.is-transitioning .maya-systems-card{
-  opacity:.24;
-  transform:translateY(8px);
-}
+.maya-read-layout.is-updating .maya-reader-card,
+.maya-read-layout.is-updating .maya-systems-card{border-color:color-mix(in srgb,var(--moment-color) 28%,rgba(88,221,255,.16))}
 .citation-badge-header{display:flex;align-items:center;gap:8px;margin-bottom:4px}
 .citation-logo{flex-shrink:0;display:block}
 .meta-logo,
@@ -774,7 +778,7 @@ h2.section-title em{font-style:italic;color:var(--accent);font-variation-setting
 .lens-note .ct{font-size:11px;color:#8a857b;font-style:italic}
 .lens-note .ct-row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:4px}
 .lens-note .ct-labs{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
-.lab-chip{display:inline-flex;align-items:center;gap:5px;height:24px;padding:0 9px 0 6px;border-radius:5px;font-family:'Inter Tight',system-ui,sans-serif;font-size:11px;font-weight:600;letter-spacing:.02em;white-space:nowrap;border:1.5px solid;background:rgba(255,255,255,.04)}
+.lab-chip{display:inline-flex;align-items:center;gap:5px;height:24px;padding:0 9px;border-radius:5px;font-family:'Inter Tight',system-ui,sans-serif;font-size:12px;font-weight:650;letter-spacing:.02em;white-space:nowrap;border:1.5px solid color-mix(in srgb,var(--lab) 68%,rgba(255,255,255,.18));background:color-mix(in srgb,var(--lab) 22%,rgba(255,255,255,.05));color:#f3f8ff}
 
 /* RESEARCH-NUDGE (closing section) — tells the science story with numbers,
    labs, and a single CTA. No walls of text. */
@@ -937,7 +941,8 @@ body.landing-reveal .hero-stage::before{
   .hero-stage{height:clamp(340px,48vh,440px)}
   .hero-dim-card{top:14px;left:14px;right:14px;max-width:none}
   .compare-grid{grid-template-columns:1fr;gap:14px}
-  .maya-live-stage{grid-template-columns:1fr;gap:16px}
+  .maya-live-stage{grid-template-columns:1fr;gap:16px;height:auto}
+  .maya-reader-card,.maya-systems-card{height:auto}
   /* Tablet / small-laptop: stack the card vertically, separator flips horizontal */
   .case-head{grid-template-columns:1fr;gap:16px}
   .case-card{grid-template-columns:1fr}
@@ -988,7 +993,7 @@ body.landing-reveal .hero-stage::before{
   .maya-reader-text{font-size:clamp(22px,6.4vw,29px);line-height:1.42;margin-top:42px}
   .maya-systems-card{padding:19px 20px}
   .maya-system-row{grid-template-columns:1fr 70px 38px;padding:11px 0}
-  .maya-moment-rail{grid-auto-columns:minmax(236px,82vw);gap:12px}
+  .maya-moment-rail{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:minmax(236px,82vw);gap:12px}
   .maya-moment-card{min-height:122px;padding:15px}
   .maya-moment-kicker{margin-bottom:10px}
   .maya-moment-card h3{font-size:17px}
@@ -1055,7 +1060,7 @@ body.landing-reveal .hero-stage::before{
         </div>
       </div>
       <div class="hero-stage reveal">
-        <canvas id="heroBrain" class="brain-canvas"></canvas>
+        <canvas id="heroBrain" class="brain-canvas" role="img" aria-label="Animated MindReader brain surface highlighting the active response system"></canvas>
         <svg class="hero-line-svg" id="heroLineSvg" aria-hidden="true">
           <path class="hero-line-path" id="heroLinePath" d=""/>
           <circle class="hero-line-end" id="heroLineEnd" r="4"/>
@@ -1065,7 +1070,7 @@ body.landing-reveal .hero-stage::before{
             <span class="hero-dim-label" id="heroDimLabel">Attention</span>
             <span class="hero-dim-region" id="heroDimRegion">Dorsal attention network</span>
           </div>
-          <p class="hero-dim-body" id="heroDimBody">Where the reader locks focus. Activity here spikes on novelty, urgency, and anything that breaks the rhythm of what came before.</p>
+          <p class="hero-dim-body" id="heroDimBody">Where the reader locks focus. Activity here rises on novelty, urgency, and anything that breaks the rhythm of what came before.</p>
         </div>
         <div class="hero-stage-foot">
           <div class="hero-pills" id="heroPills" role="tablist" aria-label="Cortical dimensions — hover to explore">
@@ -1154,11 +1159,11 @@ body.landing-reveal .hero-stage::before{
         </div>
       </div>
       <div class="lens-stage">
-        <canvas id="lensBrain" class="brain-canvas"></canvas>
+        <canvas id="lensBrain" class="brain-canvas" role="img" aria-label="Interactive cortex model showing the selected response system"></canvas>
         <div class="lens-note">
           <div class="nm" id="lensNm">Attention</div>
           <div class="rg" id="lensRg">Dorsal attention network</div>
-          <div class="bd" id="lensBd">Where the reader locks focus. Activity here spikes on novelty, urgency, a sharp cut, a personal stake — anything that breaks the rhythm of what came before.</div>
+          <div class="bd" id="lensBd">Where the reader locks focus. Activity here rises on novelty, urgency, a sharp cut, a personal stake — anything that breaks the rhythm of what came before.</div>
           <div class="ct-row">
             <div class="ct" id="lensCt">Corbetta &amp; Shulman, 2002</div>
             <div class="ct-labs" id="lensLabs"></div>
@@ -2412,7 +2417,6 @@ function setupHeroCortex(ctrl){
     updateHeroCopy(key, fade);
     if (ctrl?.setRoi) ctrl.setRoi(resultRoiKey(key));
     if (ctrl?.setRoiIntensity) ctrl.setRoiIntensity(1);
-    if (ctrl?.focusRoi) ctrl.focusRoi(resultRoiKey(key));
   };
   const startAuto = () => {
     if (autoTimer) return;
@@ -2535,7 +2539,7 @@ if(lensCanvas) {
 // Display order used on the result page: Personal → Attention → Effort →
 // Gut → Memory → Social → Language.
 const LENS_COPY = {
-  attention_salience:{ nm:"Attention", rg:"Dorsal attention network", bd:"Where the reader locks focus. Activity here spikes on novelty, urgency, a sharp cut, a personal stake — anything that breaks the rhythm of what came before.", ct:"Corbetta &amp; Shulman, 2002" },
+  attention_salience:{ nm:"Attention", rg:"Dorsal attention network", bd:"Where the reader locks focus. Activity here rises on novelty, urgency, a sharp cut, a personal stake — anything that breaks the rhythm of what came before.", ct:"Corbetta &amp; Shulman, 2002" },
   memory_encoding:{ nm:"Memory Encoding", rg:"Left ventrolateral prefrontal cortex · vlPFC", bd:"Not what the reader feels now — what they will still remember tomorrow. Two pieces of content can feel equal in the moment and differ sharply in what sticks.", ct:"Paller &amp; Wagner, 2002" },
   personal_resonance:{ nm:"Personal Resonance", rg:"Medial prefrontal cortex · mPFC", bd:"Tracks whether a message feels like it's about <em>you</em>. Activation here has predicted real-world behaviour change at population scale where self-reports missed it entirely.", ct:"Falk et al., 2012 · Scholz et al., 2025" },
   gut_reaction:{ nm:"Gut Reaction", rg:"Anterior insula", bd:"The visceral, felt edge of a message. Sensitive to urgency, moral weight, personal risk — the reaction that arrives before language catches up.", ct:"Craig, 2009" },
@@ -2547,7 +2551,7 @@ const LENS_COPY = {
 // University affiliations behind each citation — picked for trust signal
 // (primary author's home institution for the cited paper). 1–2 per region.
 const LAB_LOGOS = {
-  attention_salience:  [{ label:'WashU',       color:'#A51417' }],
+  attention_salience:  [{ label:'Washington Univ.', color:'#A51417', title:'Washington University in St. Louis' }],
   memory_encoding:     [{ label:'Northwestern', color:'#4E2A84' }],
   personal_resonance:  [{ label:'Penn',        color:'#011F5B' }, { label:'UCLA', color:'#2774AE' }],
   gut_reaction:        [],
@@ -2564,7 +2568,7 @@ function renderLabChips(key){
   if (!el) return;
   const labs = LAB_LOGOS[key] || [];
   el.innerHTML = labs.map(l =>
-    `<span class="lab-chip" style="border-color:${l.color};color:${l.color}">${labMark(l.label, l.color)}${l.label}</span>`
+    `<span class="lab-chip" title="${l.title || l.label}" style="--lab:${l.color}">${labMark(l.label, l.color)}${l.label}</span>`
   ).join('');
 }
 renderLabChips('attention_salience');
@@ -2636,7 +2640,6 @@ function setupMayaReadout(){
   const rail = document.getElementById('mayaMomentRail');
   const cards = Array.from(root.querySelectorAll('.maya-moment-card'));
   let idx = 0;
-  let timer = null;
   let transitionTimer = null;
 
   function applyMoment(moment, nextIdx, opts={}){
@@ -2676,15 +2679,11 @@ function setupMayaReadout(){
 
   function render(moment, nextIdx, opts={}){
     window.clearTimeout(transitionTimer);
-    if (opts.instant) {
-      applyMoment(moment, nextIdx, opts);
-      return;
+    applyMoment(moment, nextIdx, opts);
+    if (!opts.instant) {
+      root.classList.add('is-updating');
+      transitionTimer = window.setTimeout(() => root.classList.remove('is-updating'), 180);
     }
-    root.classList.add('is-transitioning');
-    transitionTimer = window.setTimeout(() => {
-      applyMoment(moment, nextIdx, opts);
-      requestAnimationFrame(() => root.classList.remove('is-transitioning'));
-    }, 140);
   }
 
   function go(nextIdx, opts={}){
@@ -2692,22 +2691,14 @@ function setupMayaReadout(){
     render(MAYA_MOMENTS[idx], idx, opts);
   }
 
-  function restartTimer(){
-    window.clearInterval(timer);
-    timer = window.setInterval(() => go(idx + 1), 5600);
-  }
-
   cards.forEach((card) => {
     card.addEventListener('click', () => {
       go(Number(card.dataset.moment || 0));
-      restartTimer();
     });
   });
 
   go(idx, { instant: true });
-  restartTimer();
   window.addEventListener('pagehide', () => {
-    window.clearInterval(timer);
     window.clearTimeout(transitionTimer);
   }, { once: true });
 }

@@ -227,6 +227,8 @@ function adaptWorkerJobToSingleRun(job, side) {
     return {
       id: String(job.job_id || jobId || "job"),
       title: String(displayName || "Completed MindReader run"),
+      modality: String(meta.modality || "text"),
+      runType: "single",
       transcriptText: transcript,
       transcriptWords,
       transcriptSegments,
@@ -271,6 +273,8 @@ function adaptWorkerJobToSingleRun(job, side) {
   return {
     id: String(job.job_id || jobId || "job"),
     title: String(displayName || "Completed MindReader run"),
+    modality: String(meta.modality || "text"),
+    runType: String(meta.run_type || result.run_type || "diff"),
     transcriptText: transcript,
     transcriptWords,
     transcriptSegments,
@@ -408,6 +412,39 @@ function trimTerminalPunctuation(text) {
   return String(text || "").trim().replace(/[.!?]+$/, "");
 }
 
+function isCallLikeReport() {
+  const title = String(report?.input?.title || "").toLowerCase();
+  const transcript = String(report?.input?.transcriptText || "").slice(0, 800).toLowerCase();
+  return /\bcall\b|\brep\b|\bbuyer\b|\bsales\b|\bmanager\b|\bcoaching\b/.test(`${title} ${transcript}`);
+}
+
+function contentNoun() {
+  return isCallLikeReport() ? "call" : "content";
+}
+
+function contentNounTitle() {
+  return isCallLikeReport() ? "Call" : "Content";
+}
+
+function fullPatternLabel() {
+  return isCallLikeReport() ? "full-call" : "full-content";
+}
+
+function isCompactReport() {
+  const duration = Number(report?.input?.alignment?.analysisDurationSec || report?.input?.alignment?.generatedAudioDurationSec || 0);
+  const words = report?.input?.transcriptWords || [];
+  return duration > 0 && (duration < 75 || words.length < 110);
+}
+
+function eventShapeLabel(shape) {
+  const value = String(shape || "").replaceAll("_", " ").toLowerCase();
+  if (value.includes("trough") || value.includes("low")) return "dip";
+  if (value.includes("sustained")) return "sustained";
+  if (value.includes("peak")) return "high point";
+  if (value.includes("spike")) return "sharp rise";
+  return "signal";
+}
+
 function trimToSentences(text, maxSentences = 2) {
   const sentences = splitSentences(text);
   return sentences.slice(0, maxSentences).join(" ").trim();
@@ -435,19 +472,25 @@ async function mountBrain() {
 }
 
 function render() {
-  const selected = report.finalInsights;
+  const selected = report.finalInsights || [];
   const active = activeInsight() || selected[0];
   document.title = `MindReader - ${report.input.title} analyst report`;
+  const compactReportClass = isCompactReport() ? " is-compact-report" : "";
   app.innerHTML = `
     <div class="page">
       <header class="topbar">
         <a class="brand" href="/"><span class="brand-mark"></span>MindReader</a>
+        <nav class="site-nav" aria-label="Primary navigation">
+          <a href="/research">Research</a>
+          <a href="/methodology">Methodology</a>
+          <a href="/launch" class="nav-cta">Launch a run</a>
+        </nav>
         <div class="top-readout">
           <span class="live-dot"></span>
-          <span>Live readout</span>
+          <span>Result readout</span>
           <span class="readout-bars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
           <span>${formatTime(report.input.alignment.generatedAudioDurationSec || report.input.alignment.analysisDurationSec)}</span>
-          <span>Single call</span>
+          <span>Single readout</span>
         </div>
         ${isJobReport ? `<div class="job-chip">Job · ${esc(short(report.input.id))}</div>` : `
           <nav class="run-switch" aria-label="Run switcher">
@@ -462,7 +505,7 @@ function render() {
           <p class="eyebrow"><span class="eyebrow-dot"></span> MindReader · Neural response engine</p>
           <h1>What the <span>brain</span> heard.</h1>
           <h2 class="hero-subtitle">${esc(heroInsightTitle(active))}</h2>
-          <p class="hero-metric"><span data-scrub-dimension>${esc(DIMENSION_LABELS[activeDimension])}</span> · score <b data-scrub-score>${active?.event.brainScore.toFixed(2) || "--"}</b> · <span data-scrub-shape>${esc(active?.event.eventShape.replaceAll("_", " ") || "signal")}</span></p>
+          <p class="hero-metric"><span data-scrub-dimension>${esc(DIMENSION_LABELS[activeDimension])}</span> · score <b data-scrub-score>${active?.event.brainScore.toFixed(2) || "--"}</b> · <span data-scrub-shape>${esc(eventShapeLabel(active?.event.eventShape))}</span></p>
           ${renderDimensionControls()}
           ${renderHeroScrubber(active)}
           ${renderHeroTranscript()}
@@ -484,7 +527,8 @@ function render() {
           </div>
           <div class="brain-canvas-wrap">
             <div class="mesh-badge">Real fsaverage5 · 20,484 vertices</div>
-            <canvas id="reportBrain" aria-label="Interactive MindReader cortical surface"></canvas>
+            <canvas id="reportBrain" aria-label="Interactive MindReader cortical surface" aria-describedby="brainSummary"></canvas>
+            <p id="brainSummary" class="sr-only" data-brain-summary>${esc(brainSummaryText(active))}</p>
             <div class="brain-front-field" aria-hidden="true">
               <span class="front-filament f1"></span><span class="front-filament f2"></span><span class="front-filament f3"></span>
               <span class="front-filament f4"></span><span class="front-filament f5"></span>
@@ -496,11 +540,11 @@ function render() {
         </aside>
       </section>
 
-      <section>
+      <section class="report-section${compactReportClass}">
         <div class="section-head report-head">
           <div><p class="eyebrow">Report</p><h2>Final Report</h2></div>
         </div>
-        ${renderCallSpine(selected)}
+        ${selected.length ? renderCallSpine(selected) : renderEmptyReport()}
       </section>
 
       <section class="appendix" aria-label="Appendix">
@@ -511,7 +555,7 @@ function render() {
         ${renderAppendixActivity()}
         <div class="section-head compact">
           <div><p class="eyebrow">Signal Pairing</p><h2>Which reactions moved together?</h2></div>
-          <p>This is a full-call pattern. The card names the clearest example only as a reference point.</p>
+          <p>This is a ${fullPatternLabel()} pattern. The card names the clearest example only as a reference point.</p>
         </div>
         ${renderNetworkGraph()}
       </section>
@@ -526,7 +570,7 @@ function renderHeroSignalCard(active) {
     <div class="hero-signal-card">
       <div>
         <strong>${esc(heroInsightTitle(active))}</strong>
-        <span>${esc(DIMENSION_LABELS[active.event.signalName])} · score ${active.event.brainScore.toFixed(2)} · ${active.event.eventShape.replaceAll("_", " ")}</span>
+        <span>${esc(DIMENSION_LABELS[active.event.signalName])} · score ${active.event.brainScore.toFixed(2)} · ${eventShapeLabel(active.event.eventShape)}</span>
       </div>
       <p>${esc(active.analyst.quote || active.analyst.signal_read || "")}</p>
     </div>
@@ -551,7 +595,7 @@ function renderInsight(item, index) {
       <div>
         <div class="rank">Selected ${String(index + 1).padStart(2, "0")} · ${esc(DIMENSION_LABELS[item.event.signalName])}</div>
         ${renderSignalPhrase(item.event.signalName, true, phrase)}
-        <h3>${esc(item.analyst.title)}</h3>
+        <h3>${esc(heroInsightTitle(item))}</h3>
         <p class="interpretation">${esc(plainInsightLead(item))}</p>
         <div class="transcript-evidence">
           <blockquote>${highlightTranscriptPhrase(evidence.shortText || item.analyst.quote, evidence.highlightText || item.analyst.quote)}</blockquote>
@@ -578,6 +622,15 @@ function renderCallSpine(items) {
   `;
 }
 
+function renderEmptyReport() {
+  return `
+    <div class="empty-report" role="status">
+      <h3>No clear signal moments yet.</h3>
+      <p>This run finished, but the report did not find enough stable signal movement to build the usual three-moment readout.</p>
+    </div>
+  `;
+}
+
 function renderSpineMoment(item, index) {
   const evidence = transcriptEvidenceForInsight(item);
   const dims = momentDimensions(item);
@@ -594,7 +647,7 @@ function renderSpineMoment(item, index) {
       <div class="spine-copy">
         <div class="spine-ghost">${String(index + 1).padStart(2, "0")}</div>
         <p class="spine-kicker"><i></i> Signal ${String(index + 1).padStart(2, "0")} · ${esc(DIMENSION_LABELS[item.event.signalName])} <span>${isTrough ? "Trough" : "Peak"} · ${formatTime(item.event.peakTime)}</span></p>
-        <h3>${esc(item.analyst.title)}</h3>
+        <h3>${esc(heroInsightTitle(item))}</h3>
         <p class="spine-lead">${esc(plainInsightLead(item))}</p>
         <blockquote class="spine-quote">${highlightTranscriptPhrase(evidence.shortText || item.analyst.quote, evidence.highlightText || item.analyst.quote)}</blockquote>
         <div class="spine-reads">
@@ -655,7 +708,7 @@ function renderSpineCurve(item, index) {
         </linearGradient>
       </defs>
       <text x="${pad.left}" y="14" class="axis-label">Y: response strength</text>
-      <text x="${width - pad.right}" y="${height - 6}" text-anchor="end" class="axis-label">X: call time</text>
+      <text x="${width - pad.right}" y="${height - 6}" text-anchor="end" class="axis-label">X: time</text>
       <line x1="${pad.left}" x2="${width - pad.right}" y1="${height - pad.bottom}" y2="${height - pad.bottom}" class="axis-line" />
       <line x1="${pad.left}" x2="${pad.left}" y1="${pad.top}" y2="${height - pad.bottom}" class="axis-line" />
       <line x1="${pad.left}" x2="${width - pad.right}" y1="${pad.top + graphH / 2}" y2="${pad.top + graphH / 2}" class="chart-mid" />
@@ -753,8 +806,8 @@ function renderHeroTranscript() {
 function renderScrubBars(dim, time) {
   const points = report.normalized.byDimension[dim] || [];
   if (!points.length) return "";
-  const count = 58;
   const duration = Math.max(1, report.input.alignment.analysisDurationSec || points.at(-1)?.t || 1);
+  const count = duration < 58 ? Math.max(2, Math.floor(duration) + 1) : 58;
   return Array.from({ length: count }, (_, index) => {
     const t = (index / Math.max(1, count - 1)) * duration;
     const value = nearest(points, t)?.smoothed ?? 0;
@@ -764,7 +817,7 @@ function renderScrubBars(dim, time) {
 
 function plainInsightLead(item) {
   if (item.analyst.agent_source === "anthropic" && item.analyst.interpretation) {
-    return trimToSentences(item.analyst.interpretation, 2);
+    return softenSignalLanguage(trimToSentences(item.analyst.interpretation, 2));
   }
   const title = item.analyst.title.toLowerCase();
   const dim = DIMENSION_LABELS[item.event.signalName];
@@ -773,7 +826,7 @@ function plainInsightLead(item) {
     return "The strongest moment is the line that names the buyer's manual work clearly.";
   }
   if (title.includes("working-session") || title.includes("trough")) {
-    return "The call loses pull when it moves from the buyer's pain into the next-step ask.";
+    return `The ${contentNoun()} loses pull when it moves from the buyer's pain into the next-step ask.`;
   }
   if (title.includes("motive") || item.event.signalName === "gut_reaction") {
     return "The instinctive reaction rises when the script connects a likely motive to a concrete pain.";
@@ -796,13 +849,13 @@ function plainInsightLead(item) {
   if (item.event.signalName === "language_depth") {
     return low ? "This is where the explanation becomes lighter." : "This is where the wording asks the listener to process the meaning more deeply.";
   }
-  return `${dim} changes most clearly at this point in the call.`;
+  return `${dim} changes most clearly at this point in the ${contentNoun()}.`;
 }
 
 function heroInsightTitle(item) {
   const title = String(item?.analyst?.title || "").trim();
-  if (!title) return "Whole-call response trace";
-  return title
+  if (!title) return `${contentNounTitle()} response trace`;
+  return softenSignalLanguage(title)
     .replace(/\bburden grabs the room\b/i, "pain point lands")
     .replace(/\bgrabs the room\b/i, "lands")
     .replace(/\bland deeper than the category claim\b/i, "feel more concrete")
@@ -810,9 +863,16 @@ function heroInsightTitle(item) {
     .replace(/\bgut read\b/i, "gut reaction");
 }
 
+function softenSignalLanguage(text) {
+  return String(text || "")
+    .replace(/\bspikes\b/gi, "raises")
+    .replace(/\bspiked\b/gi, "rose")
+    .replace(/\bspike\b/gi, "sharp rise");
+}
+
 function simpleDriver(item, sentenceText) {
   if (item.analyst.agent_source === "anthropic" && (item.analyst.why_it_moved || item.analyst.likely_driver)) {
-    return item.analyst.why_it_moved || item.analyst.likely_driver;
+    return softenSignalLanguage(item.analyst.why_it_moved || item.analyst.likely_driver);
   }
   const title = item.analyst.title.toLowerCase();
   const quote = sentenceText || item.analyst.quote;
@@ -829,12 +889,12 @@ function simpleDriver(item, sentenceText) {
   const cleanQuote = trimTerminalPunctuation(truncateWords(quote, 28));
   if (item.event.signalName === "attention") {
     return low
-      ? `The line carries less pull than the surrounding call: "${cleanQuote}." The attention signal gets quieter here instead of building.`
-      : `The line gives the listener a concrete reason to keep tracking the message: "${cleanQuote}." It is the part of the call where focus rises most clearly.`;
+      ? `The line carries less pull than the surrounding ${contentNoun()}: "${cleanQuote}." The attention signal gets quieter here instead of building.`
+      : `The line gives the listener a concrete reason to keep tracking the message: "${cleanQuote}." This is where focus rises most clearly.`;
   }
   if (item.event.signalName === "personal_resonance") {
     return low
-      ? `The line feels less tied to the listener's own situation: "${cleanQuote}." The personal-relevance signal drops against the surrounding call.`
+      ? `The line feels less tied to the listener's own situation: "${cleanQuote}." The personal-relevance signal drops against the surrounding ${contentNoun()}.`
       : `The line makes the message feel tied to the listener's own situation: "${cleanQuote}." It is less abstract than the surrounding setup.`;
   }
   if (item.event.signalName === "brain_effort") {
@@ -862,15 +922,15 @@ function simpleDriver(item, sentenceText) {
 
 function simpleWhy(item) {
   if (item.analyst.agent_source === "anthropic" && (item.analyst.what_it_means || item.analyst.why_it_matters)) {
-    return item.analyst.what_it_means || item.analyst.why_it_matters;
+    return softenSignalLanguage(item.analyst.what_it_means || item.analyst.why_it_matters);
   }
   const title = item.analyst.title.toLowerCase();
   const low = isLowEvent(item);
   if (title.includes("manual call review")) {
-    return "This is where the problem becomes specific, not generic. The call is strongest when the pain is easy to picture.";
+    return "This is where the problem becomes specific, not generic. The message is strongest when the pain is easy to picture.";
   }
   if (title.includes("working-session") || title.includes("trough")) {
-    return "This is where the call loses some pull as it moves into the ask. The useful read is the contrast between the strong pain language and the weaker next-step language.";
+    return "This is where the message loses some pull as it moves into the ask. The useful read is the contrast between the strong pain language and the weaker next-step language.";
   }
   if (title.includes("motive") || item.event.signalName === "gut_reaction") {
     return low
@@ -880,11 +940,11 @@ function simpleWhy(item) {
   if (item.event.signalName === "attention") {
     return low
       ? "This is a quieter attention moment. It marks wording that carries less pull than the stronger parts around it."
-      : "This is the part of the call that earns focus. It shows where the message stops being background and becomes something to track.";
+      : `This is the part of the ${contentNoun()} that earns focus. It shows where the message stops being background and becomes something to track.`;
   }
   if (item.event.signalName === "personal_resonance") {
     return low
-      ? "This is where personal relevance drops. The call is less tied to the listener's world in this window."
+      ? "This is where personal relevance drops. The message is less tied to the listener's world in this window."
       : "This is where the script feels closest to the listener's world. The useful read is relevance, not persuasion or agreement.";
   }
   if (item.event.signalName === "brain_effort") {
@@ -895,12 +955,12 @@ function simpleWhy(item) {
   if (item.event.signalName === "memory_encoding") {
     return low
       ? "This is where the memory signal gets quieter. The wording is less likely to be the part that stays available later."
-      : "This is the part most likely to remain available after the call. It marks the phrase the listener's brain treated as most memorable.";
+      : `This is the part most likely to remain available after the ${contentNoun()}. It marks the phrase the listener's brain treated as most memorable.`;
   }
   if (item.event.signalName === "social_thinking") {
     return low
-      ? "This is where the call becomes less about people and intent. The signal is about social meaning, not whether the listener trusted the rep."
-      : "This is where the call becomes more about people and intent. The signal is about social meaning, not whether the listener trusted the rep.";
+      ? "This is where the message becomes less about people and intent. The signal is about social meaning, not whether the listener trusted the speaker."
+      : "This is where the message becomes more about people and intent. The signal is about social meaning, not whether the listener trusted the speaker.";
   }
   if (item.event.signalName === "language_depth") {
     return low
@@ -1067,6 +1127,7 @@ function renderAppendixActivity() {
           `).join("")}
         </div>
       </div>
+      <p id="timelineSummary" class="sr-only">${esc(timelineSummaryText())}</p>
         <div class="chart-stage" data-chart-stage>
         ${renderFullCallChart("overlay")}
         <div class="chart-hover-line" data-chart-hover-line hidden></div>
@@ -1099,9 +1160,14 @@ function renderFullCallChart(mode) {
     <text x="18" y="${(pad.top + index * laneH + laneH / 2 + 4).toFixed(2)}" class="chart-label">${esc(DIMENSION_LABELS[dim])}</text>
     <line x1="${pad.left}" x2="${width - pad.right}" y1="${(pad.top + index * laneH + laneH - 2).toFixed(2)}" y2="${(pad.top + index * laneH + laneH - 2).toFixed(2)}" class="chart-lane" />
   `).join("") : "";
+  let lastLabelX = -Infinity;
+  let collisionRow = 0;
   const eventTicks = report.finalInsights.map((item, index) => {
     const eventX = x(item.event.peakTime);
-    const labelY = pad.top + 14 + index * 24;
+    if (eventX - lastLabelX < 44) collisionRow = (collisionRow + 1) % 3;
+    else collisionRow = 0;
+    lastLabelX = eventX;
+    const labelY = pad.top + 12 + collisionRow * 24;
     return `
       <line x1="${eventX.toFixed(2)}" x2="${eventX.toFixed(2)}" y1="${pad.top}" y2="${height - pad.bottom}" class="chart-event" />
       <rect x="${(eventX - 13).toFixed(2)}" y="${labelY}" width="26" height="18" rx="9" fill="${COLORS[item.event.signalName]}" class="chart-event-pill" />
@@ -1115,12 +1181,12 @@ function renderFullCallChart(mode) {
     return `<g transform="translate(${pad.left + col * 190}, ${24 + row * 18})"><circle r="5" fill="${COLORS[dim]}" /><text x="12" y="4" class="chart-legend">${esc(DIMENSION_LABELS[dim])}</text></g>`;
   }).join("") : "";
   return `
-    <svg class="full-call-chart" viewBox="0 0 ${width} ${height}" role="img" aria-label="Full call brain-signal chart">
+    <svg class="full-call-chart" viewBox="0 0 ${width} ${height}" role="img" tabindex="0" aria-label="Full content brain-signal chart" aria-describedby="timelineSummary">
       <rect x="0" y="0" width="${width}" height="${height}" rx="8" class="chart-bg" />
       ${labels}
       <line x1="${pad.left}" x2="${width - pad.right}" y1="${pad.top + graphH / 2}" y2="${pad.top + graphH / 2}" class="chart-mid" />
       <text x="${pad.left}" y="${pad.top - 14}" class="axis-label">Y: response strength (low to high)</text>
-      <text x="${width - pad.right}" y="${height - 10}" text-anchor="end" class="axis-label">X: call time</text>
+      <text x="${width - pad.right}" y="${height - 10}" text-anchor="end" class="axis-label">X: time</text>
       ${eventTicks}
       ${paths}
       <text x="${pad.left}" y="${height - 10}" class="trace-time">00:00</text>
@@ -1195,7 +1261,8 @@ function renderNetworkGraph() {
   const visible = summary.items;
   return `
     <div class="network-card research-network" data-network-card>
-      <svg class="network-graph" viewBox="0 0 ${width} ${height}" role="img" aria-label="Network coordination graph">
+      <p id="networkSummary" class="sr-only">${esc(networkSummaryText(summary))}</p>
+      <svg class="network-graph" viewBox="0 0 ${width} ${height}" role="img" tabindex="0" aria-label="Signal pairing graph" aria-describedby="networkSummary">
         <rect x="0" y="0" width="${width}" height="${height}" rx="8" class="network-bg" />
         <circle cx="${center.x}" cy="${center.y}" r="${radius}" class="network-ring" />
         ${visible.map((link, index) => {
@@ -1239,7 +1306,7 @@ function renderNetworkGraph() {
         ${summary.hasAnti ? "" : `
           <div class="network-item is-anti is-empty">
             <span class="network-type">Anti-coupling<small>Not detected</small></span>
-            <b>No strong opposite pair in this call</b>
+            <b>No strong opposite pair in this ${contentNoun()}</b>
             <p>The signals did not show a clear pattern where one reaction rose while another fell. The useful read here is the strongest pair above.</p>
           </div>
         `}
@@ -1269,9 +1336,19 @@ function networkSummary(links) {
   return { items: [...positive, anti].filter(Boolean), hasAnti: Boolean(anti) };
 }
 
+function networkSummaryText(summary) {
+  const first = summary.items[0];
+  if (!first) return "No strong signal pairing was detected in this report.";
+  const pair = `${DIMENSION_LABELS[first.a]} and ${DIMENSION_LABELS[first.b]}`;
+  const anti = summary.items.find((item) => item.type === "anti");
+  return anti
+    ? `The strongest pairing is ${pair}. The clearest opposite-moving pair is ${DIMENSION_LABELS[anti.a]} and ${DIMENSION_LABELS[anti.b]}.`
+    : `The strongest pairing is ${pair}. No strong opposite-moving pair was detected.`;
+}
+
 function networkFallbackExplanation(link) {
   if (link.type === "anti" && link.r >= 0) {
-    return `${DIMENSION_LABELS[link.a]} and ${DIMENSION_LABELS[link.b]} stayed mostly separate. The call did not strongly tie these two listener reactions together.`;
+    return `${DIMENSION_LABELS[link.a]} and ${DIMENSION_LABELS[link.b]} stayed mostly separate. The ${contentNoun()} did not strongly tie these two listener reactions together.`;
   }
   if (link.type === "anti") {
     return `${DIMENSION_LABELS[link.a]} and ${DIMENSION_LABELS[link.b]} pulled apart. When one reaction rose, the other tended to stay quiet.`;
@@ -1284,20 +1361,20 @@ function networkMomentInsight(link) {
   const b = DIMENSION_LABELS[link.b];
   if (link.type === "anti") {
     if ((link.a === "gut_reaction" && link.b === "language_depth") || (link.a === "language_depth" && link.b === "gut_reaction")) {
-      return "Across the call, gut reaction and language depth tended to separate. The immediate hit did not depend on dense wording.";
+      return `Across the ${contentNoun()}, gut reaction and language depth tended to separate. The immediate hit did not depend on dense wording.`;
     }
-    return `Across the call, ${a} and ${b} tended to move in opposite directions. When one got louder, the other was usually quieter.`;
+    return `Across the ${contentNoun()}, ${a} and ${b} tended to move in opposite directions. When one got louder, the other was usually quieter.`;
   }
   if ((link.a === "language_depth" && link.b === "memory_encoding") || (link.a === "memory_encoding" && link.b === "language_depth")) {
-    return "Across the call, fuller meaning and memory tended to rise together. The parts with more to process were also more likely to stick.";
+    return `Across the ${contentNoun()}, fuller meaning and memory tended to rise together. The parts with more to process were also more likely to stick.`;
   }
   if ((link.a === "attention" && link.b === "gut_reaction") || (link.a === "gut_reaction" && link.b === "attention")) {
-    return "Across the call, focus and gut reaction often came as a pair. What got noticed also tended to feel immediate.";
+    return `Across the ${contentNoun()}, focus and gut reaction often came as a pair. What got noticed also tended to feel immediate.`;
   }
   if (link.a === "personal_resonance" && link.b === "social_thinking") {
-    return "Across the call, relevance and people-reading moved together. The message felt most active when it connected the situation to people, roles, or trust.";
+    return `Across the ${contentNoun()}, relevance and people-reading moved together. The message felt most active when it connected the situation to people, roles, or trust.`;
   }
-  return `Across the call, ${a} and ${b} tended to rise together. Read this as a repeated pairing, not one isolated spike.`;
+  return `Across the ${contentNoun()}, ${a} and ${b} tended to rise together. Read this as a repeated pairing, not one isolated moment.`;
 }
 
 function bindInteractions() {
@@ -1430,11 +1507,11 @@ function updateHeroActiveCopy(active) {
   const activeTitle = document.querySelector(".active-read strong");
   const activeMeta = document.querySelector(".active-read span");
   if (activeTitle) activeTitle.textContent = active ? heroInsightTitle(active) : "Brain activity";
-  if (activeMeta) activeMeta.textContent = active ? `${DIMENSION_LABELS[active.event.signalName]} · score ${active.event.brainScore.toFixed(2)} · ${active.event.eventShape.replaceAll("_", " ")}` : "";
+  if (activeMeta) activeMeta.textContent = active ? `${DIMENSION_LABELS[active.event.signalName]} · score ${active.event.brainScore.toFixed(2)} · ${eventShapeLabel(active.event.eventShape)}` : "";
   const card = document.querySelector(".hero-signal-card");
   if (!card || !active) return;
   card.querySelector("strong").textContent = heroInsightTitle(active);
-  card.querySelector("span").textContent = `${DIMENSION_LABELS[active.event.signalName]} · score ${active.event.brainScore.toFixed(2)} · ${active.event.eventShape.replaceAll("_", " ")}`;
+  card.querySelector("span").textContent = `${DIMENSION_LABELS[active.event.signalName]} · score ${active.event.brainScore.toFixed(2)} · ${eventShapeLabel(active.event.eventShape)}`;
   card.querySelector("p").textContent = active.analyst.quote || active.analyst.signal_read || "";
 }
 
@@ -1474,7 +1551,7 @@ function stopScrubberPlayback() {
 }
 
 function updateBrainScrubber() {
-  const active = activeInsight();
+  const active = syncActiveInsightToScrubTime();
   if (!active) return;
   const dim = activeDimension || active.event.signalName;
   const point = nearest(report.normalized.byDimension[dim], scrubTime);
@@ -1505,7 +1582,7 @@ function updateBrainScrubber() {
     bars.innerHTML = renderScrubBars(dim, scrubTime);
   }
   const transcript = scrubPlaying
-    ? { start: scrubTime, end: scrubTime, text: "Pause to see the transcript at this moment." }
+    ? { label: "Playback", start: null, end: null, text: "Pause to see the transcript at this moment." }
     : stableTranscriptAtSignalTime(scrubTime);
   const transcriptRange = document.querySelector("[data-hero-transcript-range]");
   const transcriptText = document.querySelector("[data-hero-transcript]");
@@ -1520,12 +1597,14 @@ function updateBrainScrubber() {
   if (peakEl) peakEl.textContent = formatTime(active.event.peakTime);
   if (orbDim) orbDim.textContent = shortLabel(dim);
   if (orbValue) orbValue.textContent = `${Math.round(value * 100)}%`;
-  const nextTranscriptRange = `${formatTime(transcript.start)}-${formatTime(transcript.end)}`;
+  const brainSummary = document.querySelector("[data-brain-summary]");
+  if (brainSummary) brainSummary.textContent = brainSummaryText(active);
+  const nextTranscriptRange = transcript.label || `${formatTime(transcript.start)}-${formatTime(transcript.end)}`;
   const nextTranscriptText = transcript.text || active.analyst.quote || "";
   const nextTranscriptKey = `${nextTranscriptRange}|${nextTranscriptText}`;
   if (nextTranscriptKey !== lastHeroTranscriptKey) {
     lastHeroTranscriptKey = nextTranscriptKey;
-    if (transcriptWrap) {
+    if (transcriptWrap && !scrubPlaying) {
       transcriptWrap.classList.add("is-updating");
       window.setTimeout(() => transcriptWrap.classList.remove("is-updating"), 260);
     }
@@ -1558,6 +1637,41 @@ function activateNetworkEdge(index) {
 
 function activeInsight() {
   return report?.finalInsights.find((item) => item.id === activeInsightId);
+}
+
+function nearestInsightAtTime(time) {
+  const insights = report?.finalInsights || [];
+  if (!insights.length) return null;
+  return insights.reduce((best, item) => {
+    const distance = Math.abs((item.event?.peakTime || 0) - time);
+    return !best || distance < best.distance ? { item, distance } : best;
+  }, null)?.item || null;
+}
+
+function syncActiveInsightToScrubTime() {
+  const next = nearestInsightAtTime(scrubTime) || activeInsight();
+  if (!next) return null;
+  if (next.id !== activeInsightId) {
+    activeInsightId = next.id;
+    updateHeroActiveCopy(next);
+    document.querySelectorAll(".insight, .spine-moment").forEach((node) => {
+      node.classList.toggle("is-active", node.dataset.insightId === activeInsightId);
+    });
+  }
+  return next;
+}
+
+function brainSummaryText(active) {
+  const dim = activeDimension || active?.event?.signalName || "attention";
+  const value = nearest(report.normalized.byDimension[dim], scrubTime)?.smoothed ?? 0;
+  return `${DIMENSION_LABELS[dim]} is highlighted at ${Math.round(value * 100)} percent response strength around ${formatTime(scrubTime)}.`;
+}
+
+function timelineSummaryText() {
+  const active = [...activeChartDimensions].map((dim) => DIMENSION_LABELS[dim]).join(", ");
+  return active
+    ? `Timeline showing response strength over time for ${active}.`
+    : "Timeline showing response strength over time.";
 }
 
 function switchButton(id, label) {
@@ -1855,7 +1969,7 @@ function bindSpineReveal() {
         observer.unobserve(entry.target);
       }
     });
-  }, { threshold: 0.22 });
+  }, { threshold: 0.12, rootMargin: "0px 0px -8% 0px" });
   moments.forEach((moment) => observer.observe(moment));
 }
 
